@@ -4,8 +4,8 @@ import {app, RouterPaths} from "../../src/setting";
 import {
     correctBodyPost, errorsIncorrectInputPost, errorsUndefinedInputPost,
     incorrectBodyPost, undefinedBodyPost, updatedCorrectBodyPost
-} from "./test-repositories/posts-test-repositories";
-import {generateString} from "../../src/library/generate-string";
+} from "../test-repositories/posts-test-repositories";
+import {generateString} from "../../src/functions/generate-string";
 
 let newPostId: string = ''
 

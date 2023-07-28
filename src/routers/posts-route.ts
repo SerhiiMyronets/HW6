@@ -4,15 +4,11 @@ import {
     inputValidationMiddleware,
     postBodyValidation
 } from "../midlewares/input-validation-middleware";
-import {
-    PostInputModel,
-    PostViewModel,
-    RequestWithBody,
-    RequestWithParams,
-    RequestWithParamsBody
-} from "../library/types";
+
 
 import {postsRepository} from "../repositories/post-repository";
+import {PostInputModel, PostViewModel} from "../models/posts-models";
+import {RequestWithBody, RequestWithParams, RequestWithParamsBody} from "../types/request-types";
 
 export const posts: PostViewModel[] = [
     {

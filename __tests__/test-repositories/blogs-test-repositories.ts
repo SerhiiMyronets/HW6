@@ -1,5 +1,6 @@
-import {BlogInputModel, ErrorType} from "../../../src/library/types";
-import {generateString} from "../../../src/library/generate-string";
+import {generateString} from "../../src/functions/generate-string";
+import {BlogInputModel} from "../../src/models/blogs-models";
+import {ErrorType} from "../../src/types/errors-massages-types";
 
 export const correctBodyBlog: BlogInputModel = {
     name: "Name",

@@ -1,8 +1,6 @@
 import {blogs} from "../routers/blogs-route";
-import {BlogInputModel, BlogViewModel} from "../library/types";
-import {generateString} from "../library/generate-string";
-
-
+import {generateString} from "../functions/generate-string";
+import {BlogInputModel, BlogViewModel} from "../models/blogs-models";
 
 
 export const blogsRepository = {
@@ -28,7 +26,7 @@ export const blogsRepository = {
             blog.description = description
             blog.websiteUrl = websiteUrl
             return true
-            } else {
+        } else {
             return false
         }
     },

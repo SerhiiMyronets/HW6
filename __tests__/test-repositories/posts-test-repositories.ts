@@ -1,5 +1,6 @@
-import {ErrorType, PostInputModel} from "../../../src/library/types";
-import {generateString} from "../../../src/library/generate-string";
+import {generateString} from "../../src/functions/generate-string";
+import {PostInputModel} from "../../src/models/posts-models";
+import {ErrorType} from "../../src/types/errors-massages-types";
 
 
 export const correctBodyPost: PostInputModel = {

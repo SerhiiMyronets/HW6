@@ -1,13 +1,9 @@
 import {Request, Response, Router} from "express";
 import {authentication, blogBodyValidation, inputValidationMiddleware} from "../midlewares/input-validation-middleware";
-import {
-    BlogInputModel,
-    BlogViewModel,
-    RequestWithBody,
-    RequestWithParams,
-    RequestWithParamsBody
-} from "../library/types";
+
 import {blogsRepository} from "../repositories/blogs-repository";
+import {BlogInputModel, BlogViewModel} from "../models/blogs-models";
+import {RequestWithBody, RequestWithParams, RequestWithParamsBody} from "../types/request-types";
 
 export const blogs: BlogViewModel[] = [
     {

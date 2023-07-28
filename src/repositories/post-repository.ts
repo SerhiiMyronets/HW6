@@ -1,6 +1,7 @@
-import {PostInputModel, PostViewModel} from "../library/types";
+
 import {posts} from "../routers/posts-route";
-import {generateString} from "../library/generate-string";
+import {generateString} from "../functions/generate-string";
+import {PostInputModel, PostViewModel} from "../models/posts-models";
 
 
 

@@ -5,8 +5,8 @@ import {app, RouterPaths} from "../../src/setting";
 import {
     correctBodyBlog, errorsIncorrectInputBlog, errorsUndefinedInputBlog,
     incorrectBodyBlog, undefinedBodyBlog, updatedCorrectBodyBlog
-} from "./test-repositories/blogs-test-repositories";
-import {generateString} from "../../src/library/generate-string";
+} from "../test-repositories/blogs-test-repositories";
+import {generateString} from "../../src/functions/generate-string";
 let newBlogId = ''
 
 describe(RouterPaths.blogs, () => {
