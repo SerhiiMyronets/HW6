@@ -12,6 +12,8 @@ export const updatedCorrectBodyBlog: BlogInputModel = {
     description: "newDescription",
     websiteUrl: "newWebsiteUrl.com"
 }
+
+
 export const incorrectBodyBlog: BlogInputModel = {
     name: generateString(16),
     description: generateString(501),
