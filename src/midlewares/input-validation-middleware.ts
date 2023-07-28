@@ -19,6 +19,7 @@ export const authentication = (req: Request, res: Response, next: NextFunction) 
 
 
 
+
 export const inputValidationMiddleware = (req: Request, res: Response, next: NextFunction) => {
     // @ts-ignore
     const result = validationResult(req).formatWith(({msg, path}) => ({
