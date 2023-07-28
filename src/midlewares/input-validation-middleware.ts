@@ -5,11 +5,15 @@ import {body, validationResult} from "express-validator";
 export const authentication = (req: Request, res: Response, next: NextFunction) => {
     const auth = {login: 'admin', password: 'qwerty'}
     const b64auth = (req.headers.authorization || '').split(' ')[1] || ''
-    const [login, password] = atob(b64auth).toString().split(':')
-    if (login !== auth.login || password !== auth.password) {
+    try {
+        const [login, password] = atob(b64auth).toString().split(':')
+        if (login !== auth.login || password !== auth.password) {
+            return res.status(401).send('Authentication required.')
+        }
+        return next()
+    } catch (e) {
         return res.status(401).send('Authentication required.')
     }
-    return next()
 }
 
 export const inputValidationMiddleware = (req: Request, res: Response, next: NextFunction) => {
