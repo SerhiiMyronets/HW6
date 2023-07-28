@@ -7,8 +7,7 @@ export const authentication = (req: Request, res: Response, next: NextFunction) 
     const b64auth = (req.headers.authorization || '').split(' ')[1] || ''
     const [login, password] = atob(b64auth).toString().split(':')
     if (login !== auth.login || password !== auth.password) {
-
-        return res.sendStatus(401).send('Authentication required.')
+        return res.status(401).send('Authentication required.')
     }
     return next()
 }
@@ -43,7 +42,7 @@ export const postBodyValidation = [
     body("shortDescription").trim().isLength({max: 100}).withMessage('ShortDescription length should be below 100 symbols'),
     body("content").trim().notEmpty().withMessage('Content is required'),
     body("content").trim().isLength({max: 1000}).withMessage('Content should be be below 1000 symbols'),
-    body("blogId")/*.trim()*/.notEmpty().withMessage('BlogId is required'),
-    body("blogId")/*.trim()*/.isString().withMessage('BlogId should be string'),
-    body("blogId")/*.trim()*/.isLength({max: 35}).withMessage('BlogId length should be below 35 symbols'),
+    body("blogId").notEmpty().withMessage('BlogId is required'),
+    body("blogId").isString().withMessage('BlogId should be string'),
+    body("blogId").isLength({max: 35}).withMessage('BlogId length should be below 35 symbols'),
 ]
