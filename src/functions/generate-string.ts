@@ -8,3 +8,8 @@ export function generateString(length: number) {
     }
     return result;
 }
+
+
+
+
+
