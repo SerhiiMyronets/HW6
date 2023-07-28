@@ -7,7 +7,7 @@ export const authentication = (req: Request, res: Response, next: NextFunction) 
     const b64auth = (req.headers.authorization || '').split(' ')[1] || ''
     try {
         const [login, password] = atob(b64auth).toString().split(':')
-        if (login !== auth.login || password !== auth.password) {
+        if (login !== auth.login || password !== auth.password || (req.headers.authorization || '').split(' ')[0] !== 'Basic')  {
             return res.status(401).send('Authentication required.')
         }
         return next()
