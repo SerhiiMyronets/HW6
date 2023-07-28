@@ -10,7 +10,7 @@ export const app = express()
 export const RouterPaths = {
     blogs: '/blogs',
     posts: '/posts',
-    __test__: '/__test__/data'
+    __test__: '/testing/data'
 }
 
 
