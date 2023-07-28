@@ -1,0 +1,156 @@
+// @ts-ignore
+import request from 'supertest'
+
+import {app, RouterPaths} from "../../src/setting";
+import {
+    correctBodyBlog, errorsIncorrectInputBlog, errorsUndefinedInputBlog,
+    incorrectBodyBlog, undefinedBodyBlog, updatedCorrectBodyBlog
+} from "./test-repositories/blogs-test-repositories";
+import {generateString} from "../../src/library/generate-string";
+let newBlogId = ''
+
+describe(RouterPaths.blogs, () => {
+    beforeAll(async () => {
+        await request(app).delete(RouterPaths.__test__)
+    })
+    it(`should return 200 and empty array after get/`, async () => {
+        await request(app)
+            .get(RouterPaths.blogs)
+            .expect(200, [])
+    })
+    it(`should return 400 after get with incorrect id`, async () => {
+        await request(app)
+            .get(`${RouterPaths.blogs}/${generateString(5)}`)
+            .expect(404)
+    })
+    it(`shouldn't create blog with incorrect data`, async () => {
+        await request(app)
+            .post(RouterPaths.blogs)
+            .set("Authorization", "basic " + btoa("admin:qwerty"))
+            .send(incorrectBodyBlog)
+            .expect(400, errorsIncorrectInputBlog)
+
+        await request(app)
+            .get(RouterPaths.blogs)
+            .expect(200, [])
+    })
+    it('should create blog with correct data', async () => {
+        await request(app)
+            .post(RouterPaths.blogs)
+            .set("Authorization", "basic " + btoa("admin:qwerty"))
+            .send(correctBodyBlog)
+            .expect(response => {
+                expect(response.status).toBe(201)
+                expect(response.body.id).toBeDefined()
+                expect(Object.keys(response.body).length).toBe(4)
+                expect(response.body).toMatchObject(correctBodyBlog)
+                newBlogId = response.body.id
+            })
+
+        await request(app)
+            .get(`${RouterPaths.blogs}/${newBlogId}`)
+            .expect(response => {
+                expect(response.status).toBe(200)
+                expect(response.body.id).toBe(newBlogId)
+                expect(Object.keys(response.body).length).toBe(4)
+                expect(response.body).toMatchObject(correctBodyBlog)
+            })
+    })
+    it(`should return 200 and correct blog after get/id`, async () => {
+        await request(app)
+            .get(`${RouterPaths.blogs}/${newBlogId}`)
+            .expect(response => {
+                expect(response.status).toBe(200)
+                expect(response.body.id).toBe(newBlogId)
+                expect(Object.keys(response.body).length).toBe(4)
+                expect(response.body).toMatchObject(correctBodyBlog)
+            })
+    })
+    it('should update existing blog with correct data', async () => {
+        await request(app)
+            .put(`${RouterPaths.blogs}/${newBlogId}`)
+            .set("Authorization", "basic " + btoa("admin:qwerty"))
+            .send(updatedCorrectBodyBlog)
+            .expect(204)
+
+        await request(app)
+            .get(`${RouterPaths.blogs}/${newBlogId}`)
+            .expect(response => {
+                expect(response.status).toBe(200)
+                expect(response.body.id).toBe(newBlogId)
+                expect(Object.keys(response.body).length).toBe(4)
+                expect(response.body).toMatchObject(updatedCorrectBodyBlog)
+            })
+    })
+    it(`shouldn't update existing blog with incorrect data in body`, async () => {
+        await request(app)
+            .put(`${RouterPaths.blogs}/${newBlogId}`)
+            .set("Authorization", "basic " + btoa("admin:qwerty"))
+            .send(incorrectBodyBlog)
+            .expect(400, errorsIncorrectInputBlog)
+
+        await request(app)
+            .get(`${RouterPaths.blogs}/${newBlogId}`)
+            .expect(response => {
+                expect(response.status).toBe(200)
+                expect(response.body.id).toBe(newBlogId)
+                expect(Object.keys(response.body).length).toBe(4)
+                expect(response.body).toMatchObject(updatedCorrectBodyBlog)
+            })
+    })
+    it(`shouldn't update existing blog with undefined data in body`, async () => {
+        await request(app)
+            .put(`${RouterPaths.blogs}/${newBlogId}`)
+            .set("Authorization", "basic " + btoa("admin:qwerty"))
+            .send(undefinedBodyBlog)
+            .expect(400, errorsUndefinedInputBlog)
+
+        await request(app)
+            .get(`${RouterPaths.blogs}/${newBlogId}`)
+            .expect(response => {
+                expect(response.status).toBe(200)
+                expect(response.body.id).toBe(newBlogId)
+                expect(Object.keys(response.body).length).toBe(4)
+                expect(response.body).toMatchObject(updatedCorrectBodyBlog)
+            })
+    })
+    it(`shouldn't update blog with incorrect id`, async () => {
+        await request(app)
+            .put(`${RouterPaths.blogs}/${generateString(5)}`)
+            .set("Authorization", "basic " + btoa("admin:qwerty"))
+            .send(correctBodyBlog)
+            .expect(404)
+
+        await request(app)
+            .get(`${RouterPaths.blogs}/${newBlogId}`)
+            .expect(response => {
+                expect(response.status).toBe(200)
+                expect(response.body.id).toBe(newBlogId)
+                expect(Object.keys(response.body).length).toBe(4)
+                expect(response.body).toMatchObject(updatedCorrectBodyBlog)
+            })
+    })
+    it(`shouldn't delete not existing blog`, async () => {
+        await request(app)
+            .delete(`${RouterPaths.blogs}/${generateString(5)}`)
+            .set("Authorization", "basic " + btoa("admin:qwerty"))
+            .expect(404)
+        await request(app)
+            .get(`${RouterPaths.blogs}/${newBlogId}`)
+            .expect(response => {
+                expect(response.status).toBe(200)
+                expect(response.body.id).toBe(newBlogId)
+                expect(Object.keys(response.body).length).toBe(4)
+                expect(response.body).toMatchObject(updatedCorrectBodyBlog)
+            })
+    })
+    it(`shouldn delete existing blog`, async () => {
+        await request(app)
+            .delete(`${RouterPaths.blogs}/${newBlogId}`)
+            .set("Authorization", "basic " + btoa("admin:qwerty"))
+            .expect(204)
+        await request(app)
+            .get(RouterPaths.blogs)
+            .expect(200, [])
+    })
+})
