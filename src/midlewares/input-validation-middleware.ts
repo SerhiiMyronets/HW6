@@ -45,4 +45,5 @@ export const postBodyValidation = [
     body("content").trim().isLength({max: 1000}).withMessage('Content should be be below 1000 symbols'),
     body("blogId")/*.trim()*/.notEmpty().withMessage('BlogId is required'),
     body("blogId")/*.trim()*/.isString().withMessage('BlogId should be string'),
+    body("blogId").trim().isLength({max: 35}).withMessage('BlogId length should be below 35 symbols'),
 ]
