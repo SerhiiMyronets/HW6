@@ -4,17 +4,17 @@ import {auth} from "../setting";
 
 
 export const authentication = (req: Request, res: Response, next: NextFunction) => {
-    const headerAuth = req.headers.authorization || ''
-    if (/Basic .*/.test(headerAuth || '')) {
-        const headerLoginPass = atob(headerAuth.split(" ")[1])
-        if (/.*:.+/.test(headerLoginPass)) {
-            const [login, password] = headerLoginPass.split(':')
-            if (login === auth.login || password === auth.password) {
-                return next()
-            }
+
+    const b64auth = (req.headers.authorization || '').split(' ')[1] || ''
+    try {
+        const [login, password] = atob(b64auth).toString().split(':')
+        if (login !== auth.login || password !== auth.password || (req.headers.authorization || '').split(' ')[0] !== 'Basic') {
+            return res.status(401).send('Authentication required.')
         }
+        return next()
+    } catch (e) {
+        return res.status(401).send('Authentication required.')
     }
-    return res.status(401).send('Authentication required.')
 }
 
 export const inputValidationMiddleware = (req: Request, res: Response, next: NextFunction) => {
