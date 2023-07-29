@@ -4,9 +4,9 @@ import {app, RouterPaths} from "../../src/setting";
 import {
     correctBodyPost, errorsIncorrectInputPost, errorsUndefinedInputPost,
     incorrectBodyPost, undefinedBodyPost, updatedCorrectBodyPost
-} from "../test-repositories/posts-test-repositories";
+} from "../test-repositories/posts-test-inputs";
 import {generateString} from "../../src/functions/generate-string";
-import {testRepository} from "./test-repository";
+import {testRepository} from "../test-repositories/test-repository";
 
 let newPostId: string = ''
 
@@ -28,7 +28,7 @@ describe(RouterPaths.posts, () => {
     it(`shouldn't create post with incorrect data`, async () => {
         await request(app)
             .post(RouterPaths.posts)
-            .set("Authorization", "basic " + btoa("admin:qwerty"))
+            .set("Authorization", "Basic " + btoa("admin:qwerty"))
             .send(incorrectBodyPost)
             .expect(400, errorsIncorrectInputPost)
 
@@ -39,7 +39,7 @@ describe(RouterPaths.posts, () => {
     it('should create post with correct data', async () => {
         await request(app)
             .post(RouterPaths.posts)
-            .set("Authorization", "basic " + btoa("admin:qwerty"))
+            .set("Authorization", "Basic " + btoa("admin:qwerty"))
             .send(correctBodyPost)
             .expect(response => {
                 expect(response.status).toBe(201)
@@ -58,7 +58,7 @@ describe(RouterPaths.posts, () => {
     it('should update existing post with correct data', async () => {
         await request(app)
             .put(`${RouterPaths.posts}/${newPostId}`)
-            .set("Authorization", "basic " + btoa("admin:qwerty"))
+            .set("Authorization", "Basic " + btoa("admin:qwerty"))
             .send(updatedCorrectBodyPost)
             .expect(204)
         await testRepository.checkPostExisting(newPostId, updatedCorrectBodyPost)
@@ -67,7 +67,7 @@ describe(RouterPaths.posts, () => {
     it(`shouldn't update existing post with incorrect data in body`, async () => {
         await request(app)
             .put(`${RouterPaths.posts}/${newPostId}`)
-            .set("Authorization", "basic " + btoa("admin:qwerty"))
+            .set("Authorization", "Basic " + btoa("admin:qwerty"))
             .send(incorrectBodyPost)
             .expect(400, errorsIncorrectInputPost)
         await testRepository.checkPostExisting(newPostId, updatedCorrectBodyPost)
@@ -76,7 +76,7 @@ describe(RouterPaths.posts, () => {
     it(`shouldn't update existing post with undefined data in body`, async () => {
         await request(app)
             .put(`${RouterPaths.posts}/${newPostId}`)
-            .set("Authorization", "basic " + btoa("admin:qwerty"))
+            .set("Authorization", "Basic " + btoa("admin:qwerty"))
             .send(undefinedBodyPost)
             .expect(400, errorsUndefinedInputPost)
         await testRepository.checkPostExisting(newPostId, updatedCorrectBodyPost)
@@ -85,7 +85,7 @@ describe(RouterPaths.posts, () => {
     it(`shouldn't update post with incorrect id`, async () => {
         await request(app)
             .put(`${RouterPaths.posts}/${generateString(5)}`)
-            .set("Authorization", "basic " + btoa("admin:qwerty"))
+            .set("Authorization", "Basic " + btoa("admin:qwerty"))
             .send(correctBodyPost)
             .expect(404)
         await testRepository.checkPostExisting(newPostId, updatedCorrectBodyPost)
@@ -94,7 +94,7 @@ describe(RouterPaths.posts, () => {
     it(`shouldn't delete not existing post`, async () => {
         await request(app)
             .delete(`${RouterPaths.posts}/${generateString(5)}`)
-            .set("Authorization", "basic " + btoa("admin:qwerty"))
+            .set("Authorization", "Basic " + btoa("admin:qwerty"))
             .expect(404)
         await testRepository.checkPostExisting(newPostId, updatedCorrectBodyPost)
 
@@ -102,7 +102,7 @@ describe(RouterPaths.posts, () => {
     it(`should delete existing post`, async () => {
         await request(app)
             .delete(`${RouterPaths.posts}/${newPostId}`)
-            .set("Authorization", "basic " + btoa("admin:qwerty"))
+            .set("Authorization", "Basic " + btoa("admin:qwerty"))
             .expect(204)
         await request(app)
             .get(RouterPaths.posts)
