@@ -1,20 +1,18 @@
 import {generateString} from "../../src/functions/generate-string";
-import {PostInputModel} from "../../src/models/posts-models";
+import {PostInputModel, PostInputModelWithoutBlogId} from "../../src/models/posts-models";
 import {ErrorType} from "../../src/types/errors-massages-types";
-import {newBlogId} from "../e2e/posts.e2e.test";
 
 
-export const correctBodyPost: PostInputModel = {
+
+export const correctBodyPost: PostInputModelWithoutBlogId = {
     title: "Title",
     shortDescription: "ShortDescription",
     content: "Content",
-    blogId: newBlogId
 }
-export const updatedCorrectBodyPost: PostInputModel = {
+export const updatedCorrectBodyPost: PostInputModelWithoutBlogId = {
     title: "NewTitle",
     shortDescription: "NewShortDescription",
-    content: "NewContent",
-    blogId: newBlogId
+    content: "NewContent"
 }
 export const incorrectBodyPost: PostInputModel = {
     title: generateString(31),
@@ -44,3 +42,5 @@ export const errorsUndefinedInputPost: ErrorType = {
         {message: 'BlogId is required', field: 'blogId'}
     ]
 }
+
+export const incorrectLogin: string = "Basic admin:qwerty"

@@ -3,14 +3,14 @@ import request from 'supertest'
 import {app, auth, RouterPaths} from "../../src/setting";
 import {
     correctBodyPost, errorsIncorrectInputPost, errorsUndefinedInputPost,
-    incorrectBodyPost, undefinedBodyPost, updatedCorrectBodyPost
+    incorrectBodyPost, incorrectLogin, undefinedBodyPost, updatedCorrectBodyPost
 } from "../test-repositories/posts-test-inputs";
 import {generateString} from "../../src/functions/generate-string";
 import {testRepository} from "../test-repositories/test-repository";
 import {correctBodyBlog} from "../test-repositories/blogs-test-inputs";
-export let newBlogId: string = ''
-let newPostId: string = ''
 
+export let BlogId: string = ''
+let newPostId: string = ''
 
 describe(RouterPaths.posts, () => {
     beforeAll(async () => {
@@ -24,7 +24,7 @@ describe(RouterPaths.posts, () => {
                 expect(response.body.id).toBeDefined()
                 expect(Object.keys(response.body).length).toBe(4)
                 expect(response.body).toMatchObject(correctBodyBlog)
-                newBlogId = response.body.id
+                BlogId = response.body.id
             })
     })
 
@@ -54,29 +54,33 @@ describe(RouterPaths.posts, () => {
         await request(app)
             .post(RouterPaths.posts)
             .set("Authorization", "Basic " + btoa(`${auth.login}:${auth.password}`))
-            .send(correctBodyPost)
+            .send({
+                title: "Title",
+                shortDescription: "ShortDescription",
+                content: "Content",
+                blogId: BlogId
+            })
             .expect(response => {
                 expect(response.status).toBe(201)
                 expect(response.body.id).toBeDefined()
                 expect(response.body.blogName).toBeDefined()
                 expect(Object.keys(response.body).length).toBe(6)
-                expect(response.body).toMatchObject(correctBodyPost)
+                expect(response.body).toMatchObject({...correctBodyPost, blogId: BlogId})
                 newPostId = response.body.id
-                console.log(newBlogId)
             })
-        await testRepository.checkPostExisting(newPostId, correctBodyPost)
+        await testRepository.checkPostExisting(newPostId, {...correctBodyPost, blogId: BlogId})
 
     })
     it(`should return 200 and correct post after get/id`, async () => {
-        await testRepository.checkPostExisting(newPostId, correctBodyPost)
+        await testRepository.checkPostExisting(newPostId, {...correctBodyPost, blogId: BlogId})
     })
     it('should update existing post with correct data', async () => {
         await request(app)
             .put(`${RouterPaths.posts}/${newPostId}`)
             .set("Authorization", "Basic " + btoa(`${auth.login}:${auth.password}`))
-            .send(updatedCorrectBodyPost)
+            .send({...updatedCorrectBodyPost, blogId: BlogId})
             .expect(204)
-        await testRepository.checkPostExisting(newPostId, updatedCorrectBodyPost)
+        await testRepository.checkPostExisting(newPostId, {...updatedCorrectBodyPost, blogId: BlogId})
 
     })
     it(`shouldn't update existing post with incorrect data in body`, async () => {
@@ -85,7 +89,7 @@ describe(RouterPaths.posts, () => {
             .set("Authorization", "Basic " + btoa(`${auth.login}:${auth.password}`))
             .send(incorrectBodyPost)
             .expect(400, errorsIncorrectInputPost)
-        await testRepository.checkPostExisting(newPostId, updatedCorrectBodyPost)
+        await testRepository.checkPostExisting(newPostId, {...updatedCorrectBodyPost, blogId: BlogId})
 
     })
     it(`shouldn't update existing post with undefined data in body`, async () => {
@@ -94,24 +98,31 @@ describe(RouterPaths.posts, () => {
             .set("Authorization", "Basic " + btoa(`${auth.login}:${auth.password}`))
             .send(undefinedBodyPost)
             .expect(400, errorsUndefinedInputPost)
-        await testRepository.checkPostExisting(newPostId, updatedCorrectBodyPost)
+        await testRepository.checkPostExisting(newPostId, {...updatedCorrectBodyPost, blogId: BlogId})
 
     })
     it(`shouldn't update post with incorrect id`, async () => {
         await request(app)
             .put(`${RouterPaths.posts}/${generateString(5)}`)
             .set("Authorization", "Basic " + btoa(`${auth.login}:${auth.password}`))
-            .send(correctBodyPost)
+            .send({...correctBodyPost, blogId: BlogId})
             .expect(404)
-        await testRepository.checkPostExisting(newPostId, updatedCorrectBodyPost)
+        await testRepository.checkPostExisting(newPostId, {...updatedCorrectBodyPost, blogId: BlogId})
 
+    })
+    it(`shouldn't delete existing post with incorrect authorization`, async () => {
+        await request(app)
+            .delete(`${RouterPaths.posts}/${newPostId}`)
+            .set("Authorization", incorrectLogin)
+            .expect(401)
+        await testRepository.checkPostExisting(newPostId, {...updatedCorrectBodyPost, blogId: BlogId})
     })
     it(`shouldn't delete not existing post`, async () => {
         await request(app)
             .delete(`${RouterPaths.posts}/${generateString(5)}`)
             .set("Authorization", "Basic " + btoa(`${auth.login}:${auth.password}`))
             .expect(404)
-        await testRepository.checkPostExisting(newPostId, updatedCorrectBodyPost)
+        await testRepository.checkPostExisting(newPostId, {...updatedCorrectBodyPost, blogId: BlogId})
 
     })
     it(`should delete existing post`, async () => {

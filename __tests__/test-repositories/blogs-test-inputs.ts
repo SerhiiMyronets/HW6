@@ -39,4 +39,6 @@ export const errorsUndefinedInputBlog: ErrorType = {
     ]
 }
 
+export const incorrectLogin: string = "Basic admin:qwerty"
+
 

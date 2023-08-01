@@ -12,3 +12,9 @@ export type PostInputModel = {
     content: string
     blogId: string
 }
+
+export type PostInputModelWithoutBlogId = {
+    title: string
+    shortDescription: string
+    content: string
+}

@@ -6,8 +6,9 @@ import {generateString} from "../../src/functions/generate-string";
 import {testRepository} from "../test-repositories/test-repository";
 import {
     correctBodyBlog, errorsIncorrectInputBlog, errorsUndefinedInputBlog,
-    incorrectBodyBlog, undefinedBodyBlog, updatedCorrectBodyBlog
+    incorrectBodyBlog, undefinedBodyBlog, updatedCorrectBodyBlog, incorrectLogin
 } from "../test-repositories/blogs-test-inputs";
+
 
 let newBlogId = ''
 
@@ -90,6 +91,13 @@ describe(RouterPaths.blogs, () => {
             .expect(404)
         await testRepository.checkBlogExisting(newBlogId, updatedCorrectBodyBlog)
 
+    })
+    it(`shouldn't delete existing blog with incorrect authorization`, async () => {
+        await request(app)
+            .delete(`${RouterPaths.blogs}/${newBlogId}`)
+            .set("Authorization", incorrectLogin)
+            .expect(401)
+        await testRepository.checkBlogExisting(newBlogId, updatedCorrectBodyBlog)
     })
     it(`shouldn't delete not existing blog`, async () => {
         await request(app)
