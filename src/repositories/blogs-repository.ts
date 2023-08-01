@@ -1,7 +1,12 @@
 import {generateString} from "../functions/generate-string";
 import {BlogInputModel, BlogViewModel} from "../models/blogs-models";
 
-const blogs: BlogViewModel[] = []
+const blogs: BlogViewModel[] = [{
+    id: "1",
+    name: "Name",
+    description: "Description",
+    websiteUrl: "WebsiteUrl.com"
+}]
 
 export const blogsRepository = {
     getAllBlogs() {

@@ -2,7 +2,14 @@ import {generateString} from "../functions/generate-string";
 import {PostInputModel, PostViewModel} from "../models/posts-models";
 import {blogsRepository} from "./blogs-repository";
 
-const posts: PostViewModel[] =[]
+const posts: PostViewModel[] =[{
+    id: "string",
+    title: "string",
+    shortDescription: "string",
+    content: "string",
+    blogId: "1",
+    blogName: "Name"
+}]
 
 export const postsRepository = {
     getAllPosts() {

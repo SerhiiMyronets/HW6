@@ -7,14 +7,27 @@ import {
 } from "../test-repositories/posts-test-inputs";
 import {generateString} from "../../src/functions/generate-string";
 import {testRepository} from "../test-repositories/test-repository";
-
+import {correctBodyBlog} from "../test-repositories/blogs-test-inputs";
+export let newBlogId: string = ''
 let newPostId: string = ''
 
 
 describe(RouterPaths.posts, () => {
     beforeAll(async () => {
         await request(app).delete(RouterPaths.__test__)
+        await request(app)
+            .post(RouterPaths.blogs)
+            .set("Authorization", "Basic " + btoa(`${auth.login}:${auth.password}`))
+            .send(correctBodyBlog)
+            .expect(response => {
+                expect(response.status).toBe(201)
+                expect(response.body.id).toBeDefined()
+                expect(Object.keys(response.body).length).toBe(4)
+                expect(response.body).toMatchObject(correctBodyBlog)
+                newBlogId = response.body.id
+            })
     })
+
     it(`should return 200 and empty array after get/`, async () => {
         await request(app)
             .get(RouterPaths.posts)
@@ -49,6 +62,7 @@ describe(RouterPaths.posts, () => {
                 expect(Object.keys(response.body).length).toBe(6)
                 expect(response.body).toMatchObject(correctBodyPost)
                 newPostId = response.body.id
+                console.log(newBlogId)
             })
         await testRepository.checkPostExisting(newPostId, correctBodyPost)
 

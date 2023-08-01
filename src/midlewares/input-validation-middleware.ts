@@ -49,14 +49,12 @@ export const postBodyValidation = [
     body("content").isString().trim().notEmpty().withMessage('Content is required'),
     body("content").isLength({max: 1000}).withMessage('Content should be be below 1000 symbols'),
     body("blogId").isString().notEmpty().withMessage('BlogId is required'),
-    body("blogId").isString().withMessage('BlogId should be string'),
-    body("blogId").isLength({max: 35}).withMessage('BlogId length should be below 35 symbols').custom(blogId => {
+    body("blogId").isString().custom(blogId => {
         const isBlogExist = blogsRepository.getBlogById(blogId);
-
         if (!isBlogExist) {
             throw new Error("Blog not found")
         }
-
         return true
-    }),
+    })
+
 ]
