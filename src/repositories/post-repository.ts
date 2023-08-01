@@ -1,20 +1,25 @@
-
-import {posts} from "../routers/posts-route";
 import {generateString} from "../functions/generate-string";
 import {PostInputModel, PostViewModel} from "../models/posts-models";
+import {blogsRepository} from "./blogs-repository";
 
-
+const posts: PostViewModel[] =[]
 
 export const postsRepository = {
-    creatBlog(body: PostInputModel) {
+    getAllPosts() {
+        return posts
+    },
+    creatPost(body: PostInputModel) {
         const {title, shortDescription, content, blogId} = body
+
+        const blog = blogsRepository.getBlogById(blogId);
+
         const newPost: PostViewModel = {
             id: generateString(5),
             title,
             shortDescription,
             content,
             blogId,
-            blogName: generateString(5)
+            blogName: blog!.name
         }
         posts.push(newPost)
         return newPost;
@@ -25,11 +30,13 @@ export const postsRepository = {
     updatePost(id: string, body: PostInputModel) {
         const {title, shortDescription, content, blogId} = body
         const post = posts.find(post => post.id === id)
+        const blog = blogsRepository.getBlogById(blogId);
         if (post) {
             post.title = title
             post.shortDescription = shortDescription
             post.content = content
             post.blogId = blogId
+            post.blogName = blog!.name
             return true
         } else {
             return false
@@ -43,5 +50,9 @@ export const postsRepository = {
         } else {
             return false
         }
+    },
+    deleteAllPosts() {
+        posts.length = 0
+        return
     }
 }

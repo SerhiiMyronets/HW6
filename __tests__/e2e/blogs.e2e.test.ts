@@ -1,6 +1,6 @@
 // @ts-ignore
 import request from 'supertest'
-import {app, RouterPaths} from "../../src/setting";
+import {app, auth, RouterPaths} from "../../src/setting";
 
 import {generateString} from "../../src/functions/generate-string";
 import {testRepository} from "../test-repositories/test-repository";
@@ -28,7 +28,7 @@ describe(RouterPaths.blogs, () => {
     it(`shouldn't create blog with incorrect data`, async () => {
         await request(app)
             .post(RouterPaths.blogs)
-            .set("Authorization", "Basic " + btoa("admin:qwerty"))
+            .set("Authorization", "Basic " + btoa(`${auth.login}:${auth.password}`))
             .send(incorrectBodyBlog)
             .expect(400, errorsIncorrectInputBlog)
 
@@ -39,7 +39,7 @@ describe(RouterPaths.blogs, () => {
     it('should create blog with correct data', async () => {
         await request(app)
             .post(RouterPaths.blogs)
-            .set("Authorization", "Basic " + btoa("admin:qwerty"))
+            .set("Authorization", "Basic " + btoa(`${auth.login}:${auth.password}`))
             .send(correctBodyBlog)
             .expect(response => {
                 expect(response.status).toBe(201)
@@ -58,7 +58,7 @@ describe(RouterPaths.blogs, () => {
     it('should update existing blog with correct data', async () => {
         await request(app)
             .put(`${RouterPaths.blogs}/${newBlogId}`)
-            .set("Authorization", "Basic " + btoa("admin:qwerty"))
+            .set("Authorization", "Basic " + btoa(`${auth.login}:${auth.password}`))
             .send(updatedCorrectBodyBlog)
             .expect(204)
         await testRepository.checkBlogExisting(newBlogId, updatedCorrectBodyBlog)
@@ -67,7 +67,7 @@ describe(RouterPaths.blogs, () => {
     it(`shouldn't update existing blog with incorrect data in body`, async () => {
         await request(app)
             .put(`${RouterPaths.blogs}/${newBlogId}`)
-            .set("Authorization", "Basic " + btoa("admin:qwerty"))
+            .set("Authorization", "Basic " + btoa(`${auth.login}:${auth.password}`))
             .send(incorrectBodyBlog)
             .expect(400, errorsIncorrectInputBlog)
 
@@ -76,7 +76,7 @@ describe(RouterPaths.blogs, () => {
     it(`shouldn't update existing blog with undefined data in body`, async () => {
         await request(app)
             .put(`${RouterPaths.blogs}/${newBlogId}`)
-            .set("Authorization", "Basic " + btoa("admin:qwerty"))
+            .set("Authorization", "Basic " + btoa(`${auth.login}:${auth.password}`))
             .send(undefinedBodyBlog)
             .expect(400, errorsUndefinedInputBlog)
         await testRepository.checkBlogExisting(newBlogId, updatedCorrectBodyBlog)
@@ -85,7 +85,7 @@ describe(RouterPaths.blogs, () => {
     it(`shouldn't update blog with incorrect id`, async () => {
         await request(app)
             .put(`${RouterPaths.blogs}/${generateString(5)}`)
-            .set("Authorization", "Basic " + btoa("admin:qwerty"))
+            .set("Authorization", "Basic " + btoa(`${auth.login}:${auth.password}`))
             .send(correctBodyBlog)
             .expect(404)
         await testRepository.checkBlogExisting(newBlogId, updatedCorrectBodyBlog)
@@ -94,14 +94,14 @@ describe(RouterPaths.blogs, () => {
     it(`shouldn't delete not existing blog`, async () => {
         await request(app)
             .delete(`${RouterPaths.blogs}/${generateString(5)}`)
-            .set("Authorization", "Basic " + btoa("admin:qwerty"))
+            .set("Authorization", "Basic " + btoa(`${auth.login}:${auth.password}`))
             .expect(404)
         await testRepository.checkBlogExisting(newBlogId, updatedCorrectBodyBlog)
     })
     it(`shouldn delete existing blog`, async () => {
         await request(app)
             .delete(`${RouterPaths.blogs}/${newBlogId}`)
-            .set("Authorization", "Basic " + btoa("admin:qwerty"))
+            .set("Authorization", "Basic " + btoa(`${auth.login}:${auth.password}`))
             .expect(204)
         await request(app)
             .get(RouterPaths.blogs)

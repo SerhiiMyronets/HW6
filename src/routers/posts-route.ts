@@ -4,25 +4,14 @@ import {
     inputValidationMiddleware,
     postBodyValidation
 } from "../midlewares/input-validation-middleware";
-
-
 import {postsRepository} from "../repositories/post-repository";
-import {PostInputModel, PostViewModel} from "../models/posts-models";
+import {PostInputModel} from "../models/posts-models";
 import {RequestWithBody, RequestWithParams, RequestWithParamsBody} from "../types/request-types";
 
-export const posts: PostViewModel[] = [
-    {
-        id: '1',
-        title: 'string',
-        shortDescription: 'string',
-        content: 'string',
-        blogId: 'string',
-        blogName: 'string'
-    }
-]
 export const postsRoute = Router({})
 
 postsRoute.get('/', (req: Request, res: Response) => {
+    const posts = postsRepository.getAllPosts();
     res.send(posts)
 })
 postsRoute.get('/:id', (req: RequestWithParams<{ id: string }>, res: Response) => {
@@ -44,7 +33,7 @@ postsRoute.delete('/:id', authentication, (req: RequestWithParams<{ id: string }
 postsRoute.post('/', authentication,
     postBodyValidation,
     inputValidationMiddleware, (req: RequestWithBody<PostInputModel>, res: Response) => {
-        const newPost = postsRepository.creatBlog(req.body)
+        const newPost = postsRepository.creatPost(req.body)
         res.status(201).send(newPost)
     })
 postsRoute.put('/:id', authentication,

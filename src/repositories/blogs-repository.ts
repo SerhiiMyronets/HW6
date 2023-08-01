@@ -1,9 +1,13 @@
-import {blogs} from "../routers/blogs-route";
 import {generateString} from "../functions/generate-string";
 import {BlogInputModel, BlogViewModel} from "../models/blogs-models";
 
+const blogs: BlogViewModel[] = []
 
 export const blogsRepository = {
+    getAllBlogs() {
+        return blogs
+    },
+
     creatBlog(body: BlogInputModel) {
         const {name, description, websiteUrl} = body
         const newBlog: BlogViewModel = {
@@ -38,5 +42,9 @@ export const blogsRepository = {
         } else {
             return false
         }
+    },
+    deleteAllBlogs() {
+        blogs.length = 0;
+        return
     }
 }

@@ -1,22 +1,12 @@
 import {Request, Response, Router} from "express";
-
-
 import {blogsRepository} from "../repositories/blogs-repository";
-import {BlogInputModel, BlogViewModel} from "../models/blogs-models";
+import {BlogInputModel} from "../models/blogs-models";
 import {RequestWithBody, RequestWithParams, RequestWithParamsBody} from "../types/request-types";
 import {authentication, blogBodyValidation, inputValidationMiddleware} from "../midlewares/input-validation-middleware";
-
-export const blogs: BlogViewModel[] = [
-    {
-        id: "1",
-        name: "string",
-        description: "string",
-        websiteUrl: "string"
-    }
-]
 export const blogsRoute = Router({})
 
 blogsRoute.get('/', (req: Request, res: Response) => {
+    const blogs = blogsRepository.getAllBlogs();
     res.send(blogs)
 })
 blogsRoute.get('/:id', (req: RequestWithParams<{ id: string }>, res: Response) => {
