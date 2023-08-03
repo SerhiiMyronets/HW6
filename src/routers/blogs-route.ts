@@ -1,5 +1,4 @@
 import {Request, Response, Router} from "express";
-
 import {BlogInputModel} from "../models/blogs-models";
 import {RequestWithBody, RequestWithParams, RequestWithParamsBody} from "../types/request-types";
 import {authentication, blogBodyValidation, inputValidationMiddleware} from "../midlewares/input-validation-middleware";
