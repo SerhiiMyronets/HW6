@@ -13,7 +13,8 @@ import {blogsCollection} from "../db/db";
 export const blogsRepository = {
     async getAllBlogs(): Promise<BlogViewModel[]> {
         return await blogsCollection
-            .find().toArray()
+            .find().project<BlogViewModel>({_id: 0})
+            .toArray()
     },
 
     async creatBlog(body: BlogInputModel): Promise<BlogViewModel> {
@@ -32,7 +33,8 @@ export const blogsRepository = {
     },
     async getBlogById(id: string): Promise<BlogViewModel | null> {
         return await blogsCollection
-            .findOne({id: id})
+            .findOne({id: id}, { projection: {_id: 0}} )
+
     },
     async updateBlog(id: string, body: BlogInputModel): Promise<Boolean> {
         const {name, description, websiteUrl} = body

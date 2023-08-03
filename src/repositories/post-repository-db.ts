@@ -5,6 +5,7 @@ import {postsCollection} from "../db/db";
 
 
 
+
 /*const posts: PostViewModel[] = [{
     id: "string",
     title: "string",
@@ -15,11 +16,13 @@ import {postsCollection} from "../db/db";
 }]*/
 
 export const postsRepository = {
-    async getAllPosts(): Promise<PostInputModel[]> {
+    async getAllPosts(): Promise<PostViewModel[]> {
         return await postsCollection
-            .find({}).toArray()
+            .find({})
+            .project<PostViewModel>({_id: 0})
+            .toArray()
     },
-    async creatPost(body: PostInputModel): Promise<PostInputModel> {
+    async creatPost(body: PostInputModel): Promise<PostViewModel> {
         const {title, shortDescription, content, blogId} = body
         const blog = await blogsRepository.getBlogById(blogId);
         const newPost: PostViewModel = {
@@ -37,7 +40,8 @@ export const postsRepository = {
     },
     async getPostById(id: string): Promise<PostViewModel | null> {
         return await postsCollection
-            .findOne({id: id})
+            .findOne({id: id}, { projection: {_id: 0}} )
+
     },
     async updatePost(id: string, body: PostInputModel): Promise<Boolean> {
         const {title, shortDescription, content, blogId} = body
