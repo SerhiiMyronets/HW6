@@ -13,7 +13,9 @@ export const testRepository = {
             .expect(response => {
                 expect(response.status).toBe(200)
                 expect(response.body.id).toBe(BlogId)
-                expect(Object.keys(response.body).length).toBe(5)
+                expect(response.body.createdAt).toBeDefined()
+                expect(response.body.isMembership).toBeDefined()
+                expect(Object.keys(response.body).length).toBe(7)
                 expect(response.body).toMatchObject(BodyBlog)
             })
     },
@@ -22,9 +24,10 @@ export const testRepository = {
             .get(`${RouterPaths.posts}/${PostId}`)
             .expect(response => {
                 expect(response.status).toBe(200)
-                expect(response.body.id).toBeDefined()
+                expect(response.body.id).toBe(PostId)
                 expect(response.body.blogName).toBeDefined()
-                expect(Object.keys(response.body).length).toBe(7)
+                expect(response.body.createdAt).toBeDefined()
+                expect(Object.keys(response.body).length).toBe(8)
                 expect(response.body).toMatchObject(BodyBlog)
             })
     }
