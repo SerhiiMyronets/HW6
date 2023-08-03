@@ -29,6 +29,7 @@ export const blogsRepository = {
         }
             await blogsCollection
                 .insertOne({...newBlog})
+        //
         return newBlog;
     },
     async getBlogById(id: string): Promise<BlogViewModel | null> {
