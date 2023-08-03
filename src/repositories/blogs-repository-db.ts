@@ -27,13 +27,13 @@ export const blogsRepository = {
             createdAt: new Date().toISOString(),
             isMembership: false
         }
-        await blogsCollection
-            .insertOne(newBlog)
+            await blogsCollection
+                .insertOne({...newBlog})
         return newBlog;
     },
     async getBlogById(id: string): Promise<BlogViewModel | null> {
         return await blogsCollection
-            .findOne({id: id}, { projection: {_id: 0}} )
+            .findOne({id: id}, {projection: {_id: 0}})
 
     },
     async updateBlog(id: string, body: BlogInputModel): Promise<Boolean> {
