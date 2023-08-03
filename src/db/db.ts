@@ -2,7 +2,7 @@ import {MongoClient} from 'mongodb'
 import {BlogViewModel} from "../models/blogs-models";
 import {PostViewModel} from "../models/posts-models";
 
-const mongoURI = process.env.mongoURI || "mongodb://0.0.0.0:27017/";
+const mongoURI = "mongodb+srv://hardmail88:3846MrN1@cluster0.0goknaf.mongodb.net/?retryWrites=true&w=majority";
 
 export const client = new MongoClient(mongoURI)
 
