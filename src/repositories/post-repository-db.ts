@@ -35,7 +35,7 @@ export const postsRepository = {
             createdAt: new Date().toISOString()
         }
         await postsCollection
-            .insertOne(newPost)
+            .insertOne({...newPost})
         return newPost;
     },
     async getPostById(id: string): Promise<PostViewModel | null> {
