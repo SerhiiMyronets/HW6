@@ -1,7 +1,9 @@
 import {NextFunction, Request, Response} from "express";
 import {body, validationResult} from "express-validator";
 import {auth} from "../setting";
-import {blogsRepository} from "../repositories/blogs-repository";
+import {blogsRepository} from "../repositories/blogs-repository-db";
+
+
 
 
 export const authentication = (req: Request, res: Response, next: NextFunction) => {
@@ -49,8 +51,8 @@ export const postBodyValidation = [
     body("content").isString().trim().notEmpty().withMessage('Content is required'),
     body("content").isLength({max: 1000}).withMessage('Content should be be below 1000 symbols'),
     body("blogId").isString().notEmpty().withMessage('BlogId is required'),
-    body("blogId").isString().custom(blogId => {
-        const isBlogExist = blogsRepository.getBlogById(blogId);
+    body("blogId").custom(async blogId => {
+        const isBlogExist = await blogsRepository.getBlogById(blogId);
         if (!isBlogExist) {
             throw new Error("Blog not found")
         }

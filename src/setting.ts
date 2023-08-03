@@ -13,7 +13,7 @@ export const RouterPaths = {
     __test__: '/testing/all-data'
 }
 
-//export const authHeader = 'Basic '+ window.atob("admin:qwerty")
+
 export const auth = {login: 'admin', password: 'qwerty'}
 
 app.use(express.json())

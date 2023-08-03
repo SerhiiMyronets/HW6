@@ -45,7 +45,7 @@ describe(RouterPaths.blogs, () => {
             .expect(response => {
                 expect(response.status).toBe(201)
                 expect(response.body.id).toBeDefined()
-                expect(Object.keys(response.body).length).toBe(4)
+                expect(Object.keys(response.body).length).toBe(5)
                 expect(response.body).toMatchObject(correctBodyBlog)
                 newBlogId = response.body.id
             })

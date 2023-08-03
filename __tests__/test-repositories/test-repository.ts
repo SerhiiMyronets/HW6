@@ -13,7 +13,7 @@ export const testRepository = {
             .expect(response => {
                 expect(response.status).toBe(200)
                 expect(response.body.id).toBe(BlogId)
-                expect(Object.keys(response.body).length).toBe(4)
+                expect(Object.keys(response.body).length).toBe(5)
                 expect(response.body).toMatchObject(BodyBlog)
             })
     },
@@ -24,7 +24,7 @@ export const testRepository = {
                 expect(response.status).toBe(200)
                 expect(response.body.id).toBeDefined()
                 expect(response.body.blogName).toBeDefined()
-                expect(Object.keys(response.body).length).toBe(6)
+                expect(Object.keys(response.body).length).toBe(7)
                 expect(response.body).toMatchObject(BodyBlog)
             })
     }
