@@ -1,9 +1,12 @@
 import {MongoClient} from 'mongodb'
 import {BlogViewModel} from "../models/blogs-models";
 import {PostViewModel} from "../models/posts-models";
+import 'dotenv/config'
 
-const mongoURI = "mongodb+srv://hardmail88:3846MrN1@cluster0.0goknaf.mongodb.net/?retryWrites=true&w=majority";
-
+const mongoURI = process.env.MONGO_URI
+if (!mongoURI) {
+    throw new Error('URI doesnt found')
+}
 export const client = new MongoClient(mongoURI)
 
 const db = client.db("social_media");
