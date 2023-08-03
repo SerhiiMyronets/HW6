@@ -1,8 +1,14 @@
 import {MongoClient} from 'mongodb'
+import {BlogViewModel} from "../models/blogs-models";
+import {PostViewModel} from "../models/posts-models";
 
 const mongoURI = process.env.mongoURI || "mongodb://0.0.0.0:27017/";
 
 export const client = new MongoClient(mongoURI)
+
+const db = client.db("social_media");
+export const blogsCollection = db.collection<BlogViewModel>("blogs");
+export const postsCollection = db.collection<PostViewModel>("posts");
 
 export async function runDb() {
     try {

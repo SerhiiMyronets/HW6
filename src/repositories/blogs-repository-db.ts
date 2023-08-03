@@ -1,6 +1,7 @@
 import {generateString} from "../functions/generate-string";
 import {BlogInputModel, BlogViewModel} from "../models/blogs-models";
-import {client} from "../db/db";
+import {blogsCollection} from "../db/db";
+
 
 /*const blogs: BlogViewModel[] = [{
     id: "1",
@@ -11,7 +12,7 @@ import {client} from "../db/db";
 
 export const blogsRepository = {
     async getAllBlogs(): Promise<BlogViewModel[]> {
-        return await client.db("social_media").collection<BlogViewModel>("blogs")
+        return await blogsCollection
             .find().toArray()
     },
 
@@ -23,17 +24,17 @@ export const blogsRepository = {
             description,
             websiteUrl
         }
-        await client.db("social_media").collection<BlogViewModel>("blogs")
+        await blogsCollection
             .insertOne(newBlog)
         return newBlog;
     },
     async getBlogById(id: string): Promise<BlogViewModel | null> {
-        return await client.db("social_media").collection<BlogViewModel>("blogs")
+        return await blogsCollection
             .findOne({id: id})
     },
     async updateBlog(id: string, body: BlogInputModel): Promise<Boolean> {
         const {name, description, websiteUrl} = body
-        const result = await client.db("social_media").collection<BlogViewModel>("blogs")
+        const result = await blogsCollection
             .updateOne({id: id}, {
                 $set: {
                     name: name,
@@ -44,12 +45,12 @@ export const blogsRepository = {
         return result.modifiedCount === 1
     },
     async deleteBlog(id: string): Promise<Boolean> {
-        const result = await client.db("social_media").collection<BlogViewModel>("blogs")
+        const result = await blogsCollection
             .deleteOne({id: id})
         return result.deletedCount === 1
     },
     async deleteAllBlogs(): Promise<Boolean> {
-        await client.db("social_media").collection<BlogViewModel>("blogs")
+        await blogsCollection
             .deleteMany({})
         return true
     }
