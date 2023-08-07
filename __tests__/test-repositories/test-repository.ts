@@ -15,7 +15,7 @@ export const testRepository = {
                 expect(response.body.id).toBe(BlogId)
                 expect(response.body.createdAt).toBeDefined()
                 expect(response.body.isMembership).toBeDefined()
-                expect(Object.keys(response.body).length).toBe(7)
+                expect(Object.keys(response.body).length).toBe(6)
                 expect(response.body).toMatchObject(BodyBlog)
             })
     },
@@ -27,7 +27,7 @@ export const testRepository = {
                 expect(response.body.id).toBe(PostId)
                 expect(response.body.blogName).toBeDefined()
                 expect(response.body.createdAt).toBeDefined()
-                expect(Object.keys(response.body).length).toBe(8)
+                expect(Object.keys(response.body).length).toBe(7)
                 expect(response.body).toMatchObject(BodyBlog)
             })
     }

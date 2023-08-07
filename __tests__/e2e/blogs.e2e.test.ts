@@ -47,7 +47,7 @@ describe(RouterPaths.blogs, () => {
                 expect(response.body.id).toBeDefined()
                 expect(response.body.createdAt).toBeDefined()
                 expect(response.body.isMembership).toBeDefined()
-                expect(Object.keys(response.body).length).toBe(7)
+                expect(Object.keys(response.body).length).toBe(6)
                 expect(response.body).toMatchObject(correctBodyBlog)
                 newBlogId = response.body.id
             })
@@ -108,7 +108,7 @@ describe(RouterPaths.blogs, () => {
             .expect(404)
         await testRepository.checkBlogExisting(newBlogId, updatedCorrectBodyBlog)
     })
-    it(`shouldn delete existing blog`, async () => {
+    it(`should delete existing blog`, async () => {
         await request(app)
             .delete(`${RouterPaths.blogs}/${newBlogId}`)
             .set("Authorization", "Basic " + btoa(`${auth.login}:${auth.password}`))
