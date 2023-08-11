@@ -8,7 +8,6 @@ export type BlogViewModel = {
     createdAt: string
     isMembership: boolean
 }
-
 export type BlogStructureMongoDB = {
     name: string
     description: string
@@ -16,7 +15,6 @@ export type BlogStructureMongoDB = {
     createdAt: string
     isMembership: boolean
 }
-
 export type BlogOutputMongoDB = {
     _id: ObjectId
     name: string
@@ -25,13 +23,11 @@ export type BlogOutputMongoDB = {
     createdAt: string
     isMembership: boolean
 }
-
 export type BlogInputModel = {
     name: string
     description: string
     websiteUrl: string
 }
-
 export class BlogViewClass {
     id: string
     name: string
@@ -49,7 +45,6 @@ export class BlogViewClass {
         this.isMembership = obj.isMembership
     }
 }
-
 export class BlogCreatClass {
     name: string
     description: string

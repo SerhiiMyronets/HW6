@@ -5,7 +5,7 @@ import {blogTestRepository} from "../test-repositories/blog-test-repository";
 import {
     correctBodyBlog, errorsIncorrectInputBlog, errorsUndefinedInputBlog,
     incorrectBodyBlog, undefinedBodyBlog, updatedCorrectBodyBlog, incorrectLogin, randomObjectId
-} from "../test-repositories/blogs-test-inputs";
+} from "../test-inputs/blogs-test-inputs";
 import {generateString} from "../../src/functions/generate-string";
 
 describe(RouterPaths.blogs, () => {

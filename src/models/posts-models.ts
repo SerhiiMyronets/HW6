@@ -9,7 +9,6 @@ export type PostViewModel = {
     blogName: string
     createdAt: string
 }
-
 export type PostStructureMongoDB = {
     title: string
     shortDescription: string
@@ -18,7 +17,6 @@ export type PostStructureMongoDB = {
     blogName: string
     createdAt: string
 }
-
 export type PostOutputMongoDB = {
     _id: ObjectId
     title: string
@@ -28,20 +26,17 @@ export type PostOutputMongoDB = {
     blogName: string
     createdAt: string
 }
-
 export type PostInputModel = {
     title: string
     shortDescription: string
     content: string
     blogId: string
 }
-
 export type PostInputModelWithoutBlogId = {
     title: string
     shortDescription: string
     content: string
 }
-
 export class PostViewClass {
     id: string
     title: string
@@ -61,7 +56,6 @@ export class PostViewClass {
         this.createdAt = obj.createdAt
     }
 }
-
 export class PostCreatClass {
     title: string
     shortDescription: string
@@ -78,7 +72,6 @@ export class PostCreatClass {
         this.createdAt = new Date().toISOString()
     }
 }
-
 export class PostUpdateClass {
     title: string
     shortDescription: string

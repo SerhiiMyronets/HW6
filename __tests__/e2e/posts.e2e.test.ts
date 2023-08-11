@@ -4,10 +4,10 @@ import {app, RouterPaths} from "../../src/setting";
 import {
     correctBodyPost, errorsIncorrectInputPost, errorsUndefinedInputPost,
     incorrectBodyPost, incorrectLogin, undefinedBodyPost, updatedCorrectBodyPost
-} from "../test-repositories/posts-test-inputs";
+} from "../test-inputs/posts-test-inputs";
 import {generateString} from "../../src/functions/generate-string";
 import {blogTestRepository} from "../test-repositories/blog-test-repository";
-import {correctBodyBlog, randomObjectId,} from "../test-repositories/blogs-test-inputs";
+import {correctBodyBlog, randomObjectId,} from "../test-inputs/blogs-test-inputs";
 import {postTestRepository} from "../test-repositories/posts-test-repository";
 
 describe(RouterPaths.posts, () => {
