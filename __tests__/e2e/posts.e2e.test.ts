@@ -1,138 +1,109 @@
 // @ts-ignore
 import request from 'supertest'
-import {app, auth, RouterPaths} from "../../src/setting";
+import {app, RouterPaths} from "../../src/setting";
 import {
     correctBodyPost, errorsIncorrectInputPost, errorsUndefinedInputPost,
     incorrectBodyPost, incorrectLogin, undefinedBodyPost, updatedCorrectBodyPost
 } from "../test-repositories/posts-test-inputs";
 import {generateString} from "../../src/functions/generate-string";
-import {testRepository} from "../test-repositories/test-repository";
-import {correctBodyBlog} from "../test-repositories/blogs-test-inputs";
-
-export let BlogId: string = ''
-let newPostId: string = ''
+import {blogTestRepository} from "../test-repositories/blog-test-repository";
+import {correctBodyBlog, randomObjectId,} from "../test-repositories/blogs-test-inputs";
+import {postTestRepository} from "../test-repositories/posts-test-repository";
 
 describe(RouterPaths.posts, () => {
-    beforeAll(async () => {
-        await request(app).delete(RouterPaths.__test__)
-        await request(app)
-            .post(RouterPaths.blogs)
-            .set("Authorization", "Basic " + btoa(`${auth.login}:${auth.password}`))
-            .send(correctBodyBlog)
-            .expect(response => {
-                expect(response.status).toBe(201)
-                expect(response.body.id).toBeDefined()
-                expect(Object.keys(response.body).length).toBe(6)
-                expect(response.body).toMatchObject(correctBodyBlog)
-                BlogId = response.body.id
-            })
+    beforeEach(async () => {
+        await request(app).delete(RouterPaths.__test__).expect(204)
     })
-
-    it(`should return 200 and empty array after get/`, async () => {
-        await request(app)
-            .get(RouterPaths.posts)
-            .expect(200, [])
+    it(`should return 200 and empty array after get/ request`, async () => {
+        await postTestRepository.get()
     })
-    it(`should return 400 after get with incorrect id`, async () => {
-        await request(app)
-            .get(`${RouterPaths.posts}/${generateString(5)}`)
-            .expect(404)
+    it(`should return 200 and array of posts after get/ request`, async () => {
+        const testBlog = await blogTestRepository.create(correctBodyBlog)
+        const testPostBody = {...correctBodyPost, blogId: testBlog.body.id}
+        const testPost = await postTestRepository.create(testPostBody)
+        const testPost1 = await postTestRepository.create(testPostBody)
+        const testPost2 = await postTestRepository.create(testPostBody)
+        await postTestRepository.get([testPost.body, testPost1.body, testPost2.body])
     })
-    it(`shouldn't create post with incorrect data`, async () => {
-        await request(app)
-            .post(RouterPaths.posts)
-            .set("Authorization", "Basic " + btoa(`${auth.login}:${auth.password}`))
-            .send(incorrectBodyPost)
-            .expect(400, errorsIncorrectInputPost)
-
-
-        await request(app)
-            .get(RouterPaths.posts)
-            .expect(200, [])
+    it(`should return 404 after get/id request with incorrect object id`, async () => {
+        await postTestRepository.getById(randomObjectId, 404)
     })
-    it('should create post with correct data', async () => {
-        await request(app)
-            .post(RouterPaths.posts)
-            .set("Authorization", "Basic " + btoa(`${auth.login}:${auth.password}`))
-            .send({
-                title: "Title",
-                shortDescription: "ShortDescription",
-                content: "Content",
-                blogId: BlogId
-            })
-            .expect(response => {
-                expect(response.status).toBe(201)
-                expect(response.body.id).toBeDefined()
-                expect(response.body.blogName).toBeDefined()
-                expect(response.body.createdAt).toBeDefined()
-                expect(Object.keys(response.body).length).toBe(7)
-                expect(response.body).toMatchObject({...correctBodyPost, blogId: BlogId})
-                newPostId = response.body.id
-            })
-        await testRepository.checkPostExisting(newPostId, {...correctBodyPost, blogId: BlogId})
-
+    it(`should return 404 after get/id request with incorrect non object id`, async () => {
+        await postTestRepository.getById(generateString(60), 404)
     })
     it(`should return 200 and correct post after get/id`, async () => {
-        await testRepository.checkPostExisting(newPostId, {...correctBodyPost, blogId: BlogId})
+        const testBlog = await blogTestRepository.create(correctBodyBlog)
+        const testPost = await postTestRepository.create({...correctBodyPost, blogId: testBlog.body.id})
+        expect(testPost.body).toEqual(await postTestRepository.getById(testPost.body.id))
     })
-    it('should update existing post with correct data', async () => {
-        await request(app)
-            .put(`${RouterPaths.posts}/${newPostId}`)
-            .set("Authorization", "Basic " + btoa(`${auth.login}:${auth.password}`))
-            .send({...updatedCorrectBodyPost, blogId: BlogId})
-            .expect(204)
-        await testRepository.checkPostExisting(newPostId, {...updatedCorrectBodyPost, blogId: BlogId})
-
+    it(`shouldn't create post with incorrect body`, async () => {
+        await postTestRepository.create(incorrectBodyPost, 400, errorsIncorrectInputPost)
+        await postTestRepository.get()
+    })
+    it(`shouldn't create post with incorrect auth`, async () => {
+        await postTestRepository.create(incorrectBodyPost, 401, null, incorrectLogin)
+        await postTestRepository.get()
+    })
+    it('should create post with correct data', async () => {
+        const testBlog = await blogTestRepository.create(correctBodyBlog)
+        const testPost = await postTestRepository.create({...correctBodyPost, blogId: testBlog.body.id})
+        expect(testPost.body).toMatchObject(correctBodyPost)
+        expect(testPost.body).toEqual(await postTestRepository.getById(testPost.body.id))
     })
     it(`shouldn't update existing post with incorrect data in body`, async () => {
-        await request(app)
-            .put(`${RouterPaths.posts}/${newPostId}`)
-            .set("Authorization", "Basic " + btoa(`${auth.login}:${auth.password}`))
-            .send(incorrectBodyPost)
-            .expect(400, errorsIncorrectInputPost)
-        await testRepository.checkPostExisting(newPostId, {...updatedCorrectBodyPost, blogId: BlogId})
-
+        const testBlog = await blogTestRepository.create(correctBodyBlog)
+        const testPost = await postTestRepository.create({...correctBodyPost, blogId: testBlog.body.id})
+        await postTestRepository.update(testPost.body.id, incorrectBodyPost, 400, errorsIncorrectInputPost)
+        expect(testPost.body).toEqual(await postTestRepository.getById(testPost.body.id))
     })
     it(`shouldn't update existing post with undefined data in body`, async () => {
-        await request(app)
-            .put(`${RouterPaths.posts}/${newPostId}`)
-            .set("Authorization", "Basic " + btoa(`${auth.login}:${auth.password}`))
-            .send(undefinedBodyPost)
-            .expect(400, errorsUndefinedInputPost)
-        await testRepository.checkPostExisting(newPostId, {...updatedCorrectBodyPost, blogId: BlogId})
-
+        const testBlog = await blogTestRepository.create(correctBodyBlog)
+        const testPost = await postTestRepository.create({...correctBodyPost, blogId: testBlog.body.id})
+        await postTestRepository.update(testPost.body.id, undefinedBodyPost, 400, errorsUndefinedInputPost)
+        expect(testPost.body).toEqual(await postTestRepository.getById(testPost.body.id))
     })
-    it(`shouldn't update post with incorrect id`, async () => {
-        await request(app)
-            .put(`${RouterPaths.posts}/${generateString(5)}`)
-            .set("Authorization", "Basic " + btoa(`${auth.login}:${auth.password}`))
-            .send({...correctBodyPost, blogId: BlogId})
-            .expect(404)
-        await testRepository.checkPostExisting(newPostId, {...updatedCorrectBodyPost, blogId: BlogId})
-
+    it(`shouldn't update post with incorrect object id`, async () => {
+        const testBlog = await blogTestRepository.create(correctBodyBlog)
+        const testPost = await postTestRepository.create({...correctBodyPost, blogId: testBlog.body.id})
+        await postTestRepository.update(
+            randomObjectId,
+            {...updatedCorrectBodyPost, blogId: testBlog.body.id},
+            404)
+        expect(testPost.body).toEqual(await postTestRepository.getById(testPost.body.id))
+    })
+    it(`shouldn't update post with incorrect auth`, async () => {
+        const testBlog = await blogTestRepository.create(correctBodyBlog)
+        const testPost = await postTestRepository.create({...correctBodyPost, blogId: testBlog.body.id})
+        await postTestRepository.update(
+            testPost.body.id,
+            {...updatedCorrectBodyPost, blogId: testBlog.body.id},
+            401,
+            null,
+            incorrectLogin)
+        expect(testPost.body).toEqual(await postTestRepository.getById(testPost.body.id))
+    })
+    it('should update existing post with correct data', async () => {
+        const testBlog = await blogTestRepository.create(correctBodyBlog)
+        const testPost = await postTestRepository.create({...correctBodyPost, blogId: testBlog.body.id})
+        await postTestRepository.update(testPost.body.id, {...updatedCorrectBodyPost, blogId: testBlog.body.id})
+        expect(await postTestRepository.getById(testPost.body.id)).toMatchObject(updatedCorrectBodyPost)
+    })
+    it(`shouldn't delete post with incorrect object id`, async () => {
+        const testBlog = await blogTestRepository.create(correctBodyBlog)
+        const testPost = await postTestRepository.create({...correctBodyPost, blogId: testBlog.body.id})
+        await postTestRepository.delete(randomObjectId, 404)
+        expect(testPost.body).toEqual(await postTestRepository.getById(testPost.body.id))
     })
     it(`shouldn't delete existing post with incorrect authorization`, async () => {
-        await request(app)
-            .delete(`${RouterPaths.posts}/${newPostId}`)
-            .set("Authorization", incorrectLogin)
-            .expect(401)
-        await testRepository.checkPostExisting(newPostId, {...updatedCorrectBodyPost, blogId: BlogId})
-    })
-    it(`shouldn't delete not existing post`, async () => {
-        await request(app)
-            .delete(`${RouterPaths.posts}/${generateString(5)}`)
-            .set("Authorization", "Basic " + btoa(`${auth.login}:${auth.password}`))
-            .expect(404)
-        await testRepository.checkPostExisting(newPostId, {...updatedCorrectBodyPost, blogId: BlogId})
-
+        const testBlog = await blogTestRepository.create(correctBodyBlog)
+        const testPost = await postTestRepository.create({...correctBodyPost, blogId: testBlog.body.id})
+        await postTestRepository.delete(testPost.body.id, 401, incorrectLogin)
+        expect(testPost.body).toEqual(await postTestRepository.getById(testPost.body.id))
     })
     it(`should delete existing post`, async () => {
-        await request(app)
-            .delete(`${RouterPaths.posts}/${newPostId}`)
-            .set("Authorization", "Basic " + btoa(`${auth.login}:${auth.password}`))
-            .expect(204)
-        await request(app)
-            .get(RouterPaths.posts)
-            .expect(200, [])
+        const testBlog = await blogTestRepository.create(correctBodyBlog)
+        const testPost = await postTestRepository.create({...correctBodyPost, blogId: testBlog.body.id})
+        await postTestRepository.delete(testPost.body.id, 204)
+        await postTestRepository.getById(testPost.body.id, 404)
     })
 })

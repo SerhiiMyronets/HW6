@@ -1,12 +1,13 @@
 import {Request, Response, Router} from "express";
 import {
-    authentication,
-    inputValidationMiddleware,
-    postBodyValidation
-} from "../midlewares/input-validation-middleware";
+    ErrorsFormatMiddleware,
+
+} from "../midlewares/errors-format-middleware";
 import {PostInputModel} from "../models/posts-models";
 import {RequestWithBody, RequestWithParams, RequestWithParamsBody} from "../types/request-types";
 import {postsRepository} from "../repositories/post-repository-db";
+import {authenticationMiddleware} from "../midlewares/authentication-middleware";
+import {postBodyValidation} from "../midlewares/posts-body-validation";
 
 
 export const postsRoute = Router({})
@@ -23,7 +24,9 @@ postsRoute.get('/:id', async (req: RequestWithParams<{ id: string }>, res: Respo
         res.sendStatus(404)
     }
 })
-postsRoute.delete('/:id', authentication, async (req: RequestWithParams<{ id: string }>, res: Response) => {
+postsRoute.delete('/:id',
+    authenticationMiddleware,
+    async (req: RequestWithParams<{ id: string }>, res: Response) => {
     const isPostDeleted = await postsRepository.deletePost(req.params.id)
     if (isPostDeleted) {
         res.sendStatus(204)
@@ -31,15 +34,19 @@ postsRoute.delete('/:id', authentication, async (req: RequestWithParams<{ id: st
         res.sendStatus(404)
     }
 })
-postsRoute.post('/', authentication,
+postsRoute.post('/',
+    authenticationMiddleware,
     postBodyValidation,
-    inputValidationMiddleware, async (req: RequestWithBody<PostInputModel>, res: Response) => {
+    ErrorsFormatMiddleware,
+    async (req: RequestWithBody<PostInputModel>, res: Response) => {
         const newPost = await postsRepository.creatPost(req.body)
         res.status(201).send(newPost)
     })
-postsRoute.put('/:id', authentication,
+postsRoute.put('/:id',
+    authenticationMiddleware,
     postBodyValidation,
-    inputValidationMiddleware, async (req: RequestWithParamsBody<{ id: string }, PostInputModel>, res: Response) => {
+    ErrorsFormatMiddleware,
+    async (req: RequestWithParamsBody<{ id: string }, PostInputModel>, res: Response) => {
         const isPostUpdated = await postsRepository.updatePost(req.params.id, req.body)
         if (isPostUpdated) {
             res.sendStatus(204)

@@ -1,17 +1,17 @@
 import {MongoClient} from 'mongodb'
-import {BlogViewModel} from "../models/blogs-models";
-import {PostViewModel} from "../models/posts-models";
+import {BlogStructureMongoDB} from "../models/blogs-models";
+import {PostStructureMongoDB} from "../models/posts-models";
 import 'dotenv/config'
 
-const mongoURI = process.env.MONGO_URI
+const mongoURI = 'mongodb://localhost:27017/'//process.env.MONGO_URI || "mongodb+srv://hardmail88:3846MrN1@cluster0.0goknaf.mongodb.net/?retryWrites=true&w=majority"
 if (!mongoURI) {
     throw new Error('URI doesnt found!!')
 }
 export const client = new MongoClient(mongoURI)
 
 const db = client.db("social_media");
-export const blogsCollection = db.collection<BlogViewModel>("blogs");
-export const postsCollection = db.collection<PostViewModel>("posts");
+export const blogsCollection = db.collection<BlogStructureMongoDB>("blogs");
+export const postsCollection = db.collection<PostStructureMongoDB>("posts");
 
 export async function runDb() {
     try {

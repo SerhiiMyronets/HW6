@@ -1,66 +1,52 @@
-import {generateString} from "../functions/generate-string";
-import {PostInputModel, PostViewModel} from "../models/posts-models";
+
+import {PostCreatClass, PostInputModel, PostUpdateClass, PostViewClass, PostViewModel} from "../models/posts-models";
 import {blogsRepository} from "./blogs-repository-db";
 import {postsCollection} from "../db/db";
-
-
-
-
-/*const posts: PostViewModel[] = [{
-    id: "string",
-    title: "string",
-    shortDescription: "string",
-    content: "string",
-    blogId: "1",
-    blogName: "Name"
-}]*/
+import {ObjectId} from "mongodb";
 
 export const postsRepository = {
     async getAllPosts(): Promise<PostViewModel[]> {
-        return await postsCollection
-            .find({})
-            .project<PostViewModel>({_id: 0})
+        const result = await postsCollection
+            .find()
             .toArray()
+        return result.map(b=> (new PostViewClass(b)))
     },
-    async creatPost(body: PostInputModel): Promise<PostViewModel> {
-        const {title, shortDescription, content, blogId} = body
-        const blog = await blogsRepository.getBlogById(blogId);
-        const newPost: PostViewModel = {
-            id: generateString(5),
-            title,
-            shortDescription,
-            content,
-            blogId,
-            blogName: blog!.name,
-            createdAt: new Date().toISOString()
-        }
-        await postsCollection
-            .insertOne({...newPost})
-        return newPost;
+    async creatPost(body: PostInputModel): Promise<PostViewModel | null> {
+        const blog = await blogsRepository.getBlogById(body.blogId);
+        const res = await postsCollection
+            .insertOne(new PostCreatClass(body, blog!.name))
+        return this.getPostById(res.insertedId.toString());
     },
     async getPostById(id: string): Promise<PostViewModel | null> {
-        return await postsCollection
-            .findOne({id: id}, { projection: {_id: 0}} )
+        if (!ObjectId.isValid(id)) {
+            return null
+        }
+        const result = await postsCollection
+            .findOne({_id: new ObjectId(id)} )
+        if (result) {
+            return new PostViewClass(result)
+        } else {
+            return null
+        }
 
     },
     async updatePost(id: string, body: PostInputModel): Promise<Boolean> {
-        const {title, shortDescription, content, blogId} = body
-        const blog = await blogsRepository.getBlogById(blogId);
+        if (!ObjectId.isValid(id)) {
+            return false
+        }
+        const blog = await blogsRepository.getBlogById(body.blogId);
         const result = await postsCollection
-            .updateOne({id: id}, {
-                $set: {
-                    title: title,
-                    shortDescription: shortDescription,
-                    content: content,
-                    blogId: blogId,
-                    blogName: blog!.name
-                }
+            .updateOne({_id: new ObjectId(id)}, {
+                $set: new PostUpdateClass(body, blog!.name)
             })
         return result.matchedCount === 1
     },
     async deletePost(id: string): Promise<Boolean> {
+        if (!ObjectId.isValid(id)) {
+            return false
+        }
         const result = await postsCollection
-            .deleteOne({id: id})
+            .deleteOne({_id: new ObjectId(id)})
         return result.deletedCount === 1
     },
     async deleteAllPosts(): Promise<boolean> {

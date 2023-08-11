@@ -1,120 +1,113 @@
 // @ts-ignore
 import request from 'supertest'
-import {app, auth, RouterPaths} from "../../src/setting";
-
-import {generateString} from "../../src/functions/generate-string";
-import {testRepository} from "../test-repositories/test-repository";
+import {app, RouterPaths} from "../../src/setting";
+import {blogTestRepository} from "../test-repositories/blog-test-repository";
 import {
     correctBodyBlog, errorsIncorrectInputBlog, errorsUndefinedInputBlog,
-    incorrectBodyBlog, undefinedBodyBlog, updatedCorrectBodyBlog, incorrectLogin
+    incorrectBodyBlog, undefinedBodyBlog, updatedCorrectBodyBlog, incorrectLogin, randomObjectId
 } from "../test-repositories/blogs-test-inputs";
-
-
-let newBlogId = ''
+import {generateString} from "../../src/functions/generate-string";
 
 describe(RouterPaths.blogs, () => {
-    beforeAll(async () => {
-        await request(app).delete(RouterPaths.__test__)
+    beforeEach(async () => {
+        await request(app).delete(RouterPaths.__test__).expect(204)
     })
-    it(`should return 200 and empty array after get/`, async () => {
-        await request(app)
-            .get(RouterPaths.blogs)
-            .expect(200, [])
+    it(`should return 200 and empty array after get/ request`, async () => {
+        await blogTestRepository.get()
     })
-    it(`should return 400 after get with incorrect id`, async () => {
-        await request(app)
-            .get(`${RouterPaths.blogs}/${generateString(5)}`)
-            .expect(404)
+    it(`should return 200 and array of blogs after get/ request`, async () => {
+        const testBlog = await blogTestRepository.create(correctBodyBlog)
+        const testBlog2 = await blogTestRepository.create(correctBodyBlog)
+        const testBlog3 = await blogTestRepository.create(correctBodyBlog,)
+        await blogTestRepository.get([testBlog.body, testBlog2.body, testBlog3.body])
     })
-    it(`shouldn't create blog with incorrect data`, async () => {
-        await request(app)
-            .post(RouterPaths.blogs)
-            .set("Authorization", "Basic " + btoa(`${auth.login}:${auth.password}`))
-            .send(incorrectBodyBlog)
-            .expect(400, errorsIncorrectInputBlog)
-
-        await request(app)
-            .get(RouterPaths.blogs)
-            .expect(200, [])
+    it(`should return 404 after get/id request with incorrect object id`, async () => {
+        await blogTestRepository.getById(randomObjectId, 404)
     })
-    it('should create blog with correct data', async () => {
-        await request(app)
-            .post(RouterPaths.blogs)
-            .set("Authorization", "Basic " + btoa(`${auth.login}:${auth.password}`))
-            .send(correctBodyBlog)
-            .expect(response => {
-                expect(response.status).toBe(201)
-                expect(response.body.id).toBeDefined()
-                expect(response.body.createdAt).toBeDefined()
-                expect(response.body.isMembership).toBeDefined()
-                expect(Object.keys(response.body).length).toBe(6)
-                expect(response.body).toMatchObject(correctBodyBlog)
-                newBlogId = response.body.id
-            })
-        await testRepository.checkBlogExisting(newBlogId, correctBodyBlog)
-
+    it(`should return 404 after get/id request with incorrect non object id`, async () => {
+        await blogTestRepository.getById(generateString(60), 404)
     })
     it(`should return 200 and correct blog after get/id`, async () => {
-        await testRepository.checkBlogExisting(newBlogId, correctBodyBlog)
+        const result = await blogTestRepository.create(correctBodyBlog)
+        expect(result.body).toEqual(await blogTestRepository.getById(result.body.id))
     })
-
-    it('should update existing blog with correct data', async () => {
-        await request(app)
-            .put(`${RouterPaths.blogs}/${newBlogId}`)
-            .set("Authorization", "Basic " + btoa(`${auth.login}:${auth.password}`))
-            .send(updatedCorrectBodyBlog)
-            .expect(204)
-        await testRepository.checkBlogExisting(newBlogId, updatedCorrectBodyBlog)
-
+    it(`shouldn't create blog with incorrect body`, async () => {
+        await blogTestRepository.create(
+            incorrectBodyBlog,
+            400,
+            errorsIncorrectInputBlog)
+        await blogTestRepository.get()
+    })
+    it(`shouldn't create blog with incorrect auth`, async () => {
+        await blogTestRepository.create(
+            correctBodyBlog,
+            401,
+            null,
+            incorrectLogin)
+        await blogTestRepository.get()
+    })
+    it('should create blog with correct data', async () => {
+        const testBlog = await blogTestRepository.create(correctBodyBlog)
+        expect(testBlog.body).toMatchObject(correctBodyBlog)
+        expect(testBlog.body).toEqual(await blogTestRepository.getById(testBlog.body.id))
     })
     it(`shouldn't update existing blog with incorrect data in body`, async () => {
-        await request(app)
-            .put(`${RouterPaths.blogs}/${newBlogId}`)
-            .set("Authorization", "Basic " + btoa(`${auth.login}:${auth.password}`))
-            .send(incorrectBodyBlog)
-            .expect(400, errorsIncorrectInputBlog)
-
-        await testRepository.checkBlogExisting(newBlogId, updatedCorrectBodyBlog)
+        const testBlog = await blogTestRepository.create(correctBodyBlog)
+        await blogTestRepository.update(
+            testBlog.body.id,
+            incorrectBodyBlog,
+            400,
+            errorsIncorrectInputBlog)
+        expect(testBlog.body).toEqual(await blogTestRepository.getById(testBlog.body.id))
     })
     it(`shouldn't update existing blog with undefined data in body`, async () => {
-        await request(app)
-            .put(`${RouterPaths.blogs}/${newBlogId}`)
-            .set("Authorization", "Basic " + btoa(`${auth.login}:${auth.password}`))
-            .send(undefinedBodyBlog)
-            .expect(400, errorsUndefinedInputBlog)
-        await testRepository.checkBlogExisting(newBlogId, updatedCorrectBodyBlog)
-
+        const testBlog = await blogTestRepository.create(correctBodyBlog)
+        await blogTestRepository.update(
+            testBlog.body.id,
+            undefinedBodyBlog,
+            400,
+            errorsUndefinedInputBlog)
+        expect(testBlog.body).toEqual(await blogTestRepository.getById(testBlog.body.id))
     })
-    it(`shouldn't update blog with incorrect id`, async () => {
-        await request(app)
-            .put(`${RouterPaths.blogs}/${generateString(5)}`)
-            .set("Authorization", "Basic " + btoa(`${auth.login}:${auth.password}`))
-            .send(correctBodyBlog)
-            .expect(404)
-        await testRepository.checkBlogExisting(newBlogId, updatedCorrectBodyBlog)
-
+    it(`shouldn't update blog with incorrect object id`, async () => {
+        const testBlog = await blogTestRepository.create(correctBodyBlog)
+        await blogTestRepository.update(
+            randomObjectId,
+            updatedCorrectBodyBlog,
+            404)
+        expect(testBlog.body).toEqual(await blogTestRepository.getById(testBlog.body.id))
+    })
+    it(`shouldn't update blog with incorrect auth`, async () => {
+        const testBlog = await blogTestRepository.create(correctBodyBlog)
+        await blogTestRepository.update(
+            testBlog.body.id,
+            updatedCorrectBodyBlog,
+            401,
+            null,
+            incorrectLogin)
+        expect(testBlog.body).toEqual(await blogTestRepository.getById(testBlog.body.id))
+    })
+    it('should update existing blog with correct data', async () => {
+        const testBlog = await blogTestRepository.create(correctBodyBlog)
+        await blogTestRepository.update(
+            testBlog.body.id,
+            updatedCorrectBodyBlog,
+            204)
+        expect(await blogTestRepository.getById(testBlog.body.id)).toMatchObject(updatedCorrectBodyBlog)
+    })
+    it(`shouldn't delete blog with incorrect object id`, async () => {
+        const testBlog = await blogTestRepository.create(correctBodyBlog)
+        await blogTestRepository.delete(randomObjectId,404)
+        expect(testBlog.body).toEqual(await blogTestRepository.getById(testBlog.body.id))
     })
     it(`shouldn't delete existing blog with incorrect authorization`, async () => {
-        await request(app)
-            .delete(`${RouterPaths.blogs}/${newBlogId}`)
-            .set("Authorization", incorrectLogin)
-            .expect(401)
-        await testRepository.checkBlogExisting(newBlogId, updatedCorrectBodyBlog)
-    })
-    it(`shouldn't delete not existing blog`, async () => {
-        await request(app)
-            .delete(`${RouterPaths.blogs}/${generateString(5)}`)
-            .set("Authorization", "Basic " + btoa(`${auth.login}:${auth.password}`))
-            .expect(404)
-        await testRepository.checkBlogExisting(newBlogId, updatedCorrectBodyBlog)
+        const testBlog = await blogTestRepository.create(correctBodyBlog)
+        await blogTestRepository.delete(testBlog.body.id,401, incorrectLogin)
+        expect(testBlog.body).toEqual(await blogTestRepository.getById(testBlog.body.id))
     })
     it(`should delete existing blog`, async () => {
-        await request(app)
-            .delete(`${RouterPaths.blogs}/${newBlogId}`)
-            .set("Authorization", "Basic " + btoa(`${auth.login}:${auth.password}`))
-            .expect(204)
-        await request(app)
-            .get(RouterPaths.blogs)
-            .expect(200, [])
+        const testBlog = await blogTestRepository.create(correctBodyBlog)
+        await blogTestRepository.delete(testBlog.body.id,204)
+        await blogTestRepository.getById(testBlog.body.id, 404)
     })
 })

@@ -1,13 +1,15 @@
 import {generateString} from "../../src/functions/generate-string";
 import {PostInputModel, PostInputModelWithoutBlogId} from "../../src/models/posts-models";
 import {ErrorType} from "../../src/types/errors-massages-types";
+import {randomObjectId} from "./blogs-test-inputs";
+
 
 
 
 export const correctBodyPost: PostInputModelWithoutBlogId = {
     title: "Title",
     shortDescription: "ShortDescription",
-    content: "Content",
+    content: "Content"
 }
 export const updatedCorrectBodyPost: PostInputModelWithoutBlogId = {
     title: "NewTitle",
@@ -18,7 +20,7 @@ export const incorrectBodyPost: PostInputModel = {
     title: generateString(31),
     shortDescription: generateString(101),
     content: generateString(1001),
-    blogId: "Invalid"
+    blogId: randomObjectId
 }
 export const undefinedBodyPost: PostInputModel = {
     title: "",

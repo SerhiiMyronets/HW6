@@ -1,7 +1,10 @@
 import {generateString} from "../../src/functions/generate-string";
 import {BlogInputModel} from "../../src/models/blogs-models";
 import {ErrorType} from "../../src/types/errors-massages-types";
+import {ObjectId} from "mongodb";
+import {auth} from "../../src/setting";
 
+export const randomObjectId = new ObjectId().toString()
 export const correctBodyBlog: BlogInputModel = {
     name: "Name",
     description: "Description",
@@ -13,11 +16,10 @@ export const updatedCorrectBodyBlog: BlogInputModel = {
     websiteUrl: "newWebsiteUrl.com"
 }
 
-
 export const incorrectBodyBlog: BlogInputModel = {
     name: generateString(16),
     description: generateString(501),
-    websiteUrl: "newWebsiteUrl"
+    websiteUrl: generateString(10),
 }
 export const undefinedBodyBlog: BlogInputModel = {
     name: "",
@@ -40,5 +42,6 @@ export const errorsUndefinedInputBlog: ErrorType = {
 }
 
 export const incorrectLogin: string = "Basic admin:qwerty"
+export const correctLogin: string = "Basic " + btoa(`${auth.login}:${auth.password}`)
 
 
