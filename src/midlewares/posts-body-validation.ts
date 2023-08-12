@@ -10,7 +10,7 @@ export const postBodyValidation = [
     body("content").isLength({max: 1000}).withMessage('Content should be be below 1000 symbols'),
     body("blogId").isString().notEmpty().withMessage('BlogId is required'),
     body("blogId").custom(async blogId => {
-        const isBlogExist = await blogsRepository.getBlogById(blogId);
+        const isBlogExist = await blogsRepository.findBlogById(blogId);
         if (!isBlogExist) {
             throw new Error("Blog not found")
         }

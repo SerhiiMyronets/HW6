@@ -28,7 +28,7 @@ export type BlogInputModel = {
     description: string
     websiteUrl: string
 }
-export class BlogViewClass {
+export class ViewBlogClass {
     id: string
     name: string
     description: string
@@ -45,7 +45,7 @@ export class BlogViewClass {
         this.isMembership = obj.isMembership
     }
 }
-export class BlogCreatClass {
+export class CreatBlogClass {
     name: string
     description: string
     websiteUrl: string
@@ -60,7 +60,7 @@ export class BlogCreatClass {
     }
 }
 
-export class BlogUpdateClass {
+export class UpdateBlogClass {
     name: string
     description: string
     websiteUrl: string
