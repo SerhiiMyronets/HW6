@@ -11,7 +11,7 @@ export const postsRepository = {
             .find()
             .toArray()
         return result.map(b =>
-            (this._mapPostInputModelToPostViewModel(b)))
+            (this._mapPostOutputMongoDBToPostViewModel(b)))
     },
     async creatPost(newPostBody: PostInputMongoDB): Promise<PostViewModel | null> {
         const res = await postsCollection
@@ -22,7 +22,7 @@ export const postsRepository = {
         const result = await postsCollection
             .findOne({_id: new ObjectId(id)})
         if (result) {
-            return this._mapPostInputModelToPostViewModel(result)
+            return this._mapPostOutputMongoDBToPostViewModel(result)
         } else {
             return null
         }
@@ -44,7 +44,7 @@ export const postsRepository = {
             .deleteMany({})
         return true
     },
-    _mapPostInputModelToPostViewModel(postDB: PostOutputMongoDB) {
+    _mapPostOutputMongoDBToPostViewModel(postDB: PostOutputMongoDB) {
         return {
             id: postDB._id.toString(),
             title: postDB.title,

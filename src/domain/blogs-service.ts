@@ -1,5 +1,6 @@
-import {blogsRepository} from "../repositories/db-repositories/blogs-repository-db";
+
 import {BlogInputModel, BlogViewModel} from "../models/blogs-models";
+import {blogsRepository} from "../repositories/db-repositories/blogs-db-repository";
 
 export const blogsService = {
     async findBlogs(): Promise<BlogViewModel[]> {

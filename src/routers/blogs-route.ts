@@ -1,17 +1,33 @@
-import {Request, Response, Router} from "express";
-import {BlogInputModel} from "../models/blogs-models";
-import {RequestWithBody, RequestWithParams, RequestWithParamsBody} from "../types/request-types";
+import {Response, Router} from "express";
+import {BlogInputModel, BlogPostInputModel} from "../models/blogs-models";
+import {
+    RequestWithBody,
+    RequestWithParams,
+    RequestWithParamsBody,
+    RequestWithParamsQuery,
+    RequestWithQuery
+} from "../types/request-types";
 import {errorsFormatMiddleware} from "../midlewares/errors-format-middleware";
 import {authenticationMiddleware} from "../midlewares/authentication-middleware";
 import {blogBodyValidation} from "../midlewares/blog-body-validation";
 import {paramValidation} from "../midlewares/param-validation";
 import {blogsService} from "../domain/blogs-service";
+import {findBlogsQueryModel, findPostsByIdQueryModel} from "../models/find-blogs-query-model";
+import {blogsQueryRepository} from "../repositories/query-repositories/blogs-query-repository";
+import {postsService} from "../domain/posts-service";
+import {blogPostBodyValidation} from "../midlewares/blog-post-body-validation";
+
 export const blogsRoute = Router({})
 
-blogsRoute.get('/',
+/*blogsRoute.get('/',
     async (req: Request, res: Response) => {
         const blogs = await blogsService.findBlogs();
         res.send(blogs)
+    })*/
+blogsRoute.get('/',
+    async (req: RequestWithQuery<findBlogsQueryModel>, res: Response) => {
+        const result = await blogsQueryRepository.findBlogsQuery(req.query);
+        res.send(result)
     })
 blogsRoute.get('/:id',
     paramValidation,
@@ -20,6 +36,20 @@ blogsRoute.get('/:id',
         const blog = await blogsService.findBlogById(req.params.id)
         if (blog) {
             res.status(200).send(blog)
+        } else {
+            res.sendStatus(404)
+        }
+    })
+
+blogsRoute.get('/:id/posts',
+    paramValidation,
+    errorsFormatMiddleware,
+    // @ts-ignore
+    async (req: RequestWithParamsQuery<{ id: string }, findPostsByIdQueryModel>, res: Response) => {
+        const isExisting = await blogsQueryRepository.isBlogExisting(req.params.id)
+        const result = await blogsQueryRepository.findPostsByIdQuery(req.query, req.params.id)
+        if (isExisting) {
+            res.status(200).send(result)
         } else {
             res.sendStatus(404)
         }
@@ -44,6 +74,17 @@ blogsRoute.post('/',
         const newBlog = await blogsService.creatBlog(req.body)
         res.status(201).send(newBlog)
     })
+
+blogsRoute.post('/:id/posts',
+    authenticationMiddleware,
+    paramValidation,
+    blogPostBodyValidation,
+    errorsFormatMiddleware,
+    async (req: RequestWithParamsBody<{ id: string }, BlogPostInputModel>, res: Response) => {
+        const newBlog = await postsService.creatPost({...req.body, blogId: req.params.id})
+        res.status(201).send(newBlog)
+    })
+
 blogsRoute.put('/:id',
     authenticationMiddleware,
     paramValidation,

@@ -1,6 +1,7 @@
-import {postsRepository} from "../repositories/db-repositories/post-repository-db";
 import {PostInputModel, PostViewModel} from "../models/posts-models";
-import {blogsRepository} from "../repositories/db-repositories/blogs-repository-db";
+import {postsRepository} from "../repositories/db-repositories/post-db-repository";
+import {blogsRepository} from "../repositories/db-repositories/blogs-db-repository";
+
 
 export const postsService = {
     async findPosts(): Promise<PostViewModel[]> {
