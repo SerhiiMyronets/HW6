@@ -22,7 +22,7 @@ export const postsQueryRepository = {
         const mappedFoundedPosts = foundedPosts.map(
             b => this._mapPostOutputMongoDBToPostViewModel(b))
 
-        return this._PostsPagination(mappedFoundedPosts, query.pageNumber, query.pageSize, totalCount)
+        return this._PostsPagination(mappedFoundedPosts, +query.pageNumber, +query.pageSize, totalCount)
     },
     _mapPostOutputMongoDBToPostViewModel(postDB: PostOutputMongoDB) {
         return {
