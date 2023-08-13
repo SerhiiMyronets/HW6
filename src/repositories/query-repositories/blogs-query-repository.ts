@@ -47,7 +47,7 @@ export const blogsQueryRepository = {
         const mappedFoundedBlogs = foundedBlogs.map(
             b => this._mapPostOutputMongoDBToPostViewModel(b))
 
-        return this._PostsPagination(mappedFoundedBlogs, query.pageNumber, query.pageSize, totalCount)
+        return this._PostsPagination(mappedFoundedBlogs, +query.pageNumber, +query.pageSize, totalCount)
     },
     async isBlogExisting(id: string): Promise<boolean> {
         const result = await blogsCollection
