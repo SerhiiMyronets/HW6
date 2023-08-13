@@ -1,4 +1,4 @@
-import {PostInputModel, PostViewModel} from "../models/posts-models";
+import {PostInputModel, PostViewModel} from "../models/repository/posts-models";
 import {postsRepository} from "../repositories/db-repositories/post-db-repository";
 import {blogsRepository} from "../repositories/db-repositories/blogs-db-repository";
 

@@ -1,7 +1,7 @@
-import {BlogOutputMongoDB} from "../models/blogs-models";
-import {PostOutputMongoDB} from "../models/posts-models";
+import {BlogOutputMongoDB, PostViewMongoDB} from "../models/db-models";
 
-export const mapper = {
+
+export const mapperRepository = {
     blogOutputMongoDBToBlogViewModel(blogDB: BlogOutputMongoDB) {
         return {
             id: blogDB._id.toString(),
@@ -12,7 +12,7 @@ export const mapper = {
             isMembership: blogDB.isMembership
         }
     },
-    postOutputMongoDBToPostViewModel(postDB: PostOutputMongoDB) {
+    postOutputMongoDBToPostViewModel(postDB: PostViewMongoDB) {
         return {
             id: postDB._id.toString(),
             title: postDB.title,

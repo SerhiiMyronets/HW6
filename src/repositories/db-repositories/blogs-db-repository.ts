@@ -1,7 +1,8 @@
-import {BlogInputModel, BlogViewModel, BlogInputMongoDB,} from "../../models/blogs-models";
 import {blogsCollection} from "../../db/db";
 import {ObjectId} from "mongodb";
-import {mapper} from "../mapper";
+import {mapperRepository} from "../mapper-repository";
+import {BlogInputModel, BlogViewModel} from "../../models/repository/blogs-models";
+import {BlogInputMongoDB} from "../../models/db-models";
 
 export const blogsRepository = {
     async findBlogs(): Promise<BlogViewModel[]> {
@@ -9,13 +10,13 @@ export const blogsRepository = {
             .find()
             .toArray()
         return result.map(b =>
-            (mapper.blogOutputMongoDBToBlogViewModel(b)))
+            (mapperRepository.blogOutputMongoDBToBlogViewModel(b)))
     },
     async findBlogById(id: string): Promise<BlogViewModel | null> {
         const result = await blogsCollection
             .findOne({_id: new ObjectId(id)})
         if (result) {
-            return mapper.blogOutputMongoDBToBlogViewModel(result)
+            return mapperRepository.blogOutputMongoDBToBlogViewModel(result)
         } else {
             return null
         }

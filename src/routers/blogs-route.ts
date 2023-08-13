@@ -1,5 +1,5 @@
 import {Response, Router} from "express";
-import {BlogInputModel, BlogPostInputModel} from "../models/blogs-models";
+import {BlogInputModel, findBlogsPaginateModel} from "../models/repository/blogs-models";
 import {
     RequestWithBody,
     RequestWithParams,
@@ -9,22 +9,22 @@ import {
 } from "./request-types";
 import {errorsFormatMiddleware} from "../midlewares/errors-format-middleware";
 import {authenticationMiddleware} from "../midlewares/authentication-middleware";
-import {blogBodyValidation} from "../midlewares/body/blog-body-validation";
+import {blogsBodyValidation} from "../midlewares/body/blogs-body-validation";
 import {paramValidation} from "../midlewares/param/param-validation";
 import {blogsService} from "../domain/blogs-service";
-import {findBlogsQueryModel, findPostsByIdQueryModel} from "../models/find-blogs-query-model";
 import {blogsQueryRepository} from "../repositories/query-repositories/blogs-query-repository";
 import {postsService} from "../domain/posts-service";
-import {blogPostBodyValidation} from "../midlewares/body/blog-post-body-validation";
+import {postsByBlogBodyValidation} from "../midlewares/body/posts-by-blog-body-validation";
 import {blogQueryValidation} from "../midlewares/query/blog-query-validation";
 import {PostQueryValidation} from "../midlewares/query/post-query-validation";
+import {PostInputByBlogModel} from "../models/repository/posts-models";
 
 export const blogsRoute = Router({})
 
 //QUERY
 blogsRoute.get('/',
     blogQueryValidation,
-    async (req: RequestWithQuery<findBlogsQueryModel>, res: Response) => {
+    async (req: RequestWithQuery<findBlogsPaginateModel>, res: Response) => {
         const result = await blogsQueryRepository.findBlogsQuery(req.query);
         res.send(result)
     })
@@ -57,7 +57,7 @@ blogsRoute.get('/:id/posts',
     errorsFormatMiddleware,
     PostQueryValidation,
     // @ts-ignore
-    async (req: RequestWithParamsQuery<{ id: string }, findPostsByIdQueryModel>, res: Response) => {
+    async (req: RequestWithParamsQuery<{ id: string }, findPostsByBlogPaginateModel>, res: Response) => {
         const isExisting = await blogsQueryRepository.isBlogExisting(req.params.id)
         const result = await blogsQueryRepository.findPostsByBlogIdQuery(req.query, req.params.id)
         if (isExisting) {
@@ -68,7 +68,7 @@ blogsRoute.get('/:id/posts',
     })
 blogsRoute.post('/',
     authenticationMiddleware,
-    blogBodyValidation,
+    blogsBodyValidation,
     errorsFormatMiddleware,
     async (req: RequestWithBody<BlogInputModel>, res: Response) => {
         const newBlog = await blogsService.creatBlog(req.body)
@@ -77,9 +77,9 @@ blogsRoute.post('/',
 blogsRoute.post('/:id/posts',
     authenticationMiddleware,
     paramValidation,
-    blogPostBodyValidation,
+    postsByBlogBodyValidation,
     errorsFormatMiddleware,
-    async (req: RequestWithParamsBody<{ id: string }, BlogPostInputModel>, res: Response) => {
+    async (req: RequestWithParamsBody<{ id: string }, PostInputByBlogModel>, res: Response) => {
         const isExisting = await blogsQueryRepository.isBlogExisting(req.params.id)
         if (isExisting) {
             const newBlog = await postsService.creatPost({...req.body, blogId: req.params.id})
@@ -91,7 +91,7 @@ blogsRoute.post('/:id/posts',
 blogsRoute.put('/:id',
     authenticationMiddleware,
     paramValidation,
-    blogBodyValidation,
+    blogsBodyValidation,
     errorsFormatMiddleware,
     async (req: RequestWithParamsBody<{ id: string }, BlogInputModel>, res: Response) => {
         const isBlogUpdated = await blogsService.updateBlog(req.params.id, req.body)

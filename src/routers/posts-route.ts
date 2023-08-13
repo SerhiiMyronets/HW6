@@ -1,14 +1,14 @@
 import {Response, Router} from "express";
 import {errorsFormatMiddleware} from "../midlewares/errors-format-middleware";
-import {PostInputModel} from "../models/posts-models";
+import {PostInputModel} from "../models/repository/posts-models";
 import {RequestWithBody, RequestWithParams, RequestWithParamsBody, RequestWithQuery} from "./request-types";
 import {authenticationMiddleware} from "../midlewares/authentication-middleware";
 import {postBodyValidation} from "../midlewares/body/posts-body-validation";
 import {paramValidation} from "../midlewares/param/param-validation";
 import {postsService} from "../domain/posts-service";
-import {findBlogsQueryModel} from "../models/find-blogs-query-model";
 import {postsQueryRepository} from "../repositories/query-repositories/posts-query-repository";
 import {PostQueryValidation} from "../midlewares/query/post-query-validation";
+import {findBlogsPaginateModel} from "../models/repository/blogs-models";
 
 
 
@@ -21,7 +21,7 @@ postsRoute.get('/', async (req: Request, res: Response) => {
  */
 postsRoute.get('/',
     PostQueryValidation,
-    async (req: RequestWithQuery<findBlogsQueryModel>, res: Response) => {
+    async (req: RequestWithQuery<findBlogsPaginateModel>, res: Response) => {
     const result = await postsQueryRepository.findPostsQuery(req.query);
     res.send(result)
 })

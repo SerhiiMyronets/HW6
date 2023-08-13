@@ -1,7 +1,9 @@
-import {PostInputModel, PostInputMongoDB, PostViewModel} from "../../models/posts-models";
+
 import {postsCollection} from "../../db/db";
 import {ObjectId} from "mongodb";
-import {mapper} from "../mapper";
+import {mapperRepository} from "../mapper-repository";
+import {PostInputModel, PostViewModel} from "../../models/repository/posts-models";
+import {PostInputMongoDB} from "../../models/db-models";
 
 export const postsRepository = {
     async findPosts(): Promise<PostViewModel[]> {
@@ -9,7 +11,7 @@ export const postsRepository = {
             .find()
             .toArray()
         return result.map(b =>
-            (mapper.postOutputMongoDBToPostViewModel(b)))
+            (mapperRepository.postOutputMongoDBToPostViewModel(b)))
     },
     async creatPost(newPostBody: PostInputMongoDB): Promise<PostViewModel | null> {
         const res = await postsCollection
@@ -20,7 +22,7 @@ export const postsRepository = {
         const result = await postsCollection
             .findOne({_id: new ObjectId(id)})
         if (result) {
-            return mapper.postOutputMongoDBToPostViewModel(result)
+            return mapperRepository.postOutputMongoDBToPostViewModel(result)
         } else {
             return null
         }

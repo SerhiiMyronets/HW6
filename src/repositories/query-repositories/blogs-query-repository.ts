@@ -1,12 +1,12 @@
-import {findBlogsQueryModel, findPostsByIdQueryModel, sortDirectionList} from "../../models/find-blogs-query-model";
 import {blogsCollection, postsCollection} from "../../db/db";
-import {BlogViewModel} from "../../models/blogs-models";
+import {BlogViewPaginatedModel, findBlogsPaginateModel} from "../../models/repository/blogs-models";
 import {ObjectId} from "mongodb";
-import {PostViewModel} from "../../models/posts-models";
-import {mapper} from "../mapper";
+import {findPostsByBlogPaginateModel, PostViewModelPaginated} from "../../models/repository/posts-models";
+import {mapperRepository} from "../mapper-repository";
+import {mapperQuery, sortDirectionList} from "./mapper-query";
 
 export const blogsQueryRepository = {
-    async findBlogsQuery(query: findBlogsQueryModel) {
+    async findBlogsQuery(query: findBlogsPaginateModel): Promise<BlogViewPaginatedModel> {
         const term = new RegExp(".*" + query.searchNameTerm + ".*", "i")
         const totalCount = await blogsCollection.countDocuments({"name": term})
         const foundedBlogs = await blogsCollection
@@ -16,11 +16,11 @@ export const blogsQueryRepository = {
             .limit(+query.pageSize)
             .toArray()
         const mappedFoundedBlogs = foundedBlogs.map(
-            b => mapper.blogOutputMongoDBToBlogViewModel(b))
+            b => mapperRepository.blogOutputMongoDBToBlogViewModel(b))
 
-        return this._Pagination(mappedFoundedBlogs, +query.pageNumber, +query.pageSize, totalCount)
+        return mapperQuery.blogViewModelToBlogViewModelPaginated(mappedFoundedBlogs, +query.pageNumber, +query.pageSize, totalCount)
     },
-    async findPostsByBlogIdQuery(query: findPostsByIdQueryModel, blogId: string) {
+    async findPostsByBlogIdQuery(query: findPostsByBlogPaginateModel, blogId: string): Promise<PostViewModelPaginated> {
         const totalCount = await postsCollection.countDocuments({"blogId": blogId})
         const foundedPosts = await postsCollection
             .find({"blogId": blogId})
@@ -30,21 +30,13 @@ export const blogsQueryRepository = {
             .toArray()
 
         const mappedFoundedPosts = foundedPosts.map(
-            b => mapper.postOutputMongoDBToPostViewModel(b))
-        return this._Pagination(mappedFoundedPosts, +query.pageNumber, +query.pageSize, totalCount)
+            b => mapperRepository.postOutputMongoDBToPostViewModel(b))
+        return mapperQuery.postViewModelToPostViewModelPaginated(
+            mappedFoundedPosts, +query.pageNumber, +query.pageSize, totalCount)
     },
     async isBlogExisting(id: string): Promise<boolean> {
         const result = await blogsCollection
             .findOne({_id: new ObjectId(id)})
         return !!result;
-    },
-    _Pagination(items: Array<BlogViewModel | PostViewModel>, page: number, pageSize: number, totalCount: number) {
-        return {
-            pagesCount: Math.ceil(totalCount / pageSize),
-            page,
-            pageSize,
-            totalCount,
-            items
-        }
     }
 }

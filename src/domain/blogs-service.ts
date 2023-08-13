@@ -1,4 +1,4 @@
-import {BlogInputModel, BlogViewModel} from "../models/blogs-models";
+import {BlogInputModel, BlogViewModel} from "../models/repository/blogs-models";
 import {blogsRepository} from "../repositories/db-repositories/blogs-db-repository";
 
 export const blogsService = {
