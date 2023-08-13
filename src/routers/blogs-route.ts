@@ -81,8 +81,13 @@ blogsRoute.post('/:id/posts',
     blogPostBodyValidation,
     errorsFormatMiddleware,
     async (req: RequestWithParamsBody<{ id: string }, BlogPostInputModel>, res: Response) => {
-        const newBlog = await postsService.creatPost({...req.body, blogId: req.params.id})
-        res.status(201).send(newBlog)
+        const isExisting = await blogsQueryRepository.isBlogExisting(req.params.id)
+        if (isExisting) {
+            const newBlog = await postsService.creatPost({...req.body, blogId: req.params.id})
+            res.status(201).send(newBlog)
+        } else {
+            res.sendStatus(404)
+        }
     })
 
 blogsRoute.put('/:id',
