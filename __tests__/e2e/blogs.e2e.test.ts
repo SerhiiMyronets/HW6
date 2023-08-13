@@ -6,7 +6,7 @@ import {
     correctBodyBlog, errorsIncorrectInputBlog, errorsUndefinedInputBlog,
     incorrectBodyBlog, undefinedBodyBlog, updatedCorrectBodyBlog, incorrectLogin, randomObjectId, errorsIncorrectInputId
 } from "../test-inputs/blogs-test-inputs";
-import {generateString} from "../../src/functions/generate-string";
+import {generateString} from "../test-inputs/generate-string";
 
 describe(RouterPaths.blogs, () => {
     beforeEach(async () => {

@@ -1,9 +1,7 @@
-import {
-    PostInputModel, PostInputMongoDB,
-    PostOutputMongoDB, PostViewModel
-} from "../../models/posts-models";
+import {PostInputModel, PostInputMongoDB, PostViewModel} from "../../models/posts-models";
 import {postsCollection} from "../../db/db";
 import {ObjectId} from "mongodb";
+import {mapper} from "../mapper";
 
 export const postsRepository = {
     async findPosts(): Promise<PostViewModel[]> {
@@ -11,7 +9,7 @@ export const postsRepository = {
             .find()
             .toArray()
         return result.map(b =>
-            (this._mapPostOutputMongoDBToPostViewModel(b)))
+            (mapper.postOutputMongoDBToPostViewModel(b)))
     },
     async creatPost(newPostBody: PostInputMongoDB): Promise<PostViewModel | null> {
         const res = await postsCollection
@@ -22,7 +20,7 @@ export const postsRepository = {
         const result = await postsCollection
             .findOne({_id: new ObjectId(id)})
         if (result) {
-            return this._mapPostOutputMongoDBToPostViewModel(result)
+            return mapper.postOutputMongoDBToPostViewModel(result)
         } else {
             return null
         }
@@ -43,16 +41,5 @@ export const postsRepository = {
         await postsCollection
             .deleteMany({})
         return true
-    },
-    _mapPostOutputMongoDBToPostViewModel(postDB: PostOutputMongoDB) {
-        return {
-            id: postDB._id.toString(),
-            title: postDB.title,
-            shortDescription: postDB.shortDescription,
-            content: postDB.content,
-            blogId: postDB.blogId,
-            blogName: postDB.blogName,
-            createdAt: postDB.createdAt
-        }
     }
 }

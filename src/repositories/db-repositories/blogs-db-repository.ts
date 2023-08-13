@@ -1,9 +1,7 @@
-import {
-    BlogInputModel, BlogViewModel,
-    BlogOutputMongoDB, BlogInputMongoDB,
-} from "../../models/blogs-models";
+import {BlogInputModel, BlogViewModel, BlogInputMongoDB,} from "../../models/blogs-models";
 import {blogsCollection} from "../../db/db";
 import {ObjectId} from "mongodb";
+import {mapper} from "../mapper";
 
 export const blogsRepository = {
     async findBlogs(): Promise<BlogViewModel[]> {
@@ -11,13 +9,13 @@ export const blogsRepository = {
             .find()
             .toArray()
         return result.map(b =>
-            (this._mapBlogOutputMongoDBToBlogViewModel(b)))
+            (mapper.blogOutputMongoDBToBlogViewModel(b)))
     },
     async findBlogById(id: string): Promise<BlogViewModel | null> {
         const result = await blogsCollection
             .findOne({_id: new ObjectId(id)})
         if (result) {
-            return this._mapBlogOutputMongoDBToBlogViewModel(result)
+            return mapper.blogOutputMongoDBToBlogViewModel(result)
         } else {
             return null
         }
@@ -43,15 +41,5 @@ export const blogsRepository = {
         await blogsCollection
             .deleteMany({})
         return true
-    },
-    _mapBlogOutputMongoDBToBlogViewModel(blogDB: BlogOutputMongoDB) {
-        return {
-            id: blogDB._id.toString(),
-            name: blogDB.name,
-            description: blogDB.description,
-            websiteUrl: blogDB.websiteUrl,
-            createdAt: blogDB.createdAt,
-            isMembership: blogDB.isMembership
-        }
     }
 }

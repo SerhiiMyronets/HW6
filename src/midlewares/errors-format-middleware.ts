@@ -1,6 +1,14 @@
 import {NextFunction, Request, Response} from "express";
 import {validationResult} from "express-validator";
 
+export type ErrorMessageType = {
+    message: string,
+    field: string
+}
+export type ErrorType = {
+    errorsMessages: ErrorMessageType[]
+}
+
 export const errorsFormatMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const result = validationResult(req).formatWith(({msg, path}: any) => ({
         message: msg,
@@ -13,6 +21,3 @@ export const errorsFormatMiddleware = (req: Request, res: Response, next: NextFu
         next()
     }
 }
-
-
-

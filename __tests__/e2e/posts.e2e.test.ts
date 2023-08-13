@@ -5,7 +5,7 @@ import {
     correctBodyPost, errorsIncorrectInputId, errorsIncorrectInputPost, errorsUndefinedInputPost,
     incorrectBodyPost, incorrectLogin, undefinedBodyPost, updatedCorrectBodyPost
 } from "../test-inputs/posts-test-inputs";
-import {generateString} from "../../src/functions/generate-string";
+import {generateString} from "../test-inputs/generate-string";
 import {blogTestRepository} from "../test-repositories/blog-test-repository";
 import {correctBodyBlog, randomObjectId,} from "../test-inputs/blogs-test-inputs";
 import {postTestRepository} from "../test-repositories/posts-test-repository";
