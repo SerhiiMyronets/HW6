@@ -1,12 +1,11 @@
 import {Request, Response, Router} from "express";
 import {BlogInputModel} from "../models/blogs-models";
 import {RequestWithBody, RequestWithParams, RequestWithParamsBody} from "../types/request-types";
-import {ErrorsFormatMiddleware} from "../midlewares/errors-format-middleware";
-import {blogsService} from "../domain/blogs-service";
+import {errorsFormatMiddleware} from "../midlewares/errors-format-middleware";
 import {authenticationMiddleware} from "../midlewares/authentication-middleware";
 import {blogBodyValidation} from "../midlewares/blog-body-validation";
-import {ParamValidation} from "../midlewares/param-validation";
-
+import {paramValidation} from "../midlewares/param-validation";
+import {blogsService} from "../domain/blogs-service";
 export const blogsRoute = Router({})
 
 blogsRoute.get('/',
@@ -15,8 +14,8 @@ blogsRoute.get('/',
         res.send(blogs)
     })
 blogsRoute.get('/:id',
-    ParamValidation,
-    ErrorsFormatMiddleware,
+    paramValidation,
+    errorsFormatMiddleware,
     async (req: RequestWithParams<{ id: string }>, res: Response) => {
         const blog = await blogsService.findBlogById(req.params.id)
         if (blog) {
@@ -27,8 +26,8 @@ blogsRoute.get('/:id',
     })
 blogsRoute.delete('/:id',
     authenticationMiddleware,
-    ParamValidation,
-    ErrorsFormatMiddleware,
+    paramValidation,
+    errorsFormatMiddleware,
     async (req: RequestWithParams<{ id: string }>, res: Response) => {
         const isBlogDeleted = await blogsService.deleteBlog(req.params.id)
         if (isBlogDeleted) {
@@ -40,16 +39,16 @@ blogsRoute.delete('/:id',
 blogsRoute.post('/',
     authenticationMiddleware,
     blogBodyValidation,
-    ErrorsFormatMiddleware,
+    errorsFormatMiddleware,
     async (req: RequestWithBody<BlogInputModel>, res: Response) => {
         const newBlog = await blogsService.creatBlog(req.body)
         res.status(201).send(newBlog)
     })
 blogsRoute.put('/:id',
     authenticationMiddleware,
-    ParamValidation,
+    paramValidation,
     blogBodyValidation,
-    ErrorsFormatMiddleware,
+    errorsFormatMiddleware,
     async (req: RequestWithParamsBody<{ id: string }, BlogInputModel>, res: Response) => {
         const isBlogUpdated = await blogsService.updateBlog(req.params.id, req.body)
         if (isBlogUpdated) {

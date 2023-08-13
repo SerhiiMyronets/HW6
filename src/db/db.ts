@@ -1,6 +1,6 @@
 import {MongoClient} from 'mongodb'
-import {BlogStructureMongoDB} from "../models/blogs-models";
-import {PostStructureMongoDB} from "../models/posts-models";
+import {BlogInputMongoDB} from "../models/blogs-models";
+import {PostInputMongoDB} from "../models/posts-models";
 import 'dotenv/config'
 
 const mongoURI = 'mongodb://localhost:27017/'//process.env.MONGO_URI || "mongodb+srv://hardmail88:3846MrN1@cluster0.0goknaf.mongodb.net/?retryWrites=true&w=majority"
@@ -10,8 +10,8 @@ if (!mongoURI) {
 export const client = new MongoClient(mongoURI)
 
 const db = client.db("social_media");
-export const blogsCollection = db.collection<BlogStructureMongoDB>("blogs");
-export const postsCollection = db.collection<PostStructureMongoDB>("posts");
+export const blogsCollection = db.collection<BlogInputMongoDB>("blogs");
+export const postsCollection = db.collection<PostInputMongoDB>("posts");
 
 export async function runDb() {
     try {

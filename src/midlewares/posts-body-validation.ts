@@ -1,5 +1,5 @@
 import {body} from "express-validator";
-import {blogsRepository} from "../repositories/blogs-repository-db";
+import {blogsRepository} from "../repositories/db-repositories/blogs-repository-db";
 
 export const postBodyValidation = [
     body('title').isString().trim().notEmpty().withMessage('Title is required'),

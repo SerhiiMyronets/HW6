@@ -1,5 +1,5 @@
-import {blogsRepository} from "../repositories/blogs-repository-db";
-import {CreatBlogClass, BlogInputModel, BlogViewModel, UpdateBlogClass} from "../models/blogs-models";
+import {blogsRepository} from "../repositories/db-repositories/blogs-repository-db";
+import {BlogInputModel, BlogViewModel} from "../models/blogs-models";
 
 export const blogsService = {
     async findBlogs(): Promise<BlogViewModel[]> {
@@ -9,19 +9,25 @@ export const blogsService = {
         return blogsRepository.findBlogById(id)
     },
     async creatBlog(body: BlogInputModel): Promise<BlogViewModel | null> {
-        const newBlogBody = new CreatBlogClass(body)
-        return blogsRepository.creatBlog(newBlogBody)
+        const newBody = this._creatNewBlogBody(body)
+        return blogsRepository.creatBlog(newBody)
     },
-
     async updateBlog(id: string, body: BlogInputModel): Promise<Boolean> {
-        const newUpdatedBlogBody = new UpdateBlogClass(body)
-        return blogsRepository.updateBlog(id, newUpdatedBlogBody)
+        return blogsRepository.updateBlog(id, body)
     },
     async deleteBlog(id: string): Promise<Boolean> {
         return blogsRepository.deleteBlog(id)
-
     },
     async deleteAllBlogs(): Promise<Boolean> {
         return blogsRepository.deleteAllBlogs()
+    },
+    _creatNewBlogBody(body: BlogInputModel) {
+        return {
+            name: body.name,
+            description: body.description,
+            websiteUrl: body.websiteUrl,
+            createdAt: new Date().toISOString(),
+            isMembership: false
+        }
     }
 }

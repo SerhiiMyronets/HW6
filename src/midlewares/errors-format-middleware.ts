@@ -1,7 +1,7 @@
 import {NextFunction, Request, Response} from "express";
 import {validationResult} from "express-validator";
 
-export const ErrorsFormatMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const errorsFormatMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const result = validationResult(req).formatWith(({msg, path}: any) => ({
         message: msg,
         field: path
