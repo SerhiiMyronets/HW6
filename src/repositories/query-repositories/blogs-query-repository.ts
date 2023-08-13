@@ -38,7 +38,7 @@ export const blogsQueryRepository = {
 
         const totalCount = await postsCollection.countDocuments({"blogId": blogId})
         const foundedBlogs = await postsCollection
-            .find()
+            .find({"blogId": blogId})
             .sort({[query.sortBy]: sortDirectionList[query.sortDirection]})
             .skip(query.pageSize * (query.pageNumber - 1))
             .limit(+query.pageSize)
