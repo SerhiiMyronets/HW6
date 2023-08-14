@@ -38,5 +38,6 @@ export const blogsQueryRepository = {
         const result = await blogsCollection
             .findOne({_id: new ObjectId(id)})
         return !!result;
+
     }
 }
