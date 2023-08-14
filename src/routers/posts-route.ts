@@ -11,7 +11,6 @@ import {PostQueryValidation} from "../midlewares/query/post-query-validation";
 import {findBlogsPaginateModel} from "../models/repository/blogs-models";
 
 
-
 export const postsRoute = Router({})
 /*
 postsRoute.get('/', async (req: Request, res: Response) => {
@@ -22,9 +21,9 @@ postsRoute.get('/', async (req: Request, res: Response) => {
 postsRoute.get('/',
     PostQueryValidation,
     async (req: RequestWithQuery<findBlogsPaginateModel>, res: Response) => {
-    const result = await postsQueryRepository.findPostsQuery(req.query);
-    res.send(result)
-})
+        const result = await postsQueryRepository.findPostsQuery(req.query);
+        res.send(result)
+    })
 
 postsRoute.get('/:id',
     paramValidation,
@@ -54,6 +53,7 @@ postsRoute.post('/',
     postBodyValidation,
     errorsFormatMiddleware,
     async (req: RequestWithBody<PostInputModel>, res: Response) => {
+        debugger;
         const newPost = await postsService.creatPost(req.body)
         res.status(201).send(newPost)
     })

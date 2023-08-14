@@ -9,12 +9,12 @@ import {
 } from "./request-types";
 import {errorsFormatMiddleware} from "../midlewares/errors-format-middleware";
 import {authenticationMiddleware} from "../midlewares/authentication-middleware";
-import {blogsBodyValidation} from "../midlewares/body/blogs-body-validation";
+import {blogBodyValidation} from "../midlewares/body/blog-body-validation";
 import {paramValidation} from "../midlewares/param/param-validation";
 import {blogsService} from "../domain/blogs-service";
 import {blogsQueryRepository} from "../repositories/query-repositories/blogs-query-repository";
 import {postsService} from "../domain/posts-service";
-import {postsByBlogBodyValidation} from "../midlewares/body/posts-by-blog-body-validation";
+import {blogPostBodyValidation} from "../midlewares/body/blog-post-body-validation";
 import {blogQueryValidation} from "../midlewares/query/blog-query-validation";
 import {PostQueryValidation} from "../midlewares/query/post-query-validation";
 import {PostInputByBlogModel} from "../models/repository/posts-models";
@@ -68,7 +68,7 @@ blogsRoute.get('/:id/posts',
     })
 blogsRoute.post('/',
     authenticationMiddleware,
-    blogsBodyValidation,
+    blogBodyValidation,
     errorsFormatMiddleware,
     async (req: RequestWithBody<BlogInputModel>, res: Response) => {
         const newBlog = await blogsService.creatBlog(req.body)
@@ -77,7 +77,7 @@ blogsRoute.post('/',
 blogsRoute.post('/:id/posts',
     authenticationMiddleware,
     paramValidation,
-    postsByBlogBodyValidation,
+    blogPostBodyValidation,
     errorsFormatMiddleware,
     async (req: RequestWithParamsBody<{ id: string }, PostInputByBlogModel>, res: Response) => {
         const isExisting = await blogsQueryRepository.isBlogExisting(req.params.id)
@@ -91,7 +91,7 @@ blogsRoute.post('/:id/posts',
 blogsRoute.put('/:id',
     authenticationMiddleware,
     paramValidation,
-    blogsBodyValidation,
+    blogBodyValidation,
     errorsFormatMiddleware,
     async (req: RequestWithParamsBody<{ id: string }, BlogInputModel>, res: Response) => {
         const isBlogUpdated = await blogsService.updateBlog(req.params.id, req.body)

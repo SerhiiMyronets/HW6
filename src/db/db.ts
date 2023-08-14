@@ -2,7 +2,7 @@ import {MongoClient} from 'mongodb'
 import 'dotenv/config'
 import {BlogInputMongoDB, PostInputMongoDB} from "../models/db-models";
 
-const mongoURI = /*'mongodb://localhost:27017/'*/process.env.MONGO_URI || "mongodb+srv://hardmail88:3846MrN1@cluster0.0goknaf.mongodb.net/?retryWrites=true&w=majority"
+const mongoURI = /*'mongodb://localhost:27017'*/process.env.MONGO_URI || "mongodb+srv://hardmail88:3846MrN1@cluster0.0goknaf.mongodb.net/?retryWrites=true&w=majority"
 if (!mongoURI) {
     throw new Error('URI doesnt found!!')
 }

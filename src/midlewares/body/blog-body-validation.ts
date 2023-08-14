@@ -1,6 +1,6 @@
 import {body} from "express-validator";
 
-export const blogsBodyValidation = [
+export const blogBodyValidation = [
     body('name').isString().trim().notEmpty().withMessage('Name is required'),
     body('name').isLength({max: 15,}).withMessage('Name length should be below 15 symbols'),
     body("description").isString().trim().notEmpty().withMessage('Description is required'),

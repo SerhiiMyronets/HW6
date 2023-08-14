@@ -2,7 +2,7 @@ import {body} from "express-validator";
 
 
 
-export const postsByBlogBodyValidation = [
+export const blogPostBodyValidation = [
     body('title').isString().trim().notEmpty().withMessage('Title is required'),
     body('title').isLength({max: 30,}).withMessage('Title length should be below 30 symbols'),
     body("shortDescription").isString().trim().notEmpty().withMessage('ShortDescription is required'),
