@@ -6,9 +6,9 @@ import {postsService} from "../domain/posts-service";
 
 
 
-export const deleteAllRoute = Router({})
+export const testing = Router({})
 
-deleteAllRoute.delete('/', async (req: Request, res: Response) => {
+testing.delete('/', async (req: Request, res: Response) => {
     await blogsService.deleteAllBlogs()
     await postsService.deleteAllPosts()
     res.sendStatus(204)
