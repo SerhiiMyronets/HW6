@@ -28,7 +28,6 @@ export const blogsQueryRepository = {
             .skip(query.pageSize * (query.pageNumber - 1))
             .limit(+query.pageSize)
             .toArray()
-
         const mappedFoundedPosts = foundedPosts.map(
             b => mapperRepository.postOutputMongoDBToPostViewModel(b))
         return mapperQuery.postViewModelToPostViewModelPaginated(
