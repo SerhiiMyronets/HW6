@@ -1,6 +1,6 @@
 import {query} from "express-validator";
 
-export const blogQueryValidation = [
+export const blogsQueryValidation = [
     query("searchNameTerm").default(""),
     query("pageNumber").default("1"),
     query("pageSize").default("10"),

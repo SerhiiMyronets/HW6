@@ -1,6 +1,6 @@
 import {query} from "express-validator";
 
-export const PostQueryValidation = [
+export const PostsQueryValidation = [
     query("pageNumber").default("1"),
     query("pageSize").default("10"),
     query("sortDirection").default("desc"),

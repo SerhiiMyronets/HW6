@@ -1,5 +1,6 @@
 import {BlogViewModel} from "../../models/repository/blogs-models";
 import {PostViewModel} from "../../models/repository/posts-models";
+import {UsersViewModel} from "../../models/repository/users-models";
 
 export enum sortDirectionList {
     "asc" = 1,
@@ -16,6 +17,15 @@ export const mapperQuery = {
         }
     },
     postViewModelToPostViewModelPaginated(items: Array<PostViewModel>, page: number, pageSize: number, totalCount: number) {
+        return {
+            pagesCount: Math.ceil(totalCount / pageSize),
+            page,
+            pageSize,
+            totalCount,
+            items
+        }
+    },
+    userViewModelToUserViewModelPaginated(items: Array<UsersViewModel>, page: number, pageSize: number, totalCount: number) {
         return {
             pagesCount: Math.ceil(totalCount / pageSize),
             page,

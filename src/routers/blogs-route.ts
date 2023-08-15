@@ -15,14 +15,14 @@ import {blogsService} from "../domain/blogs-service";
 import {blogsQueryRepository} from "../repositories/query-repositories/blogs-query-repository";
 import {postsService} from "../domain/posts-service";
 import {blogPostBodyValidation} from "../midlewares/body/blog-post-body-validation";
-import {blogQueryValidation} from "../midlewares/query/blog-query-validation";
-import {PostQueryValidation} from "../midlewares/query/post-query-validation";
+import {blogsQueryValidation} from "../midlewares/query/blogs-query-validation";
+import {PostsQueryValidation} from "../midlewares/query/posts-query-validation";
 import {PostInputByBlogModel} from "../models/repository/posts-models";
 
 export const blogsRoute = Router({})
 
 blogsRoute.get('/',
-    blogQueryValidation,
+    blogsQueryValidation,
     async (req: RequestWithQuery<findBlogsPaginateModel>, res: Response) => {
         const result = await blogsQueryRepository.findBlogsQuery(req.query);
         res.send(result)
@@ -54,7 +54,7 @@ blogsRoute.delete('/:id',
 blogsRoute.get('/:id/posts',
     paramValidation,
     errorsFormatMiddleware,
-    PostQueryValidation,
+    PostsQueryValidation,
     // @ts-ignore
     async (req: RequestWithParamsQuery<{ id: string }, findPostsByBlogPaginateModel>, res: Response) => {
         const isExisting = await blogsQueryRepository.isBlogExisting(req.params.id)

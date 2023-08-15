@@ -7,14 +7,14 @@ import {postBodyValidation} from "../midlewares/body/posts-body-validation";
 import {paramValidation} from "../midlewares/param/param-validation";
 import {postsService} from "../domain/posts-service";
 import {postsQueryRepository} from "../repositories/query-repositories/posts-query-repository";
-import {PostQueryValidation} from "../midlewares/query/post-query-validation";
+import {PostsQueryValidation} from "../midlewares/query/posts-query-validation";
 import {findBlogsPaginateModel} from "../models/repository/blogs-models";
 
 
 export const postsRoute = Router({})
 
 postsRoute.get('/',
-    PostQueryValidation,
+    PostsQueryValidation,
     async (req: RequestWithQuery<findBlogsPaginateModel>, res: Response) => {
         const result = await postsQueryRepository.findPostsQuery(req.query);
         res.send(result)

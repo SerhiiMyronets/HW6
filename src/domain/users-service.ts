@@ -1,18 +1,19 @@
-import {UsersInputModel, UsersViewModel} from "../models/repository/users-models";
+import {UsersViewModel} from "../models/repository/users-models";
 import {usersDbRepository} from "../repositories/db-repositories/users-db-repository";
+const bcrypt = require('bcrypt');
 
 
 export const usersService = {
-    async createUser(body: UsersInputModel): Promise<UsersViewModel | null> {
-        const newUser = this._createNewUserBody(body)
-        return await usersDbRepository.createUser(newUser)
-    },
-    _createNewUserBody(body: UsersInputModel) {
-        return {
-            login: body.login,
-            email: body.email,
-            password: body.password,
+    async createUser(login: string, password: string, email: string)
+        : Promise<UsersViewModel | null> {
+        const passwordHash = await bcrypt.hash(password, 10)
+        const newUser = {
+            login,
+            password: passwordHash,
+            email,
             createdAt: new Date().toISOString()
         }
+        return await usersDbRepository.createUser(newUser)
     }
+
 }

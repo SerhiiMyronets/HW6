@@ -30,5 +30,6 @@ export const mapperRepository = {
             email: userDB.email,
             createdAt: userDB.createdAt
         }
-    }
+    },
+
 }
