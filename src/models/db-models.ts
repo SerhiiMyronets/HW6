@@ -8,7 +8,7 @@ export type BlogInputMongoDB = {
     createdAt: string
     isMembership: boolean
 }
-export type BlogOutputMongoDB =  BlogInputMongoDB & {
+export type BlogViewMongoDB =  BlogInputMongoDB & {
     _id: ObjectId
 }
 //posts db models
@@ -22,4 +22,19 @@ export type PostInputMongoDB = {
 }
 export type PostViewMongoDB = PostInputMongoDB & {
     _id: ObjectId
+}
+
+export type UsersInputMongoDB = {
+    login: string
+    email: string
+    password: string
+    createdAt: string
+}
+
+export type UsersViewMongoDB = {
+    _id: ObjectId
+    login: string
+    email: string
+    password: string
+    createdAt: string
 }

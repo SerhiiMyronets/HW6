@@ -12,19 +12,13 @@ import {findBlogsPaginateModel} from "../models/repository/blogs-models";
 
 
 export const postsRoute = Router({})
-/*
-postsRoute.get('/', async (req: Request, res: Response) => {
-    const posts = await postsService.findPosts();
-    res.send(posts)
-})
- */
+
 postsRoute.get('/',
     PostQueryValidation,
     async (req: RequestWithQuery<findBlogsPaginateModel>, res: Response) => {
         const result = await postsQueryRepository.findPostsQuery(req.query);
         res.send(result)
     })
-
 postsRoute.get('/:id',
     paramValidation,
     errorsFormatMiddleware,
@@ -53,8 +47,9 @@ postsRoute.post('/',
     postBodyValidation,
     errorsFormatMiddleware,
     async (req: RequestWithBody<PostInputModel>, res: Response) => {
-        debugger;
-        const newPost = await postsService.creatPost(req.body)
+        const newPost = await postsService.creatPost(
+            req.body.title, req.body.shortDescription,
+            req.body.content, req.body.blogId)
         res.status(201).send(newPost)
     })
 postsRoute.put('/:id',
@@ -63,7 +58,9 @@ postsRoute.put('/:id',
     postBodyValidation,
     errorsFormatMiddleware,
     async (req: RequestWithParamsBody<{ id: string }, PostInputModel>, res: Response) => {
-        const isPostUpdated = await postsService.updatePost(req.params.id, req.body)
+        const isPostUpdated = await postsService.updatePost(
+            req.params.id, req.body.title, req.body.shortDescription,
+            req.body.content, req.body.blogId)
         if (isPostUpdated) {
             res.sendStatus(204)
         } else {

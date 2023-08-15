@@ -11,6 +11,7 @@ export const client = new MongoClient(mongoURI)
 const db = client.db("social_media");
 export const blogsCollection = db.collection<BlogInputMongoDB>("blogs");
 export const postsCollection = db.collection<PostInputMongoDB>("posts");
+export const usersCollection = db.collection("users");
 
 export async function runDb() {
     try {

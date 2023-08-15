@@ -21,7 +21,6 @@ import {PostInputByBlogModel} from "../models/repository/posts-models";
 
 export const blogsRoute = Router({})
 
-//QUERY
 blogsRoute.get('/',
     blogQueryValidation,
     async (req: RequestWithQuery<findBlogsPaginateModel>, res: Response) => {
@@ -71,7 +70,12 @@ blogsRoute.post('/',
     blogBodyValidation,
     errorsFormatMiddleware,
     async (req: RequestWithBody<BlogInputModel>, res: Response) => {
-        const newBlog = await blogsService.creatBlog(req.body)
+        const blogInputBody: BlogInputModel = {
+            name: req.body.name,
+            description: req.body.description,
+            websiteUrl: req.body.websiteUrl
+        }
+        const newBlog = await blogsService.creatBlog(blogInputBody)
         res.status(201).send(newBlog)
     })
 blogsRoute.post('/:id/posts',
@@ -82,8 +86,10 @@ blogsRoute.post('/:id/posts',
     async (req: RequestWithParamsBody<{ id: string }, PostInputByBlogModel>, res: Response) => {
         const isExisting = await blogsQueryRepository.isBlogExisting(req.params.id)
         if (isExisting) {
-            const newBlog = await postsService.creatPost({...req.body, blogId: req.params.id})
-            res.status(201).send(newBlog)
+            const newPost = await postsService.creatPost(
+                req.body.title, req.body.shortDescription,
+                req.body.content, req.params.id)
+            res.status(201).send(newPost)
         } else {
             res.sendStatus(404)
         }
@@ -94,7 +100,9 @@ blogsRoute.put('/:id',
     blogBodyValidation,
     errorsFormatMiddleware,
     async (req: RequestWithParamsBody<{ id: string }, BlogInputModel>, res: Response) => {
-        const isBlogUpdated = await blogsService.updateBlog(req.params.id, req.body)
+        const isBlogUpdated = await blogsService.updateBlog(
+            req.params.id, req.body.name,
+            req.body.description, req.body.websiteUrl)
         if (isBlogUpdated) {
             res.sendStatus(204)
         } else {
