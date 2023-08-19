@@ -13,10 +13,8 @@ export const usersDbRepository = {
         console.log(id)
         const result = await usersCollection
             .findOne({_id: new ObjectId(id)})
-
         if (result) {
             console.log(result)
-            // @ts-ignore
             return mapperRepository.userOutputMongoDBtoUsersViewMongo(result)
         } else {
             return null

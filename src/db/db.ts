@@ -1,6 +1,6 @@
 import {MongoClient} from 'mongodb'
 import 'dotenv/config'
-import {BlogInputMongoDB, PostInputMongoDB} from "../models/db-models";
+import {BlogInputMongoDB, PostInputMongoDB, UsersInputMongoDB} from "../models/db-models";
 
 const mongoURI = /*'mongodb://localhost:27017'*/process.env.MONGO_URI || "mongodb+srv://hardmail88:3846MrN1@cluster0.0goknaf.mongodb.net/?retryWrites=true&w=majority"
 if (!mongoURI) {
@@ -11,7 +11,7 @@ export const client = new MongoClient(mongoURI)
 const db = client.db("social_media");
 export const blogsCollection = db.collection<BlogInputMongoDB>("blogs");
 export const postsCollection = db.collection<PostInputMongoDB>("posts");
-export const usersCollection = db.collection("users");
+export const usersCollection = db.collection<UsersInputMongoDB>("users");
 
 export async function runDb() {
     try {

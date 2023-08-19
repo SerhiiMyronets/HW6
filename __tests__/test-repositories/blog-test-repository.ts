@@ -1,5 +1,5 @@
 // @ts-ignore
-import request from "supertest";
+import request from 'supertest'
 import {app, RouterPaths} from "../../src/setting";
 import {BlogInputModel} from "../../src/models/repository/blogs-models";
 import {correctLogin} from "../test-inputs/blogs-test-inputs";

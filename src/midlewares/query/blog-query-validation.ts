@@ -1,8 +1,9 @@
 import {query} from "express-validator";
 
-export const PostsQueryValidation = [
+export const blogQueryValidation = [
+    query("searchNameTerm").default(""),
     query("pageNumber").default("1"),
     query("pageSize").default("10"),
     query("sortDirection").default("desc"),
-    query("sortBy").default("createdAt"),
+    query("sortBy").default("createdAt")
 ]

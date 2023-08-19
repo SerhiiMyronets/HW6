@@ -9,7 +9,7 @@ export type ErrorType = {
     errorsMessages: ErrorMessageType[]
 }
 
-export const errorsFormatMiddleware = (req: Request, res: Response, next: NextFunction) => {
+export const errorsFormatMiddleware = (req: Request<any, any, any, any>, res: Response, next: NextFunction) => {
     const result = validationResult(req).formatWith(({msg, path}: any) => ({
         message: msg,
         field: path

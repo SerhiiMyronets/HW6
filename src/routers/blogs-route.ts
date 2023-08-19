@@ -17,7 +17,7 @@ import {postsService} from "../domain/posts-service";
 import {blogPostBodyValidation} from "../midlewares/body/blog-post-body-validation";
 import {blogsQueryValidation} from "../midlewares/query/blogs-query-validation";
 import {PostsQueryValidation} from "../midlewares/query/posts-query-validation";
-import {PostInputByBlogModel} from "../models/repository/posts-models";
+import {findPostsByBlogPaginateModel, PostInputByBlogModel} from "../models/repository/posts-models";
 
 export const blogsRoute = Router({})
 
@@ -53,9 +53,8 @@ blogsRoute.delete('/:id',
     })
 blogsRoute.get('/:id/posts',
     paramValidation,
+    ...PostsQueryValidation,
     errorsFormatMiddleware,
-    PostsQueryValidation,
-    // @ts-ignore
     async (req: RequestWithParamsQuery<{ id: string }, findPostsByBlogPaginateModel>, res: Response) => {
         const isExisting = await blogsQueryRepository.isBlogExisting(req.params.id)
         const result = await blogsQueryRepository.findPostsByBlogIdQuery(req.query, req.params.id)
