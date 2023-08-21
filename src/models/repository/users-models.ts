@@ -29,3 +29,9 @@ export type UserViewPaginatedModel = {
     totalCount: number
     items: UsersViewModel[]
 }
+
+//auth
+export type AuthModel = {
+    loginOrEmail: string
+    password: string
+}
