@@ -1,6 +1,5 @@
 import {UsersViewModel} from "../models/repository/users-models";
 import {usersDbRepository} from "../repositories/db-repositories/users-db-repository";
-
 const bcrypt = require('bcrypt');
 
 
@@ -19,9 +18,6 @@ export const usersAuthService = {
     async deleteUser(id: string): Promise<Boolean> {
         return await usersDbRepository.deleteUser(id)
     },
-    async generateHash(pass: string) {
-        return await bcrypt.hash(pass, 10)
-    },
     async checkCredentials(login: string, pass: string) {
         const result = await usersDbRepository.findUserByLoginOrEmail(login)
         if (!result) {
@@ -29,7 +25,7 @@ export const usersAuthService = {
         }
         return await bcrypt.compare(pass, result.password)
     },
-    async deleteAllUsers() {
-        await usersDbRepository.deleteAllUsers()
+    async deleteAllUsers(): Promise<Boolean> {
+        return usersDbRepository.deleteAllUsers()
     }
 }

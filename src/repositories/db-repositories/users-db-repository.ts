@@ -27,7 +27,9 @@ export const usersDbRepository = {
             .findOne({ $or:[{"login": loginOrEmail}, {"email": loginOrEmail}]})
         return foundedUser ? foundedUser : null
     },
-    async deleteAllUsers() {
-        await usersCollection.deleteMany({})
+    async deleteAllUsers(): Promise<Boolean> {
+        await usersCollection
+            .deleteMany({})
+        return true
     }
 }
