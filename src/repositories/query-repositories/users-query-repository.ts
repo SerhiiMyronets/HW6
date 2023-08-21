@@ -19,13 +19,13 @@ export const usersQueryRepository = {
         termEmail = new RegExp(".*" + query.searchEmailTerm + ".*", "i")
         }
         const totalCount = await usersCollection.countDocuments({ $or: [{"login": termLogin}, {"email": termEmail}]})
+        console.log(totalCount)
         const foundedUsers = await usersCollection
             .find({ $or: [{"login": termLogin}, {"email": termEmail}]})
             .sort({[query.sortBy]: sortDirectionList[query.sortDirection]})
             .skip(query.pageSize * (query.pageNumber - 1))
             .limit(+query.pageSize)
             .toArray()
-        console.log(foundedUsers)
         const mappedFoundedBlogs = foundedUsers.map(
             b => mapperRepository.userOutputMongoDBtoUsersViewMongo(b))
 

@@ -28,5 +28,8 @@ export const usersAuthService = {
             return false
         }
         return await bcrypt.compare(pass, result.password)
+    },
+    async deleteAllUsers() {
+        await usersDbRepository.deleteAllUsers()
     }
 }
