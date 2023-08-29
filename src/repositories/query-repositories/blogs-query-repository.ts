@@ -7,7 +7,7 @@ import {mapperQuery, sortDirectionList} from "./mapper-query";
 
 export const blogsQueryRepository = {
     async findBlogsQuery(query: findBlogsPaginateModel): Promise<BlogViewPaginatedModel> {
-        const term = new RegExp(".*" + query.searchNameTerm + ".*", "i")
+        const term = new RegExp(query.searchNameTerm, "i")
         const totalCount = await blogsCollection.countDocuments({"name": term})
         const foundedBlogs = await blogsCollection
             .find({"name": term})
@@ -17,7 +17,6 @@ export const blogsQueryRepository = {
             .toArray()
         const mappedFoundedBlogs = foundedBlogs.map(
             b => mapperRepository.blogOutputMongoDBToBlogViewModel(b))
-
         return mapperQuery.blogViewModelToBlogViewModelPaginated(mappedFoundedBlogs, +query.pageNumber, +query.pageSize, totalCount)
     },
     async findPostsByBlogIdQuery(query: findPostsByBlogPaginateModel, blogId: string): Promise<PostViewModelPaginated> {

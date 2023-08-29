@@ -17,11 +17,11 @@ export const authRoute = Router({})
 usersRoute.get('/',
     authenticationMiddleware,
     usersQueryValidation,
-    //@ts-ignore
     async (req: RequestWithQuery<findUserPaginateModel>, res: Response) => {
         const result = await usersQueryRepository.findUsersQuery(req.query)
         res.send(result)
     })
+
 usersRoute.post('/',
     authenticationMiddleware,
     usersBodyValidation,

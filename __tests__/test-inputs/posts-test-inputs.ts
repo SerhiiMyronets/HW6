@@ -3,9 +3,6 @@ import {PostInputModel} from "../../src/models/repository/posts-models";
 import {randomObjectId} from "./blogs-test-inputs";
 import {ErrorType} from "../../src/midlewares/errors-format-middleware";
 
-
-
-
 export const correctBodyPost: PostInputModel = {
     title: "Title",
     shortDescription: "ShortDescription",
@@ -52,5 +49,4 @@ export const errorsUndefinedInputPost: ErrorType = {
         {message: 'BlogId is required', field: 'blogId'}
     ]
 }
-
 export const incorrectLogin: string = "Basic admin:qwerty"

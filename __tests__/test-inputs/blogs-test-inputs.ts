@@ -15,7 +15,6 @@ export const updatedCorrectBodyBlog: BlogInputModel = {
     description: "newDescription",
     websiteUrl: "newWebsiteUrl.com"
 }
-
 export const incorrectBodyBlog: BlogInputModel = {
     name: generateString(16),
     description: generateString(501),
@@ -26,7 +25,6 @@ export const undefinedBodyBlog: BlogInputModel = {
     description: "",
     websiteUrl: ""
 }
-
 export const errorsIncorrectInputId: ErrorType = {
     errorsMessages: [
         {message: 'Invalid id format', field: 'id'},
@@ -46,7 +44,6 @@ export const errorsUndefinedInputBlog: ErrorType = {
         {message: 'WebsiteUrl is required', field: 'websiteUrl'}
     ]
 }
-
 export const incorrectLogin: string = "Basic admin:qwerty"
 export const correctLogin: string = "Basic " + btoa(`${auth.login}:${auth.password}`)
 
