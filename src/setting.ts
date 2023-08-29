@@ -21,6 +21,11 @@ export const RouterPaths = {
 
 export const auth = {login: 'admin', password: 'qwerty'}
 
+export const settings = {
+    MONGO_URI: process.env.MONGO_URI,
+    PORT: 3000 || process.env.PORT,
+    SECRET_JWT: process.env.SECRET_JWT || "qwerty"
+}
 
 app.use(RouterPaths.blogs, blogsRoute)
 app.use(RouterPaths.posts, postsRoute)

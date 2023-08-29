@@ -9,6 +9,7 @@ import {usersQueryValidation} from "../midlewares/query/users-query-validation";
 import {usersQueryRepository} from "../repositories/query-repositories/users-query-repository";
 import {paramValidation} from "../midlewares/param/param-validation";
 import {authBodyValidation} from "../midlewares/body/auth-body-validation";
+import {jwtService} from "../appliacation/jwt-service";
 
 
 export const usersRoute = Router({})
@@ -46,9 +47,10 @@ authRoute.post('/login',
     authBodyValidation,
     errorsFormatMiddleware,
     async (req: RequestWithBody<AuthModel>, res: Response) => {
-        const result = await usersAuthService.checkCredentials(req.body.loginOrEmail, req.body.password)
-        if (result) {
-            res.sendStatus(204)
+        const user = await usersAuthService.checkCredentials(req.body.loginOrEmail, req.body.password)
+        if (user) {
+            const token = await jwtService.createJWT(user)
+            res.status(200).send(token)
         } else {
             res.sendStatus(401)
         }

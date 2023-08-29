@@ -19,11 +19,16 @@ export const usersAuthService = {
         return await usersDbRepository.deleteUser(id)
     },
     async checkCredentials(login: string, pass: string) {
-        const result = await usersDbRepository.findUserByLoginOrEmail(login)
-        if (!result) {
-            return false
+        const user = await usersDbRepository.findUserByLoginOrEmail(login)
+        if (!user) {
+            return null
         }
-        return await bcrypt.compare(pass, result.password)
+        if (await bcrypt.compare(pass, user.password)) {
+            return user
+        } else {
+            return null
+        }
+
     },
     async deleteAllUsers(): Promise<Boolean> {
         return usersDbRepository.deleteAllUsers()
