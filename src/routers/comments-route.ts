@@ -41,13 +41,16 @@ commentsRoute.delete('/:id',
     paramValidation,
     errorsFormatMiddleware,
     async (req: RequestWithParams<{ id: string }>, res: Response) => {
-        const comment = await commentsDbRepository.findCommentById(req.params.id)
-        if (!comment) {
-            res.sendStatus(404)
-        } else if (comment!.userId !== req.user!.id) {
-            res.sendStatus(403)
-        } else {
-            const isDeleted = await commentsService.deleteComment(req.params.id)
-            if (isDeleted) res.sendStatus(204)
-        }
+        const commentId = req.params.id
+        const comment = await commentsDbRepository.findCommentById(commentId)
+        if (!comment) return res.sendStatus(404)
+        if (comment.userId !== req.user!.id) return res.sendStatus(403)
+        await commentsService.deleteComment(commentId)
+        return res.sendStatus(204)
+        // else if (comment!.userId !== req.user!.id) {
+        //     res.sendStatus(403)
+        // } else {
+        //     const isDeleted = await commentsService.deleteComment(commentId)
+        //     if (isDeleted) res.sendStatus(204)
+        // }
     })

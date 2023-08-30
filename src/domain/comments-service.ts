@@ -31,7 +31,7 @@ export const commentsService = {
         return commentsDbRepository.deleteAllComments()
     },
     async updateComment(commentId: string, commentContent: string) {
-return commentsDbRepository.updateComment(commentId, commentContent)
+        return commentsDbRepository.updateComment(commentId, commentContent)
     },
     async deleteComment(id: string) {
         return await commentsDbRepository.deleteComment(id)

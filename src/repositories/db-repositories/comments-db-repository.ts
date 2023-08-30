@@ -10,7 +10,7 @@ export const commentsDbRepository = {
     },
     async findCommentById(id: string): Promise<CommentViewMongoDB | null> {
         const result = await commentsCollection
-            .findOne({_id: new ObjectId(id)})
+            .findOne({_id: new ObjectId(id)}, )
         if (result) {
             return result
         } else {

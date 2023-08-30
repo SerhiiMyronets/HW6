@@ -9,6 +9,15 @@ import {
 import {generateString} from "../test-inputs/generate-string";
 
 describe(RouterPaths.blogs, () => {
+    beforeAll(async () => {
+        //start mongo
+        //get url
+        //proEnv = url
+    })
+
+    afterAll(async () => {
+        //mongo off
+    })
     beforeEach(async () => {
         await request(app).delete(RouterPaths.__test__).expect(204)
     })
