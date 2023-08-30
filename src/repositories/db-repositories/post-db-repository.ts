@@ -1,4 +1,3 @@
-
 import {postsCollection} from "../../db/db";
 import {ObjectId} from "mongodb";
 import {mapperRepository} from "../mapper-repository";
