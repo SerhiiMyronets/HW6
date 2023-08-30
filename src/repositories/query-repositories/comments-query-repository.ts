@@ -1,7 +1,7 @@
 import { commentsCollection} from "../../db/db";
 import {CommentsViewModelPaginated, findCommentsPaginateModel} from "../../models/repository/comments-models";
-import {mapperQuery, sortDirectionList} from "./mapper-query";
-import {mapperRepository} from "../mapper-repository";
+import {mapperQueryRepository, sortDirectionList} from "../mapper-query-repository";
+import {mapperDbRepository} from "../mapper-db-repository";
 
 export const commentsQueryRepository = {
     async findCommentsByPostIdQuery (query:findCommentsPaginateModel, postId: string): Promise<CommentsViewModelPaginated> {
@@ -13,8 +13,8 @@ export const commentsQueryRepository = {
             .limit(+query.pageSize)
             .toArray()
         const mappedFoundedComments = foundedComments.map(
-            b => mapperRepository.CommentViewMongoDBtoCommentViewModel(b))
-        return mapperQuery.commentViewModelToCommentsViewModelPaginated(
+            b => mapperDbRepository.CommentViewMongoDBtoCommentViewModel(b))
+        return mapperQueryRepository.commentViewModelToCommentsViewModelPaginated(
             mappedFoundedComments, +query.pageNumber, +query.pageSize, totalCount)
     },
 

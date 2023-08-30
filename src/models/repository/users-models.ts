@@ -5,7 +5,6 @@ export type UsersInputModel = {
     password: string
     email: string
 }
-
 export type findUserPaginateModel = {
     searchLoginTerm: string
     searchEmailTerm: string
@@ -21,7 +20,6 @@ export type UsersViewModel = {
     email: string
     createdAt: string
 }
-
 export type UserViewPaginatedModel = {
     pagesCount: number
     pageSize: number
@@ -29,7 +27,6 @@ export type UserViewPaginatedModel = {
     totalCount: number
     items: UsersViewModel[]
 }
-
 //auth
 export type AuthModel = {
     loginOrEmail: string
@@ -37,7 +34,6 @@ export type AuthModel = {
 }
 
 //me
-
 export type MeViewUserModel = {
     email: string
     login: string

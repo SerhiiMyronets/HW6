@@ -1,6 +1,6 @@
 import {postsCollection} from "../../db/db";
 import {ObjectId} from "mongodb";
-import {mapperRepository} from "../mapper-repository";
+import {mapperDbRepository} from "../mapper-db-repository";
 import {PostInputModel, PostViewModel} from "../../models/repository/posts-models";
 import {PostInputMongoDB} from "../../models/db-models";
 
@@ -10,13 +10,13 @@ export const postsRepository = {
             .find()
             .toArray()
         return result.map(b =>
-            (mapperRepository.postOutputMongoDBToPostViewModel(b)))
+            (mapperDbRepository.postOutputMongoDBToPostViewModel(b)))
     },
     async findById(id: string): Promise<PostViewModel | null> {
         const result = await postsCollection
             .findOne({_id: new ObjectId(id)})
         if (result) {
-            return mapperRepository.postOutputMongoDBToPostViewModel(result)
+            return mapperDbRepository.postOutputMongoDBToPostViewModel(result)
         } else {
             return null
         }

@@ -23,7 +23,7 @@ export type PostInputMongoDB = {
 export type PostViewMongoDB = PostInputMongoDB & {
     _id: ObjectId
 }
-
+//users db models
 export type UsersInputMongoDB =  {
     login: string
     email: string
@@ -34,7 +34,7 @@ export type UsersInputMongoDB =  {
 export type UsersViewMongoDB = UsersInputMongoDB & {
     _id: ObjectId
 }
-
+//comments db models
 export type CommentInputMongoDB = {
     postId: string
     content: string

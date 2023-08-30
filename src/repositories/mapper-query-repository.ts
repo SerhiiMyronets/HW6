@@ -1,13 +1,13 @@
-import {BlogViewModel} from "../../models/repository/blogs-models";
-import {PostViewModel} from "../../models/repository/posts-models";
-import {UsersViewModel} from "../../models/repository/users-models";
-import { CommentViewModel} from "../../models/repository/comments-models";
+import {BlogViewModel} from "../models/repository/blogs-models";
+import {PostViewModel} from "../models/repository/posts-models";
+import {UsersViewModel} from "../models/repository/users-models";
+import { CommentViewModel} from "../models/repository/comments-models";
 
 export enum sortDirectionList {
     "asc" = 1,
     "desc" = -1
 }
-export const mapperQuery = {
+export const mapperQueryRepository = {
     blogViewModelToBlogViewModelPaginated(items: Array<BlogViewModel>, page: number, pageSize: number, totalCount: number) {
         return {
             pagesCount: Math.ceil(totalCount / pageSize),

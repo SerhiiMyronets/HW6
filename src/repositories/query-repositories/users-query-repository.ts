@@ -1,7 +1,7 @@
 import {findUserPaginateModel, UserViewPaginatedModel} from "../../models/repository/users-models";
 import {usersCollection} from "../../db/db";
-import {mapperQuery, sortDirectionList} from "./mapper-query";
-import {mapperRepository} from "../mapper-repository";
+import {mapperQueryRepository, sortDirectionList} from "../mapper-query-repository";
+import {mapperDbRepository} from "../mapper-db-repository";
 
 
 export const usersQueryRepository = {
@@ -23,8 +23,8 @@ export const usersQueryRepository = {
             .limit(+query.pageSize)
             .toArray()
         const mappedFoundedBlogs = foundedUsers.map(
-            b => mapperRepository.userOutputMongoDBtoUsersViewMongo(b))
-        return mapperQuery.userViewModelToUserViewModelPaginated(mappedFoundedBlogs, +query.pageNumber, +query.pageSize, totalCount)
+            b => mapperDbRepository.userOutputMongoDBtoUsersViewMongo(b))
+        return mapperQueryRepository.userViewModelToUserViewModelPaginated(mappedFoundedBlogs, +query.pageNumber, +query.pageSize, totalCount)
 
     }
 }

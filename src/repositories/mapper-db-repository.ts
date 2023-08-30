@@ -2,7 +2,7 @@ import {BlogViewMongoDB, CommentViewMongoDB, PostViewMongoDB, UsersViewMongoDB} 
 
 
 
-export const mapperRepository = {
+export const mapperDbRepository = {
     blogOutputMongoDBToBlogViewModel(blogDB: BlogViewMongoDB) {
         return {
             id: blogDB._id.toString(),

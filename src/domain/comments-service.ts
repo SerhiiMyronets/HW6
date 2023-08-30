@@ -1,6 +1,6 @@
 import {CommentInputMongoDB} from "../models/db-models";
 import {commentsDbRepository} from "../repositories/db-repositories/comments-db-repository";
-import {mapperRepository} from "../repositories/mapper-repository";
+import {mapperDbRepository} from "../repositories/mapper-db-repository";
 import {CommentViewModel} from "../models/repository/comments-models";
 
 
@@ -15,7 +15,7 @@ export const commentsService = {
         }
         const commentDB = await commentsDbRepository.creatComment(newComment)
         if (commentDB)
-            return mapperRepository.CommentViewMongoDBtoCommentViewModel(commentDB)
+            return mapperDbRepository.CommentViewMongoDBtoCommentViewModel(commentDB)
         else
 
             return null
@@ -23,7 +23,7 @@ export const commentsService = {
     async findCommentById (id: string): Promise<CommentViewModel | null> {
         const commentDB = await commentsDbRepository.findCommentById(id)
         if (commentDB)
-            return mapperRepository.CommentViewMongoDBtoCommentViewModel(commentDB)
+            return mapperDbRepository.CommentViewMongoDBtoCommentViewModel(commentDB)
         else
             return null
     },

@@ -27,4 +27,3 @@ export type BlogViewPaginatedModel = {
     totalCount: number
     items: BlogViewModel[]
 }
-

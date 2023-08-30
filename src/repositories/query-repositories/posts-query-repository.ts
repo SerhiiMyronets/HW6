@@ -1,7 +1,7 @@
 import { postsCollection} from "../../db/db";
 import {findPostsPaginateModel, PostViewModelPaginated} from "../../models/repository/posts-models";
-import {mapperRepository} from "../mapper-repository";
-import {mapperQuery, sortDirectionList} from "./mapper-query";
+import {mapperDbRepository} from "../mapper-db-repository";
+import {mapperQueryRepository, sortDirectionList} from "../mapper-query-repository";
 import {ObjectId} from "mongodb";
 
 
@@ -16,9 +16,9 @@ export const postsQueryRepository = {
             .toArray()
 
         const mappedFoundedPosts = foundedPosts.map(
-            b => mapperRepository.postOutputMongoDBToPostViewModel(b))
+            b => mapperDbRepository.postOutputMongoDBToPostViewModel(b))
 
-        return mapperQuery.postViewModelToPostViewModelPaginated(mappedFoundedPosts, +query.pageNumber, +query.pageSize, totalCount)
+        return mapperQueryRepository.postViewModelToPostViewModelPaginated(mappedFoundedPosts, +query.pageNumber, +query.pageSize, totalCount)
     },
     async isPostExisting(id: string): Promise<boolean> {
         const result = await postsCollection
