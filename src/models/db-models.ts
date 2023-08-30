@@ -24,17 +24,25 @@ export type PostViewMongoDB = PostInputMongoDB & {
     _id: ObjectId
 }
 
-export type UsersInputMongoDB = {
+export type UsersInputMongoDB =  {
     login: string
     email: string
     password: string
     createdAt: string
 }
 
-export type UsersViewMongoDB = {
+export type UsersViewMongoDB = UsersInputMongoDB & {
     _id: ObjectId
-    login: string
-    email: string
-    password: string
+}
+
+export type CommentInputMongoDB = {
+    postId: string
+    content: string
+    userId: string
+    userLogin: string
     createdAt: string
+}
+
+export type CommentViewMongoDB = CommentInputMongoDB & {
+    _id: ObjectId
 }

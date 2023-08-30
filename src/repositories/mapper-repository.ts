@@ -1,4 +1,5 @@
-import {BlogViewMongoDB, PostViewMongoDB, UsersViewMongoDB} from "../models/db-models";
+import {BlogViewMongoDB, CommentViewMongoDB, PostViewMongoDB, UsersViewMongoDB} from "../models/db-models";
+
 
 
 export const mapperRepository = {
@@ -31,5 +32,15 @@ export const mapperRepository = {
             createdAt: userDB.createdAt
         }
     },
-
+    CommentViewMongoDBtoCommentViewModel(commentDB: CommentViewMongoDB) {
+        return {
+            id: commentDB._id.toString(),
+            content: commentDB.content,
+            commentatorInfo: {
+                userId: commentDB.userId,
+                userLogin: commentDB.userLogin
+            },
+            createdAt: commentDB.createdAt
+        }
+    }
 }

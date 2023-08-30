@@ -1,6 +1,6 @@
-import {Response, Router} from "express";
-import {RequestWithBody, RequestWithParams, RequestWithQuery} from "./request-types";
-import {AuthModel, findUserPaginateModel, UsersInputModel} from "../models/repository/users-models";
+import {Response, Request, Router} from "express";
+import {RequestWithBody, RequestWithParams, RequestWithQuery} from "../types/request-types";
+import {AuthModel, findUserPaginateModel, MeViewUserModel, UsersInputModel} from "../models/repository/users-models";
 import {usersAuthService} from "../domain/users-auth-service";
 import {authenticationMiddleware} from "../midlewares/authentication-middleware";
 import {usersBodyValidation} from "../midlewares/body/users-body-validation";
@@ -10,6 +10,7 @@ import {usersQueryRepository} from "../repositories/query-repositories/users-que
 import {paramValidation} from "../midlewares/param/param-validation";
 import {authBodyValidation} from "../midlewares/body/auth-body-validation";
 import {jwtService} from "../appliacation/jwt-service";
+import {authorizationMiddleware} from "../midlewares/authorization-middleware";
 
 
 export const usersRoute = Router({})
@@ -54,4 +55,14 @@ authRoute.post('/login',
         } else {
             res.sendStatus(401)
         }
+    })
+authRoute.get('/me',
+    authorizationMiddleware,
+    async (req: Request, res: Response) => {
+        const aboutUser: MeViewUserModel = {
+            email: req.user!.email,
+            login: req.user!.login,
+            userId: req.user!.id
+        }
+        res.status(200).send(aboutUser)
     })

@@ -13,11 +13,6 @@ export const postsRepository = {
         return result.map(b =>
             (mapperRepository.postOutputMongoDBToPostViewModel(b)))
     },
-    async creatPost(newPostBody: PostInputMongoDB): Promise<PostViewModel | null> {
-        const res = await postsCollection
-            .insertOne(newPostBody)
-        return this.findById(res.insertedId.toString());
-    },
     async findById(id: string): Promise<PostViewModel | null> {
         const result = await postsCollection
             .findOne({_id: new ObjectId(id)})
@@ -27,6 +22,12 @@ export const postsRepository = {
             return null
         }
     },
+    async creatPost(newPostBody: PostInputMongoDB): Promise<PostViewModel | null> {
+        const res = await postsCollection
+            .insertOne(newPostBody)
+        return this.findById(res.insertedId.toString());
+    },
+
     async updatePost(id: string, newUpdatedPostBody: PostInputModel): Promise<Boolean> {
         const result = await postsCollection
             .updateOne({_id: new ObjectId(id)}, {

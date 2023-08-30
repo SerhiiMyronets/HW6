@@ -1,9 +1,8 @@
 import {MongoClient} from 'mongodb'
 import 'dotenv/config'
-import {BlogInputMongoDB, PostInputMongoDB, UsersInputMongoDB} from "../models/db-models";
-import {settings} from "../setting";
+import {BlogInputMongoDB, CommentInputMongoDB, PostInputMongoDB, UsersInputMongoDB} from "../models/db-models";
 
-const mongoURI = settings.MONGO_URI
+const mongoURI = process.env.MONGO_URI || "mongodb+srv://hardmail88:3846MrN1@cluster0.0goknaf.mongodb.net/?retryWrites=true&w=majority"
 if (!mongoURI) {
     throw new Error('URI doesnt found!!!!!')
 }
@@ -13,6 +12,7 @@ const db = client.db("social_media");
 export const blogsCollection = db.collection<BlogInputMongoDB>("blogs");
 export const postsCollection = db.collection<PostInputMongoDB>("posts");
 export const usersCollection = db.collection<UsersInputMongoDB>("users");
+export const commentsCollection = db.collection<CommentInputMongoDB>("comments");
 
 export async function runDb() {
     try {

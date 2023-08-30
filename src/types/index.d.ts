@@ -1,7 +1,9 @@
+import {UsersViewModel} from "../models/repository/users-models";
+
 declare global {
-    namespace Express {
+    declare namespace Express {
         export interface Request {
-            userId: string | null
+            user: UsersViewModel | null
         }
     }
 }

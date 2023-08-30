@@ -1,21 +1,33 @@
 import {Response, Router} from "express";
 import {errorsFormatMiddleware} from "../midlewares/errors-format-middleware";
-import {PostInputModel} from "../models/repository/posts-models";
-import {RequestWithBody, RequestWithParams, RequestWithParamsBody, RequestWithQuery} from "./request-types";
+import {findPostsPaginateModel, PostInputModel} from "../models/repository/posts-models";
+import {
+    RequestWithBody,
+    RequestWithParams,
+    RequestWithParamsBody,
+    RequestWithParamsQuery,
+    RequestWithQuery
+} from "../types/request-types";
 import {authenticationMiddleware} from "../midlewares/authentication-middleware";
 import {postBodyValidation} from "../midlewares/body/posts-body-validation";
 import {paramValidation} from "../midlewares/param/param-validation";
 import {postsService} from "../domain/posts-service";
 import {postsQueryRepository} from "../repositories/query-repositories/posts-query-repository";
 import {PostsQueryValidation} from "../midlewares/query/posts-query-validation";
-import {findBlogsPaginateModel} from "../models/repository/blogs-models";
+import {authorizationMiddleware} from "../midlewares/authorization-middleware";
+import {commentsBodyValidation} from "../midlewares/body/comments-body-validation";
+import {CommentInputModel, findCommentsPaginateModel} from "../models/repository/comments-models";
+import {postsRepository} from "../repositories/db-repositories/post-db-repository";
+import {commentsService} from "../domain/comments-service";
+import {commentsQueryRepository} from "../repositories/query-repositories/comments-query-repository";
+import {commentsQueryValidation} from "../midlewares/query/comments-query-validation";
 
 
 export const postsRoute = Router({})
 
 postsRoute.get('/',
     PostsQueryValidation,
-    async (req: RequestWithQuery<findBlogsPaginateModel>, res: Response) => {
+    async (req: RequestWithQuery<findPostsPaginateModel>, res: Response) => {
         const result = await postsQueryRepository.findPostsQuery(req.query);
         res.send(result)
     })
@@ -63,6 +75,33 @@ postsRoute.put('/:id',
             req.body.content, req.body.blogId)
         if (isPostUpdated) {
             res.sendStatus(204)
+        } else {
+            res.sendStatus(404)
+        }
+    })
+postsRoute.post('/:id/comments',
+    authorizationMiddleware,
+    paramValidation,
+    commentsBodyValidation,
+    errorsFormatMiddleware,
+    async (req: RequestWithParamsBody<{ id: string }, CommentInputModel>, res: Response) => {
+        if (await postsRepository.findById(req.params.id)) {
+            const newComment = await commentsService
+                .createComment(req.params.id, req.body.content, req.user!.id, req.user!.login)
+            res.status(201).send(newComment)
+        } else {
+            res.sendStatus(404)
+        }
+    })
+postsRoute.get('/:id/comments',
+    paramValidation,
+    commentsQueryValidation,
+    errorsFormatMiddleware,
+    async (req: RequestWithParamsQuery<{ id: string }, findCommentsPaginateModel>, res: Response) => {
+        const isPostExisting = await postsQueryRepository.isPostExisting(req.params.id)
+        if (isPostExisting) {
+            const result = await commentsQueryRepository.findCommentsByPostIdQuery(req.query, req.params.id)
+            res.status(200).send(result)
         } else {
             res.sendStatus(404)
         }

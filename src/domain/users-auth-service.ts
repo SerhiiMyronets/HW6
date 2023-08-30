@@ -28,7 +28,6 @@ export const usersAuthService = {
         } else {
             return null
         }
-
     },
     async deleteAllUsers(): Promise<Boolean> {
         return usersDbRepository.deleteAllUsers()

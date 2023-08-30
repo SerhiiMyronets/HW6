@@ -6,7 +6,7 @@ import {
     RequestWithParamsBody,
     RequestWithParamsQuery,
     RequestWithQuery
-} from "./request-types";
+} from "../types/request-types";
 import {errorsFormatMiddleware} from "../midlewares/errors-format-middleware";
 import {authenticationMiddleware} from "../midlewares/authentication-middleware";
 import {blogBodyValidation} from "../midlewares/body/blog-body-validation";
@@ -17,7 +17,10 @@ import {postsService} from "../domain/posts-service";
 import {blogPostBodyValidation} from "../midlewares/body/blog-post-body-validation";
 import {blogsQueryValidation} from "../midlewares/query/blogs-query-validation";
 import {PostsQueryValidation} from "../midlewares/query/posts-query-validation";
-import {findPostsByBlogPaginateModel, PostInputByBlogModel} from "../models/repository/posts-models";
+import {
+    findPostsPaginateModel,
+    PostInputByBlogModel
+} from "../models/repository/posts-models";
 
 export const blogsRoute = Router({})
 
@@ -27,7 +30,6 @@ blogsRoute.get('/',
         const result = await blogsQueryRepository.findBlogsQuery(req.query);
         res.send(result)
     })
-
 blogsRoute.get('/:id',
     paramValidation,
     errorsFormatMiddleware,
@@ -55,10 +57,10 @@ blogsRoute.get('/:id/posts',
     paramValidation,
     ...PostsQueryValidation,
     errorsFormatMiddleware,
-    async (req: RequestWithParamsQuery<{ id: string }, findPostsByBlogPaginateModel>, res: Response) => {
+    async (req: RequestWithParamsQuery<{ id: string }, findPostsPaginateModel>, res: Response) => {
         const isExisting = await blogsQueryRepository.isBlogExisting(req.params.id)
-        const result = await blogsQueryRepository.findPostsByBlogIdQuery(req.query, req.params.id)
         if (isExisting) {
+            const result = await blogsQueryRepository.findPostsByBlogIdQuery(req.query, req.params.id)
             res.status(200).send(result)
         } else {
             res.sendStatus(404)

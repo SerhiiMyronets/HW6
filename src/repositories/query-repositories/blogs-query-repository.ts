@@ -1,7 +1,10 @@
 import {blogsCollection, postsCollection} from "../../db/db";
 import {BlogViewPaginatedModel, findBlogsPaginateModel} from "../../models/repository/blogs-models";
 import {ObjectId} from "mongodb";
-import {findPostsByBlogPaginateModel, PostViewModelPaginated} from "../../models/repository/posts-models";
+import {
+    findPostsPaginateModel,
+    PostViewModelPaginated
+} from "../../models/repository/posts-models";
 import {mapperRepository} from "../mapper-repository";
 import {mapperQuery, sortDirectionList} from "./mapper-query";
 
@@ -19,7 +22,7 @@ export const blogsQueryRepository = {
             b => mapperRepository.blogOutputMongoDBToBlogViewModel(b))
         return mapperQuery.blogViewModelToBlogViewModelPaginated(mappedFoundedBlogs, +query.pageNumber, +query.pageSize, totalCount)
     },
-    async findPostsByBlogIdQuery(query: findPostsByBlogPaginateModel, blogId: string): Promise<PostViewModelPaginated> {
+    async findPostsByBlogIdQuery(query: findPostsPaginateModel, blogId: string): Promise<PostViewModelPaginated> {
         const totalCount = await postsCollection.countDocuments({"blogId": blogId})
         const foundedPosts = await postsCollection
             .find({"blogId": blogId})
@@ -36,6 +39,5 @@ export const blogsQueryRepository = {
         const result = await blogsCollection
             .findOne({_id: new ObjectId(id)})
         return !!result;
-
     }
 }

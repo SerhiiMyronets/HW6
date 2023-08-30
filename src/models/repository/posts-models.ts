@@ -16,12 +16,6 @@ export type findPostsPaginateModel = {
     sortBy: string
     sortDirection: "asc" | "desc"
 }
-export type findPostsByBlogPaginateModel = {
-    pageNumber: number
-    pageSize: number
-    sortBy: string
-    sortDirection: "asc" | "desc"
-}
 //presentation view models
 export type PostViewModel = {
     id: string

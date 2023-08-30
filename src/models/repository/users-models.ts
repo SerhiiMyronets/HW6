@@ -35,3 +35,11 @@ export type AuthModel = {
     loginOrEmail: string
     password: string
 }
+
+//me
+
+export type MeViewUserModel = {
+    email: string
+    login: string
+    userId: string
+}
