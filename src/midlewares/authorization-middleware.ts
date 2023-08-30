@@ -13,5 +13,5 @@ export const authorizationMiddleware = async (req: Request, res: Response, next:
         req.user = await usersDbRepository.findUserById(userId)
         return next()
     }
-    res.sendStatus(401)
+    return res.sendStatus(401)
 }
