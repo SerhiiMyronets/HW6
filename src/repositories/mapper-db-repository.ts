@@ -1,7 +1,5 @@
 import {BlogViewMongoDB, CommentViewMongoDB, PostViewMongoDB, UsersViewMongoDB} from "../models/db-models";
 
-
-
 export const mapperDbRepository = {
     blogOutputMongoDBToBlogViewModel(blogDB: BlogViewMongoDB) {
         return {
