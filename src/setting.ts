@@ -26,7 +26,7 @@ export const auth = {login: 'admin', password: 'qwerty'}
 
 export const settings = {
     MONGO_URI: "mongodb+srv://hardmail88:3846MrN1@cluster0.0goknaf.mongodb.net/?retryWrites=true&w=majority",
-    PORT: 3000,
+    PORT: process.env.PORT || 3000,
     SECRET_JWT: "qwerty"
 }
 
