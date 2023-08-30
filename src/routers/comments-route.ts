@@ -14,11 +14,7 @@ commentsRoute.get('/:id',
     paramValidation,
     async (req: RequestWithParams<{ id: string }>, res: Response) => {
         const comment = await commentsService.findCommentById(req.params.id)
-        if (!comment) {
-            res.sendStatus(404)
-        } else {
-            res.status(200).send(comment)
-        }
+        comment ? res.status(200).send(comment) : res.sendStatus(404)
     })
 commentsRoute.put('/:id',
     authorizationMiddleware,
@@ -26,15 +22,12 @@ commentsRoute.put('/:id',
     commentsBodyValidation,
     errorsFormatMiddleware,
     async (req: RequestWithParamsBody<{ id: string }, CommentInputModel>, res: Response) => {
-        const comment = await commentsDbRepository.findCommentById(req.params.id)
-        if (!comment) {
-            res.sendStatus(404)
-        } else if (comment!.userId !== req.user!.id)
-            res.sendStatus(403)
-        const isCommentUpdated = await commentsService
-            .updateComment(req.params.id, req.body.content)
-        if (isCommentUpdated)
-            res.sendStatus(204)
+        const commentId = req.params.id
+        const comment = await commentsDbRepository.findCommentById(commentId)
+        if (!comment) return res.sendStatus(404)
+        if (comment.userId !== req.user!.id) return res.sendStatus(403)
+        await commentsService.updateComment(commentId, req.body.content)
+        return res.sendStatus(204)
     })
 commentsRoute.delete('/:id',
     authorizationMiddleware,
@@ -47,10 +40,4 @@ commentsRoute.delete('/:id',
         if (comment.userId !== req.user!.id) return res.sendStatus(403)
         await commentsService.deleteComment(commentId)
         return res.sendStatus(204)
-        // else if (comment!.userId !== req.user!.id) {
-        //     res.sendStatus(403)
-        // } else {
-        //     const isDeleted = await commentsService.deleteComment(commentId)
-        //     if (isDeleted) res.sendStatus(204)
-        // }
     })
