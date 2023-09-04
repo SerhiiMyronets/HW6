@@ -1,7 +1,7 @@
 import {generateString} from "./generate-string";
 import {BlogInputModel} from "../../src/models/repository/blogs-models";
 import {ObjectId} from "mongodb";
-import {auth} from "../../src/setting";
+import {superAdminAuth} from "../../src/setting";
 import {ErrorType} from "../../src/midlewares/errors-format-middleware";
 
 export const randomObjectId = new ObjectId().toString()
@@ -45,6 +45,6 @@ export const errorsUndefinedInputBlog: ErrorType = {
     ]
 }
 export const incorrectLogin: string = "Basic admin:qwerty"
-export const correctLogin: string = "Basic " + btoa(`${auth.login}:${auth.password}`)
+export const correctLogin: string = "Basic " + btoa(`${superAdminAuth.login}:${superAdminAuth.password}`)
 
 

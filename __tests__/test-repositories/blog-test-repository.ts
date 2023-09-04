@@ -62,26 +62,19 @@ export const blogTestRepository = {
         errors: ErrorType | null = null,
         auth: string = correctLogin
     ) {
-        const res = request(app)
-            .post(RouterPaths.blogs)
-            .set("Authorization", auth)
-            .send(body)
-
-        return errors ? res.expect(code, errors) : res.expect(code)
-
-        // if (!errors) {
-        //     return request(app)
-        //         .post(RouterPaths.blogs)
-        //         .set("Authorization", auth)
-        //         .send(body)
-        //         .expect(code)
-        // } else {
-        //     return request(app)
-        //         .post(RouterPaths.blogs)
-        //         .set("Authorization", auth)
-        //         .send(body)
-        //         .expect(code, errors)
-        // }
+        if (!errors) {
+            return request(app)
+                .post(RouterPaths.blogs)
+                .set("Authorization", auth)
+                .send(body)
+                .expect(code)
+        } else {
+            return request(app)
+                .post(RouterPaths.blogs)
+                .set("Authorization", auth)
+                .send(body)
+                .expect(code, errors)
+        }
     },
     async update(
         blogId: string,

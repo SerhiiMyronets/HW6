@@ -21,6 +21,7 @@ import {
     findPostsPaginateModel,
     PostInputByBlogModel
 } from "../models/repository/posts-models";
+import {postsQueryRepository} from "../repositories/query-repositories/posts-query-repository";
 
 export const blogsRoute = Router({})
 
@@ -55,12 +56,12 @@ blogsRoute.delete('/:id',
     })
 blogsRoute.get('/:id/posts',
     paramValidation,
-    ...PostsQueryValidation,
+    PostsQueryValidation,
     errorsFormatMiddleware,
     async (req: RequestWithParamsQuery<{ id: string }, findPostsPaginateModel>, res: Response) => {
-        const isExisting = await blogsQueryRepository.isBlogExisting(req.params.id)
-        if (isExisting) {
-            const result = await blogsQueryRepository.findPostsByBlogIdQuery(req.query, req.params.id)
+        const isBlogExisting = await blogsQueryRepository.isBlogExisting(req.params.id)
+        if (isBlogExisting) {
+            const result = await postsQueryRepository.findPostsByBlogIdQuery(req.query, req.params.id)
             res.status(200).send(result)
         } else {
             res.sendStatus(404)
@@ -85,8 +86,8 @@ blogsRoute.post('/:id/posts',
     blogPostBodyValidation,
     errorsFormatMiddleware,
     async (req: RequestWithParamsBody<{ id: string }, PostInputByBlogModel>, res: Response) => {
-        const isExisting = await blogsQueryRepository.isBlogExisting(req.params.id)
-        if (isExisting) {
+        const isBlogExisting = await blogsQueryRepository.isBlogExisting(req.params.id)
+        if (isBlogExisting) {
             const newPost = await postsService.creatPost(
                 req.body.title, req.body.shortDescription,
                 req.body.content, req.params.id)

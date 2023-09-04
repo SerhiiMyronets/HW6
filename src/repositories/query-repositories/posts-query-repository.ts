@@ -24,5 +24,18 @@ export const postsQueryRepository = {
         const result = await postsCollection
             .findOne({_id: new ObjectId(id)})
         return !!result;
+    },
+    async findPostsByBlogIdQuery(query: findPostsPaginateModel, blogId: string): Promise<PostViewModelPaginated> {
+        const totalCount = await postsCollection.countDocuments({"blogId": blogId})
+        const foundedPosts = await postsCollection
+            .find({"blogId": blogId})
+            .sort({[query.sortBy]: sortDirectionList[query.sortDirection]})
+            .skip(query.pageSize * (query.pageNumber - 1))
+            .limit(+query.pageSize)
+            .toArray()
+        const mappedFoundedPosts = foundedPosts.map(
+            b => mapperDbRepository.postOutputMongoDBToPostViewModel(b))
+        return mapperQueryRepository.postViewModelToPostViewModelPaginated(
+            mappedFoundedPosts, +query.pageNumber, +query.pageSize, totalCount)
     }
 }

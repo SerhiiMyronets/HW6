@@ -5,7 +5,7 @@ import {ObjectId} from "mongodb";
 import {UsersViewModel} from "../../models/repository/users-models";
 
 export const usersDbRepository = {
-    async createUser(newUser: UsersInputMongoDB) {
+    async createUser(newUser: UsersInputMongoDB): Promise <UsersViewModel | null> {
         const res = await usersCollection.insertOne(newUser)
         return this.findUserById(res.insertedId.toString());
     },

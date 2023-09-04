@@ -27,7 +27,7 @@ describe(RouterPaths.blogs, () => {
     it(`should return 200 and array of blogs after get/ request`, async () => {
         const testBlog = await blogTestRepository.create(correctBodyBlog)
         const testBlog2 = await blogTestRepository.create(correctBodyBlog)
-        const testBlog3 = await blogTestRepository.create(correctBodyBlog,)
+        const testBlog3 = await blogTestRepository.create(correctBodyBlog)
         await blogTestRepository.get([testBlog.body, testBlog2.body, testBlog3.body])
     })
     it(`should return 404 after get/id request with incorrect object id`, async () => {
