@@ -87,7 +87,8 @@ postsRoute.post('/:id/comments',
     async (req: RequestWithParamsBody<{ id: string }, CommentInputModel>, res: Response) => {
         if (await postsRepository.findById(req.params.id)) {
             const newComment = await commentsService
-                .createComment(req.params.id, req.body.content, req.user!.id, req.user!.login)
+                .createComment(req.params.id, req.body.content,
+                    req.user!._id, req.user!.accountData.login)
             res.status(201).send(newComment)
         } else {
             res.sendStatus(404)

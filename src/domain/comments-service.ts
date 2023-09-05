@@ -2,14 +2,15 @@ import {CommentInputMongoDB} from "../models/db-models";
 import {commentsDbRepository} from "../repositories/db-repositories/comments-db-repository";
 import {mapperDbRepository} from "../repositories/mapper-db-repository";
 import {CommentViewModel} from "../models/repository/comments-models";
+import {ObjectId} from "mongodb";
 
 
 export const commentsService = {
-    async createComment(postId: string, content: string, userId: string, login: string): Promise<CommentViewModel | null> {
+    async createComment(postId: string, content: string, userId: ObjectId, login: string): Promise<CommentViewModel | null> {
         const newComment: CommentInputMongoDB = {
             postId: postId,
             content: content,
-            userId: userId,
+            userId: userId.toString(),
             userLogin: login,
             createdAt: new Date().toISOString()
         }

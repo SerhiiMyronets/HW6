@@ -1,8 +1,8 @@
 import nodemailer from 'nodemailer'
+import {EmailBodyType} from "../models/db-models";
 
 export const emailAdapter = {
-    async sendEmail(email: string, message: string, subject: string) {
-
+    async sendEmail(emailBody: EmailBodyType) {
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
@@ -10,12 +10,6 @@ export const emailAdapter = {
                 pass: 'wlfvxkegwsypfasg'
             }
         })
-        const info = await transporter.sendMail({
-            from: '"Me" <volkamana.test@gmail.com>',
-            to: email,
-            subject: subject,
-            html: message
-        })
-        return info
+        return await transporter.sendMail(emailBody)
     }
 }

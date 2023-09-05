@@ -1,22 +1,15 @@
 import {UsersInputMongoDB, UsersViewMongoDB} from "../../models/db-models";
 import {usersCollection} from "../../db/db";
-import {mapperDbRepository} from "../mapper-db-repository";
 import {ObjectId} from "mongodb";
-import {UsersViewModel} from "../../models/repository/users-models";
 
 export const usersDbRepository = {
-    async createUser(newUser: UsersInputMongoDB): Promise <UsersViewModel | null> {
+    async createUser(newUser: UsersInputMongoDB): Promise<UsersViewMongoDB | null> {
         const res = await usersCollection.insertOne(newUser)
         return this.findUserById(res.insertedId.toString());
     },
-    async findUserById(id: string): Promise<UsersViewModel | null> {
-        const result = await usersCollection
+    async findUserById(id: string): Promise<UsersViewMongoDB | null> {
+        return await usersCollection
             .findOne({_id: new ObjectId(id)})
-        if (result) {
-            return mapperDbRepository.userOutputMongoDBtoUsersViewMongo(result)
-        } else {
-            return null
-        }
     },
     async deleteUser(id: string): Promise<Boolean> {
         const result = await usersCollection.deleteOne({_id: new ObjectId(id)})
@@ -24,12 +17,21 @@ export const usersDbRepository = {
     },
     async findUserByLoginOrEmail(loginOrEmail: string): Promise<UsersViewMongoDB | null> {
         const foundedUser = await usersCollection
-            .findOne({ $or:[{"accountData.login": loginOrEmail}, {"accountData.email": loginOrEmail}]})
+            .findOne({$or: [{"accountData.login": loginOrEmail}, {"accountData.email": loginOrEmail}]})
         return foundedUser ? foundedUser : null
     },
     async deleteAllUsers(): Promise<Boolean> {
         await usersCollection
             .deleteMany({})
         return true
+    },
+    async findUserByConfirmationCode(code: string) {
+        return await usersCollection
+            .findOne({'emailConfirmation.confirmationCode': code})
+    },
+    async updateConfirmation(id: ObjectId) {
+        const result = await usersCollection
+            .updateOne({_id: id}, {$set: {'emailConfirmation.isConfirmed': true}})
+        return result.modifiedCount === 1
     }
 }

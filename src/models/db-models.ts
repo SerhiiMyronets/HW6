@@ -25,17 +25,20 @@ export type PostViewMongoDB = PostInputMongoDB & {
 }
 //users db models
 export type UsersInputMongoDB = {
-    accountData: {
-        login: string
-        email: string
-        password: string
-        createdAt: string
-    },
-    emailConfirmation: {
-        confirmationCode: string
-        expirationDate: string
-        isConfirmed: boolean
-    }
+    accountData: AccountDataType,
+    emailConfirmation: EmailConfirmation
+}
+export type AccountDataType = {
+    login: string
+    email: string
+    password: string
+    createdAt: string
+}
+
+export type EmailConfirmation = {
+    confirmationCode: string
+    expirationDate: Date
+    isConfirmed: boolean
 }
 
 export type UsersViewMongoDB = UsersInputMongoDB & {
@@ -52,4 +55,12 @@ export type CommentInputMongoDB = {
 
 export type CommentViewMongoDB = CommentInputMongoDB & {
     _id: ObjectId
+}
+
+// email type
+export type EmailBodyType = {
+    from: string
+    to: string
+    subject: string
+    html: string
 }

@@ -1,5 +1,7 @@
 import {UsersViewModel} from "../models/repository/users-models";
 import {usersDbRepository} from "../repositories/db-repositories/users-db-repository";
+import {mapperDbRepository} from "../repositories/mapper-db-repository";
+
 const bcrypt = require('bcrypt');
 
 
@@ -16,11 +18,15 @@ export const usersService = {
             },
             emailConfirmation: {
                 confirmationCode: '',
-                expirationDate: '',
+                expirationDate: new Date(),
                 isConfirmed: true
             }
         }
-        return await usersDbRepository.createUser(newUser)
+        const createdUser = await usersDbRepository.createUser(newUser)
+        if (createdUser)
+            return mapperDbRepository.userOutputMongoDBtoUsersViewMongo(createdUser)
+        else
+            return null
     },
     async deleteUser(id: string): Promise<Boolean> {
         return await usersDbRepository.deleteUser(id)

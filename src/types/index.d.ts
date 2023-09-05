@@ -1,9 +1,9 @@
-import {UsersViewModel} from "../models/repository/users-models";
+import {UsersViewMongoDB} from "../models/db-models";
 
 declare global {
     declare namespace Express {
         export interface Request {
-            user: UsersViewModel | null
+            user: UsersViewMongoDB | null
         }
     }
 }

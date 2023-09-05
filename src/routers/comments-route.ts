@@ -25,7 +25,7 @@ commentsRoute.put('/:id',
         const commentId = req.params.id
         const comment = await commentsDbRepository.findCommentById(commentId)
         if (!comment) return res.sendStatus(404)
-        if (comment.userId !== req.user!.id) return res.sendStatus(403)
+        if (comment.userId !== req.user!._id.toString()) return res.sendStatus(403)
         await commentsService.updateComment(commentId, req.body.content)
         return res.sendStatus(204)
     })
@@ -37,7 +37,7 @@ commentsRoute.delete('/:id',
         const commentId = req.params.id
         const comment = await commentsDbRepository.findCommentById(commentId)
         if (!comment) return res.sendStatus(404)
-        if (comment.userId !== req.user!.id) return res.sendStatus(403)
+        if (comment.userId !== req.user!._id.toString()) return res.sendStatus(403)
         await commentsService.deleteComment(commentId)
         return res.sendStatus(204)
     })
