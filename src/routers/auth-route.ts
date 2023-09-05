@@ -39,7 +39,7 @@ authRoute.post('/registration',
     async (req: RequestWithBody<UserInputModel>, res: Response) => {
         const user = await authService.createUser(req.body.login, req.body.email, req.body.password)
         if (user)
-            res.sendStatus(200)
+            res.sendStatus(204)
         else
             res.sendStatus(400)
     })
@@ -47,7 +47,7 @@ authRoute.post('/registration-confirmation',
     async (req: RequestWithBody<{ code: string }>, res: Response) => {
         const isConfirmed = await authService.confirmEmail(req.body.code)
         if (isConfirmed) {
-            res.sendStatus(200)
+            res.sendStatus(204)
         } else {
             const errorMessage: ErrorMessageType = {
                 message: 'Confirmation code is incorrect or user is already confirmed',
@@ -60,7 +60,7 @@ authRoute.post('/registration-email-resending',
     async (req: RequestWithBody<{ email: string }>, res: Response) => {
         const isEmailResend = await authService.resendConfirmationEmail(req.body.email)
         if (isEmailResend) {
-            res.sendStatus(200)
+            res.sendStatus(204)
         } else {
             const errorMessage: ErrorMessageType = {
                 message: 'Email is incorrect or user is already confirmed',
