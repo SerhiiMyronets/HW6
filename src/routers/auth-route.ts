@@ -64,7 +64,7 @@ authRoute.post('/registration-email-resending',
         } else {
             const errorMessage: ErrorMessageType = {
                 message: 'Email is incorrect or user is already confirmed',
-                field: 'email!'
+                field: 'email'
             }
             res.status(400).send(errorMessage)
         }
