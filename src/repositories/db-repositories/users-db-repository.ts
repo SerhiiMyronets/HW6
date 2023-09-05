@@ -24,7 +24,7 @@ export const usersDbRepository = {
     },
     async findUserByLoginOrEmail(loginOrEmail: string): Promise<UsersViewMongoDB | null> {
         const foundedUser = await usersCollection
-            .findOne({ $or:[{"login": loginOrEmail}, {"email": loginOrEmail}]})
+            .findOne({ $or:[{"accountData.login": loginOrEmail}, {"accountData.email": loginOrEmail}]})
         return foundedUser ? foundedUser : null
     },
     async deleteAllUsers(): Promise<Boolean> {

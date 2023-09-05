@@ -25,9 +25,9 @@ export const mapperDbRepository = {
     userOutputMongoDBtoUsersViewMongo(userDB: UsersViewMongoDB) {
         return {
             id: userDB._id.toString(),
-            login: userDB.login,
-            email: userDB.email,
-            createdAt: userDB.createdAt
+            login: userDB.accountData.login,
+            email: userDB.accountData.email,
+            createdAt: userDB.accountData.createdAt
         }
     },
     CommentViewMongoDBtoCommentViewModel(commentDB: CommentViewMongoDB) {

@@ -4,16 +4,16 @@ import {app, RouterPaths} from "../../src/setting";
 import {BlogInputModel} from "../../src/models/repository/blogs-models";
 import {correctLogin} from "../test-inputs/blogs-test-inputs";
 import {ErrorType} from "../../src/midlewares/errors-format-middleware";
-import {UsersInputModel} from "../../src/models/repository/users-models";
+import {UserInputModel} from "../../src/models/repository/users-models";
 
-const createUserForTest = async (inputModel: UsersInputModel, saLogin: string, saPwd: string) => {
+const createUserForTest = async (inputModel: UserInputModel, saLogin: string, saPwd: string) => {
     return request(app).post('/users').auth(saLogin, saPwd).send(inputModel)
 }
 
-const createUsersForTest = async (count: number, inputModel: UsersInputModel, saLogin: string, saPwd: string) => {
+const createUsersForTest = async (count: number, inputModel: UserInputModel, saLogin: string, saPwd: string) => {
     const users = []
     for (let i = 0; i < count; i++) {
-        const iM: UsersInputModel = {
+        const iM: UserInputModel = {
             login: `${inputModel.login}${i}`,
             email: `${inputModel.email}${i}`,
             password: inputModel.password,

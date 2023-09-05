@@ -1,7 +1,7 @@
 import {body} from "express-validator";
 import {usersDbRepository} from "../../repositories/db-repositories/users-db-repository";
 
-export const usersBodyValidation = [
+export const usersRegistrationBodyValidation = [
     body('login').exists().isString().isLength({
         min: 3,
         max: 10

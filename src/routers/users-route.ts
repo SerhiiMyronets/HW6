@@ -1,9 +1,9 @@
 import {Response, Router} from "express";
 import {RequestWithBody, RequestWithParams, RequestWithQuery} from "../types/request-types";
-import {findUserPaginateModel, UsersInputModel} from "../models/repository/users-models";
-import {usersAuthService} from "../domain/users-auth-service";
+import {findUserPaginateModel, UserInputModel} from "../models/repository/users-models";
+import {usersService} from "../domain/users-service";
 import {authenticationMiddleware} from "../midlewares/authentication-middleware";
-import {usersBodyValidation} from "../midlewares/body/users-body-validation";
+import {usersRegistrationBodyValidation} from "../midlewares/body/users-registration-body-validation";
 import {errorsFormatMiddleware} from "../midlewares/errors-format-middleware";
 import {usersQueryValidation} from "../midlewares/query/users-query-validation";
 import {usersQueryRepository} from "../repositories/query-repositories/users-query-repository";
@@ -22,10 +22,10 @@ usersRoute.get('/',
 
 usersRoute.post('/',
     authenticationMiddleware,
-    usersBodyValidation,
+    usersRegistrationBodyValidation,
     errorsFormatMiddleware,
-    async (req: RequestWithBody<UsersInputModel>, res: Response) => {
-        const newUser = await usersAuthService.createUser(req.body.login, req.body.password, req.body.email)
+    async (req: RequestWithBody<UserInputModel>, res: Response) => {
+        const newUser = await usersService.createUser(req.body.login, req.body.password, req.body.email)
         res.status(201).send(newUser)
     })
 usersRoute.delete('/:id',
@@ -33,7 +33,7 @@ usersRoute.delete('/:id',
     paramValidation,
     errorsFormatMiddleware,
     async (req: RequestWithParams<{ id: string }>, res: Response) => {
-        const ifUserDeleted = await usersAuthService.deleteUser(req.params.id)
+        const ifUserDeleted = await usersService.deleteUser(req.params.id)
         if (ifUserDeleted) {
             res.sendStatus(204)
         } else {

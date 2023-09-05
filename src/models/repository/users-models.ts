@@ -1,6 +1,6 @@
 //presentations input models
 
-export type UsersInputModel = {
+export type UserInputModel = {
     login: string
     password: string
     email: string

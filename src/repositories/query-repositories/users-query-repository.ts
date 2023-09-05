@@ -9,9 +9,9 @@ export const usersQueryRepository = {
         let searchFilter = {}
         let searchArray = []
         if (query.searchLoginTerm)
-            searchArray.push({"login": new RegExp(query.searchLoginTerm, "i")})
+            searchArray.push({"accountData.login": new RegExp(query.searchLoginTerm, "i")})
         if (query.searchEmailTerm)
-            searchArray.push({"email": new RegExp(query.searchEmailTerm, "i")})
+            searchArray.push({"accountData.email": new RegExp(query.searchEmailTerm, "i")})
         if (searchArray.length > 0)
             searchFilter = {$or: searchArray}
 

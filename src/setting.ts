@@ -2,8 +2,9 @@ import express from "express";
 import {blogsRoute} from "./routers/blogs-route";
 import {postsRoute} from "./routers/posts-route";
 import {testing} from "./routers/testing";
-import {authRoute, usersRoute} from "./routers/users-auth-route";
 import {commentsRoute} from "./routers/comments-route";
+import {usersRoute} from "./routers/users-route";
+import {authRoute} from "./routers/auth-route";
 
 export const app = express()
 app.use(express.json())
