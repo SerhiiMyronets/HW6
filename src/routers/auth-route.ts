@@ -1,7 +1,7 @@
 import {Request, Response, Router} from "express";
 import {RequestWithBody} from "../types/request-types";
 import {AuthModel, MeViewUserModel, UserInputModel} from "../models/repository/users-models";
-import {ErrorMessageType, errorsFormatMiddleware} from "../midlewares/errors-format-middleware";
+import {errorsFormatMiddleware, ErrorType} from "../midlewares/errors-format-middleware";
 import {authBodyValidation} from "../midlewares/body/auth-body-validation";
 import {jwtService} from "../appliacation/jwt-service";
 import {authorizationMiddleware} from "../midlewares/authorization-middleware";
@@ -49,9 +49,11 @@ authRoute.post('/registration-confirmation',
         if (isConfirmed) {
             res.sendStatus(204)
         } else {
-            const errorMessage: ErrorMessageType = {
-                message: 'Confirmation code is incorrect or user is already confirmed',
-                field: 'code'
+            const errorMessage: ErrorType = {
+                errorsMessages: [{
+                    message: 'Confirmation code is incorrect or user is already confirmed',
+                    field: 'code'
+                }]
             }
             res.status(400).send(errorMessage)
         }
@@ -62,9 +64,11 @@ authRoute.post('/registration-email-resending',
         if (isEmailResend) {
             res.sendStatus(204)
         } else {
-            const errorMessage: ErrorMessageType = {
-                message: 'Email is incorrect or user is already confirmed',
-                field: 'email'
+            const errorMessage: ErrorType = {
+                errorsMessages: [{
+                    message: 'Email is incorrect or user is already confirmed',
+                    field: 'email'
+                }]
             }
             res.status(400).send(errorMessage)
         }
