@@ -9,7 +9,7 @@ export const emailManager = {
             subject: 'Email confirmation',
             html: `<h1>Thank for your registration</h1>
  <p>To finish registration please follow the link below:
-     <a href='https://localhost:3000/confirm-email?code=${user.emailConfirmation.confirmationCode}'>complete registration</a>
+     <a href='https://hw-6-git-main-serhiimyronets.vercel.app/confirm-email?code=${user.emailConfirmation.confirmationCode}'>complete registration</a>
  </p>`
         }
         await emailAdapter.sendEmail(emailBody)
