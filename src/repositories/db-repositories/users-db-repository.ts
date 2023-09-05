@@ -1,4 +1,4 @@
-import {UsersInputMongoDB, UsersViewMongoDB} from "../../models/db-models";
+import {ConfirmationCodeUpdateType, UsersInputMongoDB, UsersViewMongoDB} from "../../models/db-models";
 import {usersCollection} from "../../db/db";
 import {ObjectId} from "mongodb";
 
@@ -32,6 +32,11 @@ export const usersDbRepository = {
     async updateConfirmation(id: ObjectId) {
         const result = await usersCollection
             .updateOne({_id: id}, {$set: {'emailConfirmation.isConfirmed': true}})
+        return result.modifiedCount === 1
+    },
+    async confirmationCodeUpdate(_id: ObjectId, updateBody: ConfirmationCodeUpdateType): Promise <boolean> {
+        const result = await usersCollection
+            .updateOne({_id: _id}, {$set: updateBody})
         return result.modifiedCount === 1
     }
 }

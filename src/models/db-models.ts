@@ -24,6 +24,9 @@ export type PostViewMongoDB = PostInputMongoDB & {
     _id: ObjectId
 }
 //users db models
+export type UsersViewMongoDB = UsersInputMongoDB & {
+    _id: ObjectId
+}
 export type UsersInputMongoDB = {
     accountData: AccountDataType,
     emailConfirmation: EmailConfirmation
@@ -34,16 +37,16 @@ export type AccountDataType = {
     password: string
     createdAt: string
 }
-
 export type EmailConfirmation = {
     confirmationCode: string
     expirationDate: Date
     isConfirmed: boolean
 }
-
-export type UsersViewMongoDB = UsersInputMongoDB & {
-    _id: ObjectId
+export type ConfirmationCodeUpdateType = {
+    'emailConfirmation.confirmationCode': string
+    'emailConfirmation.expirationDate': Date
 }
+
 //comments db models
 export type CommentInputMongoDB = {
     postId: string

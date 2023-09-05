@@ -1,5 +1,5 @@
 import {usersDbRepository} from "../repositories/db-repositories/users-db-repository";
-import {UsersInputMongoDB, UsersViewMongoDB} from "../models/db-models";
+import {ConfirmationCodeUpdateType, UsersInputMongoDB, UsersViewMongoDB} from "../models/db-models";
 import {randomUUID} from "crypto";
 import add from "date-fns/add";
 import {emailManager} from "../managers/email-manager";
@@ -55,17 +55,25 @@ export const authService = {
         return await usersDbRepository.updateConfirmation(user._id);
     },
     async resendConfirmationEmail(email: string): Promise<boolean>  {
-        const user = await usersDbRepository.findUserByLoginOrEmail(email)
-        console.log(user)
+        let user = await usersDbRepository.findUserByLoginOrEmail(email)
         if (!user) return false
         if (user.emailConfirmation.isConfirmed) return false
-        if (user.emailConfirmation.expirationDate < new Date()) return false
-        console.log(1)
+        const confirmationCodeUpdate: ConfirmationCodeUpdateType = {
+            'emailConfirmation.confirmationCode': randomUUID(),
+            'emailConfirmation.expirationDate': add(new Date(), {
+                hours: 1,
+                minutes: 3
+            })
+        }
+        await usersDbRepository.confirmationCodeUpdate(user._id, confirmationCodeUpdate)
+        console.log(user)
+        user = await usersDbRepository.findUserById(user._id.toString())
+        console.log(user)
+        if (user)
         try {
             await emailManager.sendEmailConfirmation(user)
         } catch (error) {
             console.error(error)
-            await usersDbRepository.deleteUser(user._id.toString())
             return false
         }
         return true
