@@ -56,9 +56,18 @@ export const authService = {
     },
     async resendConfirmationEmail(email: string): Promise<boolean>  {
         const user = await usersDbRepository.findUserByLoginOrEmail(email)
+        console.log(user)
         if (!user) return false
         if (user.emailConfirmation.isConfirmed) return false
         if (user.emailConfirmation.expirationDate < new Date()) return false
-        return await usersDbRepository.updateConfirmation(user._id);
+        console.log(1)
+        try {
+            await emailManager.sendEmailConfirmation(user)
+        } catch (error) {
+            console.error(error)
+            await usersDbRepository.deleteUser(user._id.toString())
+            return false
+        }
+        return true
     }
 }
