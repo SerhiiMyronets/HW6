@@ -4,7 +4,7 @@ import {BlogInputMongoDB, CommentInputMongoDB, PostInputMongoDB, UsersInputMongo
 
 const mongoURI = process.env.MONGO_URI || "mongodb+srv://hardmail88:3846MrN1@cluster0.0goknaf.mongodb.net/?retryWrites=true&w=majority"
 if (!mongoURI) {
-    throw new Error('URI doesnt found!!!!!')
+    throw new Error('URI doesnt found!!!')
 }
 export const client = new MongoClient(mongoURI)
 
