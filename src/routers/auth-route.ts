@@ -23,7 +23,7 @@ authRoute.post('/login',
             res
                 .cookie('refreshToken', tokens.refreshToken, {httpOnly: true, secure: true})
                 .status(200)
-                .send(tokens.accessToken)
+                .send({accessToken: tokens.accessToken})
         } else {
             res.sendStatus(401)
         }
@@ -86,7 +86,7 @@ authRoute.post('/refresh-token',
         res
             .cookie('refreshToken', tokens.refreshToken, {httpOnly: true, secure: true})
             .status(200)
-            .send(tokens.accessToken)
+            .send({accessToken: tokens.accessToken})
     })
 authRoute.post('/loguot',
     refreshTokenMiddleware,

@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken"
 import {UsersViewMongoDB} from "../models/db-models";
 import {settings} from "../setting";
 import {AccessRefreshTokensModel} from "./jwt-models";
+import {tokenBlackListDbRepository} from "../repositories/db-repositories/token-black-list-db-repository";
 
 export const jwtService = {
     async createAccessJWTToken(user: UsersViewMongoDB) {
@@ -29,5 +30,8 @@ export const jwtService = {
             accessToken: await this.createAccessJWTToken(user),
             refreshToken: await this.createRefreshJWTToken(user)
         }
+    },
+    async deleteAllTokens(): Promise<Boolean> {
+        return tokenBlackListDbRepository.deleteAllTokens()
     }
 }
