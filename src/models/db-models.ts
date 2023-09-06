@@ -60,10 +60,21 @@ export type CommentViewMongoDB = CommentInputMongoDB & {
     _id: ObjectId
 }
 
-// email type
-export type EmailBodyType = {
+// email smtp models
+export type EmailBodyModel = {
     from: string
     to: string
     subject: string
     html: string
+}
+
+// refresh token db models
+
+export type RefreshTokenBlackListMongoInputDB = {
+    userId: string
+    refreshToken: string
+}
+
+export type RefreshTokenBlackListMongoViewDB = RefreshTokenBlackListMongoInputDB & {
+    _id: ObjectId
 }

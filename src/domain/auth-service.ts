@@ -3,6 +3,8 @@ import {ConfirmationCodeUpdateType, UsersInputMongoDB, UsersViewMongoDB} from ".
 import {randomUUID} from "crypto";
 import add from "date-fns/add";
 import {emailManager} from "../managers/email-manager";
+import {settings} from "../setting";
+import {ObjectId} from "mongodb";
 
 const bcrypt = require('bcrypt');
 
@@ -28,10 +30,7 @@ export const authService = {
             },
             emailConfirmation: {
                 confirmationCode: randomUUID(),
-                expirationDate: add(new Date(), {
-                    hours: 1,
-                    minutes: 3
-                }),
+                expirationDate: add(new Date(), settings.CONFIRMATION_CODE_EXP),
                 isConfirmed: false
             }
         }
@@ -46,36 +45,32 @@ export const authService = {
             }
         return createdUser
     },
-    async confirmEmail(code: string): Promise<boolean> {
-        const user = await usersDbRepository.findUserByConfirmationCode(code)
-        if (!user) return false
-        if (user.emailConfirmation.isConfirmed) return false
-        if (user.emailConfirmation.confirmationCode !== code) return false
-        if (user.emailConfirmation.expirationDate < new Date()) return false
-        return await usersDbRepository.updateConfirmation(user._id);
+    async confirmEmail(id: ObjectId): Promise<boolean> {
+        // const user = await usersDbRepository.findUserByConfirmationCode(code)
+        // if (!user) return false
+        // if (user.emailConfirmation.isConfirmed) return false
+        // if (user.emailConfirmation.confirmationCode !== code) return false
+        // if (user.emailConfirmation.expirationDate < new Date()) return false
+        return await usersDbRepository.updateConfirmation(id);
     },
-    async resendConfirmationEmail(email: string): Promise<boolean>  {
-        let user = await usersDbRepository.findUserByLoginOrEmail(email)
+    async resendConfirmationEmail(email: string): Promise<boolean> {
+        const user = await usersDbRepository.findUserByLoginOrEmail(email)
         if (!user) return false
         if (user.emailConfirmation.isConfirmed) return false
         const confirmationCodeUpdate: ConfirmationCodeUpdateType = {
             'emailConfirmation.confirmationCode': randomUUID(),
-            'emailConfirmation.expirationDate': add(new Date(), {
-                hours: 1,
-                minutes: 3
-            })
+            'emailConfirmation.expirationDate': add(new Date(), settings.CONFIRMATION_CODE_EXP)
         }
-        await usersDbRepository.confirmationCodeUpdate(user._id, confirmationCodeUpdate)
-        console.log(user)
-        user = await usersDbRepository.findUserById(user._id.toString())
-        console.log(user)
-        if (user)
+        const isUpdated = await usersDbRepository.confirmationCodeUpdate(user._id, confirmationCodeUpdate)
+        if (!isUpdated) return false
+        const updatedUser = await usersDbRepository.findUserById(user._id.toString())
+        if (!updatedUser) return false
         try {
-            await emailManager.sendEmailConfirmation(user)
+            await emailManager.sendEmailConfirmation(updatedUser)
+            return true
         } catch (error) {
             console.error(error)
             return false
         }
-        return true
     }
 }

@@ -7,6 +7,8 @@ import {jwtService} from "../appliacation/jwt-service";
 import {authorizationMiddleware} from "../midlewares/authorization-middleware";
 import {usersRegistrationBodyValidation} from "../midlewares/body/users-registration-body-validation";
 import {authService} from "../domain/auth-service";
+import {registrationConfirmationBodyValidation} from "../midlewares/body/registration-confirmation-body-validation";
+import {refreshTokenMiddleware} from "../midlewares/refresh-token-middleware";
 
 
 export const authRoute = Router({})
@@ -17,8 +19,11 @@ authRoute.post('/login',
     async (req: RequestWithBody<AuthModel>, res: Response) => {
         const user = await authService.checkCredentials(req.body.loginOrEmail, req.body.password)
         if (user) {
-            const token = await jwtService.createJWT(user)
-            res.status(200).send(token)
+            const tokens = await jwtService.createAccessRefreshTokens(user)
+            res
+                .cookie('refreshToken', tokens.refreshToken, {httpOnly: true, secure: true})
+                .status(200)
+                .send(tokens.accessToken)
         } else {
             res.sendStatus(401)
         }
@@ -44,18 +49,19 @@ authRoute.post('/registration',
             res.sendStatus(400)
     })
 authRoute.post('/registration-confirmation',
+    registrationConfirmationBodyValidation,
     async (req: RequestWithBody<{ code: string }>, res: Response) => {
-        const isConfirmed = await authService.confirmEmail(req.body.code)
+        const isConfirmed = await authService.confirmEmail(req.user!._id)
         if (isConfirmed) {
             res.sendStatus(204)
         } else {
-            const errorMessage: ErrorType = {
-                errorsMessages: [{
-                    message: 'Confirmation code is incorrect or user is already confirmed',
-                    field: 'code'
-                }]
-            }
-            res.status(400).send(errorMessage)
+            // const errorMessage: ErrorType = {
+            //     errorsMessages: [{
+            //         message: 'Confirmation code is incorrect or user is already confirmed',
+            //         field: 'code'
+            //     }]
+            // }
+            res.sendStatus(400)
         }
     })
 authRoute.post('/registration-email-resending',
@@ -73,3 +79,18 @@ authRoute.post('/registration-email-resending',
             res.status(400).send(errorMessage)
         }
     })
+authRoute.post('/refresh-token',
+    refreshTokenMiddleware,
+    async (req: Request, res: Response) => {
+        const tokens = await jwtService.createAccessRefreshTokens(req.user!)
+        res
+            .cookie('refreshToken', tokens.refreshToken, {httpOnly: true, secure: true})
+            .status(200)
+            .send(tokens.accessToken)
+    })
+authRoute.post('/loguot',
+    refreshTokenMiddleware,
+    async (req: Request, res: Response) => {
+        res.sendStatus(200)
+    }
+)

@@ -1,8 +1,8 @@
 import nodemailer from 'nodemailer'
-import {EmailBodyType} from "../models/db-models";
+import {EmailBodyModel} from "../models/db-models";
 
 export const emailAdapter = {
-    async sendEmail(emailBody: EmailBodyType) {
+    async sendEmail(emailBody: EmailBodyModel) {
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {

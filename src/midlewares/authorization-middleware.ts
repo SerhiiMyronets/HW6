@@ -5,14 +5,15 @@ import {usersDbRepository} from "../repositories/db-repositories/users-db-reposi
 
 export const authorizationMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const auth = req.headers.authorization
-    if (!auth) {
+    if (!auth)
         return res.sendStatus(401)
-    }
     const token = auth.split(' ')[1]
     const userId = await jwtService.getUserIdByToken(token)
-    if (userId) {
-        req.user = await usersDbRepository.findUserById(userId)
-        return next()
-    }
-    return res.sendStatus(401)
+    if (!userId)
+        return res.sendStatus(401)
+    const user = await usersDbRepository.findUserById(userId)
+    if (!user)
+        return res.sendStatus(401)
+    req.user = user
+    return next()
 }
