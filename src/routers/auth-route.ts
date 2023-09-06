@@ -88,7 +88,7 @@ authRoute.post('/refresh-token',
             .status(200)
             .send({accessToken: tokens.accessToken})
     })
-authRoute.post('/loguot',
+authRoute.post('/logout',
     refreshTokenMiddleware,
     async (req: Request, res: Response) => {
         res.sendStatus(200)
