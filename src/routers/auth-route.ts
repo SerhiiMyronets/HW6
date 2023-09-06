@@ -91,6 +91,6 @@ authRoute.post('/refresh-token',
 authRoute.post('/logout',
     refreshTokenMiddleware,
     async (req: Request, res: Response) => {
-        res.sendStatus(200)
+        res.sendStatus(204)
     }
 )
