@@ -28,8 +28,8 @@ export const settings = {
     PORT: process.env.PORT || 3000,
     JWT_TOKEN: {
         SECRET: "qwerty",
-        ACCESS_EXP: "1h",
-        REFRESH_EXP: "1w"
+        ACCESS_EXP: "10s",
+        REFRESH_EXP: "20s"
     },
     CONFIRMATION_CODE_EXP: {
         hours: 5
