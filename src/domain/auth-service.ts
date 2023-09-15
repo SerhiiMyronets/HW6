@@ -1,10 +1,10 @@
 import {usersDbRepository} from "../repositories/db-repositories/users-db-repository";
-import {ConfirmationCodeUpdateType, UsersInputMongoDB, UsersViewMongoDB} from "../models/db-models";
+import {ConfirmationCodeUpdateType, UsersMongoDBModel} from "../db/db-models";
 import {randomUUID} from "crypto";
 import add from "date-fns/add";
 import {emailManager} from "../managers/email-manager";
 import {settings} from "../setting";
-import {ObjectId} from "mongodb";
+import {WithId} from "mongodb";
 
 const bcrypt = require('bcrypt');
 
@@ -19,9 +19,9 @@ export const authService = {
         else
             return null
     },
-    async createUser(login: string, email: string, pass: string): Promise<UsersViewMongoDB | null> {
+    async createUser(login: string, email: string, pass: string): Promise<WithId<UsersMongoDBModel> | null> {
         const password = await bcrypt.hash(pass, 10)
-        const user: UsersInputMongoDB = {
+        const user: UsersMongoDBModel = {
             accountData: {
                 login,
                 email,
@@ -45,13 +45,13 @@ export const authService = {
             }
         return createdUser
     },
-    async confirmEmail(id: ObjectId): Promise<boolean> {
-        // const user = await usersDbRepository.findUserByConfirmationCode(code)
-        // if (!user) return false
-        // if (user.emailConfirmation.isConfirmed) return false
-        // if (user.emailConfirmation.confirmationCode !== code) return false
-        // if (user.emailConfirmation.expirationDate < new Date()) return false
-        return await usersDbRepository.updateConfirmation(id);
+    async confirmEmail(code: string): Promise<boolean> {
+        const user = await usersDbRepository.findUserByConfirmationCode(code)
+        if (!user) return false
+        if (user.emailConfirmation.isConfirmed) return false
+        if (user.emailConfirmation.confirmationCode !== code) return false
+        if (user.emailConfirmation.expirationDate < new Date()) return false
+        return await usersDbRepository.updateConfirmation(user._id);
     },
     async resendConfirmationEmail(email: string): Promise<boolean> {
         const user = await usersDbRepository.findUserByLoginOrEmail(email)

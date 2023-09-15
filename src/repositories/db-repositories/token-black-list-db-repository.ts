@@ -1,5 +1,5 @@
 import {tokenBlackListCollection, usersCollection} from "../../db/db";
-import {RefreshTokenBlackListMongoInputDB} from "../../models/db-models";
+import {RefreshTokenBlackListMongoInputDB} from "../../db/db-models";
 
 export const tokenBlackListDbRepository = {
     async isTokenInBlackList(token: string): Promise<boolean> {

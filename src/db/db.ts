@@ -1,12 +1,13 @@
 import {MongoClient} from 'mongodb'
 import 'dotenv/config'
 import {
-    BlogInputMongoDB,
-    CommentInputMongoDB,
-    PostInputMongoDB,
+    apiRequestDatabase,
+    BlogMongoDBModel,
+    CommentMongoDBModel,
+    PostMongoDBModel,
     RefreshTokenBlackListMongoInputDB,
-    UsersInputMongoDB
-} from "../models/db-models";
+    UsersMongoDBModel
+} from "./db-models";
 
 const mongoURI = process.env.MONGO_URI || "mongodb+srv://hardmail88:3846MrN1@cluster0.0goknaf.mongodb.net/?retryWrites=true&w=majority"
 if (!mongoURI) {
@@ -15,11 +16,12 @@ if (!mongoURI) {
 export const client = new MongoClient(mongoURI)
 
 const db = client.db("social_media");
-export const blogsCollection = db.collection<BlogInputMongoDB>("blogs")
-export const postsCollection = db.collection<PostInputMongoDB>("posts");
-export const usersCollection = db.collection<UsersInputMongoDB>("users");
-export const commentsCollection = db.collection<CommentInputMongoDB>("comments");
+export const blogsCollection = db.collection<BlogMongoDBModel>("blogs")
+export const postsCollection = db.collection<PostMongoDBModel>("posts");
+export const usersCollection = db.collection<UsersMongoDBModel>("users");
+export const commentsCollection = db.collection<CommentMongoDBModel>("comments");
 export const tokenBlackListCollection = db.collection<RefreshTokenBlackListMongoInputDB>("refreshTokenBlackList");
+export const apiRequestDatabaseCollection = db.collection<apiRequestDatabase>('apiRequestDatabase')
 
 export async function runDb() {
     try {

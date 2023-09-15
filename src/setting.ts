@@ -34,6 +34,10 @@ export const settings = {
     CONFIRMATION_CODE_EXP: {
         hours: 5
     },
+    REQUEST_TIME_LIMIT: {
+        seconds: -10
+    },
+    REQUEST_COUNT_LIMIT: 5
 }
 
 app.use(RouterPaths.blogs, blogsRoute)

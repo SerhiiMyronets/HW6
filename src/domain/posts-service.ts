@@ -2,7 +2,18 @@ import {PostViewModel} from "../models/repository/posts-models";
 import {postsRepository} from "../repositories/db-repositories/post-db-repository";
 import {blogsRepository} from "../repositories/db-repositories/blogs-db-repository";
 
+type createPostInputModel = {}
 
+type UserViewModel = {
+    userId: string
+    login: string
+}
+
+type DomainUserModel = {
+    userId: string
+    login: string
+    passwordHash: string
+}
 
 export const postsService = {
     async findPosts(): Promise<PostViewModel[]> {

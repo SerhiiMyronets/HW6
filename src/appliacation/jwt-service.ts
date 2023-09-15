@@ -1,17 +1,18 @@
 import jwt from "jsonwebtoken"
-import {UsersViewMongoDB} from "../models/db-models";
+import {UsersMongoDBModel} from "../db/db-models";
 import {settings} from "../setting";
 import {AccessRefreshTokensModel} from "./jwt-models";
 import {tokenBlackListDbRepository} from "../repositories/db-repositories/token-black-list-db-repository";
+import {WithId} from "mongodb";
 
 export const jwtService = {
-    async createAccessJWTToken(user: UsersViewMongoDB) {
+    async createAccessJWTToken(user: WithId<UsersMongoDBModel>) {
         return jwt.sign(
             {userId: user._id},
             settings.JWT_TOKEN.SECRET,
             {expiresIn: settings.JWT_TOKEN.ACCESS_EXP})
     },
-    async createRefreshJWTToken(user: UsersViewMongoDB) {
+    async createRefreshJWTToken(user: WithId<UsersMongoDBModel>) {
         return jwt.sign(
             {userId: user._id},
             settings.JWT_TOKEN.SECRET,
@@ -25,7 +26,7 @@ export const jwtService = {
             return null
         }
     },
-    async createAccessRefreshTokens(user: UsersViewMongoDB): Promise<AccessRefreshTokensModel> {
+    async createAccessRefreshTokens(user: WithId<UsersMongoDBModel>): Promise<AccessRefreshTokensModel> {
         return {
             accessToken: await this.createAccessJWTToken(user),
             refreshToken: await this.createRefreshJWTToken(user)

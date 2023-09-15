@@ -1,7 +1,10 @@
-import {BlogViewMongoDB, CommentViewMongoDB, PostViewMongoDB, UsersViewMongoDB} from "../models/db-models";
+import {
+    BlogMongoDBModel, CommentMongoDBModel, PostMongoDBModel, UsersMongoDBModel
+} from "../db/db-models";
+import {WithId} from "mongodb";
 
 export const mapperDbRepository = {
-    blogOutputMongoDBToBlogViewModel(blogDB: BlogViewMongoDB) {
+    blogOutputMongoDBToBlogViewModel(blogDB: WithId<BlogMongoDBModel>) {
         return {
             id: blogDB._id.toString(),
             name: blogDB.name,
@@ -11,7 +14,7 @@ export const mapperDbRepository = {
             isMembership: blogDB.isMembership
         }
     },
-    postOutputMongoDBToPostViewModel(postDB: PostViewMongoDB) {
+    postOutputMongoDBToPostViewModel(postDB: WithId<PostMongoDBModel>) {
         return {
             id: postDB._id.toString(),
             title: postDB.title,
@@ -22,7 +25,7 @@ export const mapperDbRepository = {
             createdAt: postDB.createdAt
         }
     },
-    userOutputMongoDBtoUsersViewMongo(userDB: UsersViewMongoDB) {
+    userOutputMongoDBtoUsersViewMongo(userDB: WithId<UsersMongoDBModel>) {
         return {
             id: userDB._id.toString(),
             login: userDB.accountData.login,
@@ -30,7 +33,7 @@ export const mapperDbRepository = {
             createdAt: userDB.accountData.createdAt
         }
     },
-    CommentViewMongoDBtoCommentViewModel(commentDB: CommentViewMongoDB) {
+    CommentViewMongoDBtoCommentViewModel(commentDB: WithId<CommentMongoDBModel>) {
         return {
             id: commentDB._id.toString(),
             content: commentDB.content,

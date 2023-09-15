@@ -2,7 +2,7 @@ import {blogsCollection} from "../../db/db";
 import {ObjectId} from "mongodb";
 import {mapperDbRepository} from "../mapper-db-repository";
 import {BlogInputModel, BlogViewModel} from "../../models/repository/blogs-models";
-import {BlogInputMongoDB} from "../../models/db-models";
+import {BlogMongoDBModel} from "../../db/db-models";
 
 export const blogsRepository = {
     async findBlogs(): Promise<BlogViewModel[]> {
@@ -21,7 +21,7 @@ export const blogsRepository = {
             return null
         }
     },
-    async creatBlog(newBlogBody: BlogInputMongoDB): Promise<BlogViewModel | null> {
+    async creatBlog(newBlogBody: BlogMongoDBModel): Promise<BlogViewModel | null> {
         const res = await blogsCollection
             .insertOne(newBlogBody)
         return this.findBlogById(res.insertedId.toString());

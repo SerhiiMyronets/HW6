@@ -1,14 +1,14 @@
-import {CommentInputMongoDB, CommentViewMongoDB} from "../../models/db-models";
+import {CommentMongoDBModel} from "../../db/db-models";
 import {commentsCollection} from "../../db/db";
-import {ObjectId} from "mongodb";
+import {ObjectId, WithId} from "mongodb";
 
 export const commentsDbRepository = {
-    async creatComment(newComment: CommentInputMongoDB): Promise<CommentViewMongoDB | null> {
+    async creatComment(newComment: CommentMongoDBModel): Promise<WithId<CommentMongoDBModel> | null> {
         const res = await commentsCollection
             .insertOne(newComment)
         return this.findCommentById(res.insertedId.toString());
     },
-    async findCommentById(id: string): Promise<CommentViewMongoDB | null> {
+    async findCommentById(id: string): Promise<WithId<CommentMongoDBModel> | null> {
         const result = await commentsCollection
             .findOne({_id: new ObjectId(id)}, )
         if (result) {

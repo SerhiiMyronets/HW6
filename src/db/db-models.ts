@@ -1,18 +1,17 @@
-import {ObjectId} from "mongodb";
+type BlogsViewModel = Omit<BlogMongoDBModel, 'createdAt' | 'isMembership'>
+type PostInputModel = Omit<PostMongoDBModel, 'blogName'> & Pick<UsersMongoDBModel, 'emailConfirmation'>
 
 //blogs db models
-export type BlogInputMongoDB = {
+export type BlogMongoDBModel = {
     name: string
     description: string
     websiteUrl: string
     createdAt: string
     isMembership: boolean
 }
-export type BlogViewMongoDB = BlogInputMongoDB & {
-    _id: ObjectId
-}
+
 //posts db models
-export type PostInputMongoDB = {
+export type PostMongoDBModel = {
     title: string
     shortDescription: string
     content: string
@@ -20,14 +19,9 @@ export type PostInputMongoDB = {
     blogName: string
     createdAt: string
 }
-export type PostViewMongoDB = PostInputMongoDB & {
-    _id: ObjectId
-}
+
 //users db models
-export type UsersViewMongoDB = UsersInputMongoDB & {
-    _id: ObjectId
-}
-export type UsersInputMongoDB = {
+export type UsersMongoDBModel = {
     accountData: AccountDataType,
     emailConfirmation: EmailConfirmation
 }
@@ -48,16 +42,12 @@ export type ConfirmationCodeUpdateType = {
 }
 
 //comments db models
-export type CommentInputMongoDB = {
+export type CommentMongoDBModel = {
     postId: string
     content: string
     userId: string
     userLogin: string
     createdAt: string
-}
-
-export type CommentViewMongoDB = CommentInputMongoDB & {
-    _id: ObjectId
 }
 
 // email smtp models
@@ -69,12 +59,13 @@ export type EmailBodyModel = {
 }
 
 // refresh token db models
-
 export type RefreshTokenBlackListMongoInputDB = {
     userId: string
     refreshToken: string
 }
 
-export type RefreshTokenBlackListMongoViewDB = RefreshTokenBlackListMongoInputDB & {
-    _id: ObjectId
+export type apiRequestDatabase = {
+    IP: string | string[]
+    URL: string
+    date: Date
 }

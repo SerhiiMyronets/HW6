@@ -1,13 +1,13 @@
-import {ConfirmationCodeUpdateType, UsersInputMongoDB, UsersViewMongoDB} from "../../models/db-models";
+import {ConfirmationCodeUpdateType, UsersMongoDBModel} from "../../db/db-models";
 import {usersCollection} from "../../db/db";
-import {ObjectId} from "mongodb";
+import {ObjectId, WithId} from "mongodb";
 
 export const usersDbRepository = {
-    async createUser(newUser: UsersInputMongoDB): Promise<UsersViewMongoDB | null> {
+    async createUser(newUser: UsersMongoDBModel): Promise<WithId<UsersMongoDBModel> | null> {
         const res = await usersCollection.insertOne(newUser)
         return this.findUserById(res.insertedId.toString());
     },
-    async findUserById(id: string): Promise<UsersViewMongoDB | null> {
+    async findUserById(id: string): Promise<WithId<UsersMongoDBModel> | null> {
         return await usersCollection
             .findOne({_id: new ObjectId(id)})
     },
@@ -15,7 +15,7 @@ export const usersDbRepository = {
         const result = await usersCollection.deleteOne({_id: new ObjectId(id)})
         return result.deletedCount === 1
     },
-    async findUserByLoginOrEmail(loginOrEmail: string): Promise<UsersViewMongoDB | null> {
+    async findUserByLoginOrEmail(loginOrEmail: string): Promise<WithId<UsersMongoDBModel> | null> {
         const foundedUser = await usersCollection
             .findOne({$or: [{"accountData.login": loginOrEmail}, {"accountData.email": loginOrEmail}]})
         return foundedUser ? foundedUser : null

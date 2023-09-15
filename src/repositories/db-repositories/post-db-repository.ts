@@ -2,7 +2,7 @@ import {postsCollection} from "../../db/db";
 import {ObjectId} from "mongodb";
 import {mapperDbRepository} from "../mapper-db-repository";
 import {PostInputModel, PostViewModel} from "../../models/repository/posts-models";
-import {PostInputMongoDB} from "../../models/db-models";
+import {PostMongoDBModel} from "../../db/db-models";
 
 export const postsRepository = {
     async findPosts(): Promise<PostViewModel[]> {
@@ -21,7 +21,7 @@ export const postsRepository = {
             return null
         }
     },
-    async creatPost(newPostBody: PostInputMongoDB): Promise<PostViewModel | null> {
+    async creatPost(newPostBody: PostMongoDBModel): Promise<PostViewModel | null> {
         const res = await postsCollection
             .insertOne(newPostBody)
         return this.findById(res.insertedId.toString());

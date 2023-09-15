@@ -1,8 +1,9 @@
-import {EmailBodyModel, UsersViewMongoDB} from "../models/db-models";
+import {EmailBodyModel, UsersMongoDBModel} from "../db/db-models";
 import {emailAdapter} from "../adapters/email-adapter";
+import {WithId} from "mongodb";
 
 export const emailManager = {
-    async sendEmailConfirmation(user: UsersViewMongoDB) {
+    async sendEmailConfirmation(user: WithId<UsersMongoDBModel>) {
         const emailBody: EmailBodyModel = {
             from: 'Social Media <volkamana.test@gmail.com>',
             to: user.accountData.email,

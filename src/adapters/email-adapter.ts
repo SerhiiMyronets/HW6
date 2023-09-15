@@ -1,5 +1,5 @@
 import nodemailer from 'nodemailer'
-import {EmailBodyModel} from "../models/db-models";
+import {EmailBodyModel} from "../db/db-models";
 
 export const emailAdapter = {
     async sendEmail(emailBody: EmailBodyModel) {

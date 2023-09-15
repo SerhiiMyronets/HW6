@@ -1,12 +1,17 @@
 import { postsCollection} from "../../db/db";
-import {findPostsPaginateModel, PostViewModelPaginated} from "../../models/repository/posts-models";
+import {findPostsPaginateModel, PostViewModel, PostViewModelPaginated} from "../../models/repository/posts-models";
 import {mapperDbRepository} from "../mapper-db-repository";
 import {mapperQueryRepository, sortDirectionList} from "../mapper-query-repository";
 import {ObjectId} from "mongodb";
 
+type Pagination<T> = {
+    page: number
+    pageSize: number
+    items: T[]
+}
 
 export const postsQueryRepository = {
-     async findPostsQuery(query: findPostsPaginateModel): Promise<PostViewModelPaginated> {
+     async findPostsQuery(query: findPostsPaginateModel): Promise<Pagination<PostViewModel>> {
         const totalCount = await postsCollection.countDocuments()
         const foundedPosts = await postsCollection
             .find()

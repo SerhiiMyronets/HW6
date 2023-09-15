@@ -7,6 +7,10 @@ export enum sortDirectionList {
     "asc" = 1,
     "desc" = -1
 }
+
+
+
+
 export const mapperQueryRepository = {
     blogViewModelToBlogViewModelPaginated(items: Array<BlogViewModel>, page: number, pageSize: number, totalCount: number) {
         return {
