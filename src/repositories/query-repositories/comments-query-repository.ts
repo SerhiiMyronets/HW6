@@ -13,7 +13,7 @@ export const commentsQueryRepository = {
             .limit(+query.pageSize)
             .toArray()
         const mappedFoundedComments = foundedComments.map(
-            b => mapperDbRepository.CommentViewMongoDBtoCommentViewModel(b))
+            b => mapperDbRepository.commentViewMongoDBtoCommentViewModel(b))
         return mapperQueryRepository.commentViewModelToCommentsViewModelPaginated(
             mappedFoundedComments, +query.pageNumber, +query.pageSize, totalCount)
     },

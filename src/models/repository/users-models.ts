@@ -40,3 +40,10 @@ export type MeViewUserModel = {
     userId: string
 }
 
+// security device
+export type DeviceViewModel = {
+    ip: string
+    title: string
+    lastActiveDate: string
+    deviceId: string
+}

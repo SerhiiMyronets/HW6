@@ -19,7 +19,7 @@ export const RouterPaths = {
     auth:'/auth',
     users:'/users',
     comments:'/comments',
-    securityDevices: 'security/devices',
+    securityDevices: '/security/devices',
     __test__: '/testing/all-data'
 }
 
@@ -31,7 +31,7 @@ export const settings = {
     JWT_TOKEN: {
         SECRET: "qwerty",
         ACCESS_EXP: "10s",
-        REFRESH_EXP: "20s"
+        REFRESH_EXP: "2000s"
     },
     CONFIRMATION_CODE_EXP: {
         hours: 5

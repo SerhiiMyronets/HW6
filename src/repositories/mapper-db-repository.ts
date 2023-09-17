@@ -1,5 +1,9 @@
 import {
-    BlogMongoDBModel, CommentMongoDBModel, PostMongoDBModel, UsersMongoDBModel
+    BlogMongoDBModel,
+    CommentMongoDBModel,
+    DeviceAuthSessionsModel,
+    PostMongoDBModel,
+    UsersMongoDBModel
 } from "../db/db-models";
 import {WithId} from "mongodb";
 
@@ -33,7 +37,7 @@ export const mapperDbRepository = {
             createdAt: userDB.accountData.createdAt
         }
     },
-    CommentViewMongoDBtoCommentViewModel(commentDB: WithId<CommentMongoDBModel>) {
+    commentViewMongoDBtoCommentViewModel(commentDB: WithId<CommentMongoDBModel>) {
         return {
             id: commentDB._id.toString(),
             content: commentDB.content,
@@ -42,6 +46,14 @@ export const mapperDbRepository = {
                 userLogin: commentDB.userLogin
             },
             createdAt: commentDB.createdAt
+        }
+    },
+    deviceAuthSessionsModelToDeviceViewModel(session: DeviceAuthSessionsModel) {
+        return {
+            ip: session.IP,
+            title: session.deviceName,
+            lastActiveDate: session.issuedAt.toISOString(),
+            deviceId: session.deviceId
         }
     }
 }

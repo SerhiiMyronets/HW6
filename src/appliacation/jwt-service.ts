@@ -31,7 +31,7 @@ export const jwtService = {
         }
     },
     async deleteAllTokens(): Promise<Boolean> {
-        return deviceAuthSessionsDbRepository.deleteAllTokens()
+        return deviceAuthSessionsDbRepository.deleteAllSessions()
     },
     async getPayloadOfRefreshToken(refreshToken: string): Promise<refreshTokenPayload| null> {
         try {

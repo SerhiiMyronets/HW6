@@ -102,7 +102,8 @@ authRoute.post('/refresh-token',
 authRoute.post('/logout',
     refreshTokenMiddleware,
     async (req: Request, res: Response) => {
-        await authService.logOut(req.cookies.refreshToken)
+        const activeSession = req.session
+        await authService.logOut(activeSession!._id)
         res.sendStatus(204)
     }
 )

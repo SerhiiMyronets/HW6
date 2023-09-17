@@ -16,7 +16,7 @@ export const commentsService = {
         }
         const commentDB = await commentsDbRepository.creatComment(newComment)
         if (commentDB)
-            return mapperDbRepository.CommentViewMongoDBtoCommentViewModel(commentDB)
+            return mapperDbRepository.commentViewMongoDBtoCommentViewModel(commentDB)
         else
 
             return null
@@ -24,7 +24,7 @@ export const commentsService = {
     async findCommentById (id: string): Promise<CommentViewModel | null> {
         const commentDB = await commentsDbRepository.findCommentById(id)
         if (commentDB)
-            return mapperDbRepository.CommentViewMongoDBtoCommentViewModel(commentDB)
+            return mapperDbRepository.commentViewMongoDBtoCommentViewModel(commentDB)
         else
             return null
     },

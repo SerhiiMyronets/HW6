@@ -4,12 +4,11 @@ import {randomUUID} from "crypto";
 import add from "date-fns/add";
 import {emailManager} from "../managers/email-manager";
 import {settings} from "../setting";
-import {WithId} from "mongodb";
+import {ObjectId, WithId} from "mongodb";
 import {AccessRefreshTokensModel, authInputModel} from "../appliacation/jwt-models";
 import {deviceAuthSessionsDbRepository} from "../repositories/db-repositories/device-auth-sessions-db-repository";
 import {jwtService} from "../appliacation/jwt-service";
-import {log} from "util";
-import {deviceAuthSessionsCollection} from "../db/db";
+import {DeviceViewModel} from "../models/repository/users-models";
 
 const bcrypt = require('bcrypt');
 
@@ -101,8 +100,24 @@ export const authService = {
         if (!isSessionUpdated) return null
         return newPairOfTokens
     },
-    async logOut(refreshToken: string) {
-        const payload = await jwtService.getPayloadOfRefreshToken(refreshToken)
-        const sessionId = await deviceAuthSessionsDbRepository.findSessionByPayload(payload!)
+    async logOut(sessionId: ObjectId) {
+        await deviceAuthSessionsDbRepository.deleteSession(sessionId)
+    },
+    async getDeviceList(userId: string): Promise<DeviceViewModel[]> {
+        const tokenValidDate = add(new Date(), {seconds: -settings.JWT_TOKEN.REFRESH_EXP.slice(0, -1)})
+        return await deviceAuthSessionsDbRepository.getActiveSessions(userId, tokenValidDate)
+    },
+    async deleteAllSessions() {
+        await deviceAuthSessionsDbRepository.deleteAllSessions()
+    },
+    async deleteActiveDeviceSessions(userId: string, sessionId: ObjectId) {
+        await deviceAuthSessionsDbRepository.deleteActiveUserSessions(userId, sessionId)
+    },
+    async deleteSessionById(sessionId: ObjectId) {
+        await deviceAuthSessionsDbRepository.deleteSession(sessionId)
+
+    },
+    async getDeviceSession(sessionId: string) : Promise<WithId<DeviceAuthSessionsModel>| null> {
+        return await deviceAuthSessionsDbRepository.getSessionByDeviceId(sessionId)
     }
 }
