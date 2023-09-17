@@ -14,7 +14,7 @@ export const usersService = {
                 login,
                 email,
                 password,
-                createdAt: new Date().toISOString()
+                createdAt: new Date()
             },
             emailConfirmation: {
                 confirmationCode: '',

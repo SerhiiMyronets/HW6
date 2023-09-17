@@ -1,11 +1,11 @@
 import {MongoClient} from 'mongodb'
 import 'dotenv/config'
 import {
-    apiRequestDatabase,
+    ApiRequestDatabaseModel,
     BlogMongoDBModel,
     CommentMongoDBModel,
     PostMongoDBModel,
-    RefreshTokenBlackListMongoInputDB,
+    DeviceAuthSessionsModel,
     UsersMongoDBModel
 } from "./db-models";
 
@@ -20,8 +20,8 @@ export const blogsCollection = db.collection<BlogMongoDBModel>("blogs")
 export const postsCollection = db.collection<PostMongoDBModel>("posts");
 export const usersCollection = db.collection<UsersMongoDBModel>("users");
 export const commentsCollection = db.collection<CommentMongoDBModel>("comments");
-export const tokenBlackListCollection = db.collection<RefreshTokenBlackListMongoInputDB>("refreshTokenBlackList");
-export const apiRequestDatabaseCollection = db.collection<apiRequestDatabase>('apiRequestDatabase')
+export const deviceAuthSessionsCollection = db.collection<DeviceAuthSessionsModel>("deviceAuthSessions");
+export const apiRequestDatabaseCollection = db.collection<ApiRequestDatabaseModel>('apiRequestDatabase')
 
 export async function runDb() {
     try {

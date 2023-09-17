@@ -6,6 +6,7 @@ import {commentsRoute} from "./routers/comments-route";
 import {usersRoute} from "./routers/users-route";
 import {authRoute} from "./routers/auth-route";
 import cookieParser from "cookie-parser";
+import {securityDevices} from "./routers/security-devices";
 
 export const app = express()
 app.use(express.json())
@@ -18,6 +19,7 @@ export const RouterPaths = {
     auth:'/auth',
     users:'/users',
     comments:'/comments',
+    securityDevices: 'security/devices',
     __test__: '/testing/all-data'
 }
 
@@ -46,3 +48,4 @@ app.use(RouterPaths.__test__, testing)
 app.use(RouterPaths.users, usersRoute)
 app.use(RouterPaths.auth, authRoute)
 app.use(RouterPaths.comments, commentsRoute)
+app.use(RouterPaths.securityDevices, securityDevices)

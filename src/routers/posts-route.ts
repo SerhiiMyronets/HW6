@@ -14,7 +14,7 @@ import {paramValidation} from "../midlewares/param/param-validation";
 import {postsService} from "../domain/posts-service";
 import {postsQueryRepository} from "../repositories/query-repositories/posts-query-repository";
 import {PostsQueryValidation} from "../midlewares/query/posts-query-validation";
-import {authorizationMiddleware} from "../midlewares/authorization-middleware";
+import {accessTokenMiddleware} from "../midlewares/access-token-middleware";
 import {commentsBodyValidation} from "../midlewares/body/comments-body-validation";
 import {CommentInputModel, findCommentsPaginateModel} from "../models/repository/comments-models";
 import {postsRepository} from "../repositories/db-repositories/post-db-repository";
@@ -80,7 +80,7 @@ postsRoute.put('/:id',
         }
     })
 postsRoute.post('/:id/comments',
-    authorizationMiddleware,
+    accessTokenMiddleware,
     paramValidation,
     commentsBodyValidation,
     errorsFormatMiddleware,

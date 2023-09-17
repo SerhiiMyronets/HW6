@@ -2,7 +2,7 @@ import {Response, Router} from "express";
 import {paramValidation} from "../midlewares/param/param-validation";
 import {RequestWithParams, RequestWithParamsBody} from "../types/request-types";
 import {commentsService} from "../domain/comments-service";
-import {authorizationMiddleware} from "../midlewares/authorization-middleware";
+import {accessTokenMiddleware} from "../midlewares/access-token-middleware";
 import {commentsBodyValidation} from "../midlewares/body/comments-body-validation";
 import {errorsFormatMiddleware} from "../midlewares/errors-format-middleware";
 import {CommentInputModel} from "../models/repository/comments-models";
@@ -17,7 +17,7 @@ commentsRoute.get('/:id',
         comment ? res.status(200).send(comment) : res.sendStatus(404)
     })
 commentsRoute.put('/:id',
-    authorizationMiddleware,
+    accessTokenMiddleware,
     paramValidation,
     commentsBodyValidation,
     errorsFormatMiddleware,
@@ -30,7 +30,7 @@ commentsRoute.put('/:id',
         return res.sendStatus(204)
     })
 commentsRoute.delete('/:id',
-    authorizationMiddleware,
+    accessTokenMiddleware,
     paramValidation,
     errorsFormatMiddleware,
     async (req: RequestWithParams<{ id: string }>, res: Response) => {

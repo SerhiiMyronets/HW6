@@ -1,10 +1,15 @@
 import {usersDbRepository} from "../repositories/db-repositories/users-db-repository";
-import {ConfirmationCodeUpdateType, UsersMongoDBModel} from "../db/db-models";
+import {ConfirmationCodeUpdateType, DeviceAuthSessionsModel, UsersMongoDBModel} from "../db/db-models";
 import {randomUUID} from "crypto";
 import add from "date-fns/add";
 import {emailManager} from "../managers/email-manager";
 import {settings} from "../setting";
 import {WithId} from "mongodb";
+import {AccessRefreshTokensModel, authInputModel} from "../appliacation/jwt-models";
+import {deviceAuthSessionsDbRepository} from "../repositories/db-repositories/device-auth-sessions-db-repository";
+import {jwtService} from "../appliacation/jwt-service";
+import {log} from "util";
+import {deviceAuthSessionsCollection} from "../db/db";
 
 const bcrypt = require('bcrypt');
 
@@ -26,7 +31,7 @@ export const authService = {
                 login,
                 email,
                 password,
-                createdAt: new Date().toISOString()
+                createdAt: new Date()
             },
             emailConfirmation: {
                 confirmationCode: randomUUID(),
@@ -72,5 +77,32 @@ export const authService = {
             console.error(error)
             return false
         }
+    },
+    async createNewPairOfTokes(authInput: authInputModel): Promise<AccessRefreshTokensModel | null> {
+        const deviceId = randomUUID()
+        const newPairOfTokens = await jwtService.createAccessRefreshTokens(authInput.userId, deviceId)
+        const payload = await jwtService.getPayloadOfRefreshToken(newPairOfTokens.refreshToken)
+        if (!payload) return null
+        const authSession: DeviceAuthSessionsModel = {
+            userId: payload.userId,
+            deviceId: payload.deviceId,
+            deviceName: authInput.deviceName,
+            IP: authInput.IP,
+            issuedAt: payload.issuedAt,
+            expiredAt: payload.expiredAt
+        }
+        await deviceAuthSessionsDbRepository.createSession(authSession)
+        return newPairOfTokens
+    },
+    async refreshPairOfTokens(refreshToken: string, activeSession: WithId<DeviceAuthSessionsModel>): Promise<AccessRefreshTokensModel | null> {
+        const newPairOfTokens = await jwtService.createAccessRefreshTokens(activeSession.userId, activeSession.deviceId)
+        const newPayload = await jwtService.getPayloadOfRefreshToken(newPairOfTokens.refreshToken)
+        const isSessionUpdated = await deviceAuthSessionsDbRepository.updateSession(activeSession._id, newPayload!.issuedAt)
+        if (!isSessionUpdated) return null
+        return newPairOfTokens
+    },
+    async logOut(refreshToken: string) {
+        const payload = await jwtService.getPayloadOfRefreshToken(refreshToken)
+        const sessionId = await deviceAuthSessionsDbRepository.findSessionByPayload(payload!)
     }
 }

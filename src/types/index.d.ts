@@ -1,10 +1,11 @@
-import {UsersMongoDBModel} from "../db/db-models";
+import {DeviceAuthSessionsModel, UsersMongoDBModel} from "../db/db-models";
 import {WithId} from "mongodb";
 
 declare global {
     declare namespace Express {
         export interface Request {
-            user: WithId<UsersMongoDBModel> | null
+            user: WithId<UsersMongoDBModel> | null,
+            session: WithId<DeviceAuthSessionsModel> | null
         }
     }
 }

@@ -3,12 +3,12 @@ import {RequestWithBody} from "../types/request-types";
 import {AuthModel, MeViewUserModel, UserInputModel} from "../models/repository/users-models";
 import {errorsFormatMiddleware, ErrorType} from "../midlewares/errors-format-middleware";
 import {authBodyValidation} from "../midlewares/body/auth-body-validation";
-import {jwtService} from "../appliacation/jwt-service";
-import {authorizationMiddleware} from "../midlewares/authorization-middleware";
+import {accessTokenMiddleware} from "../midlewares/access-token-middleware";
 import {usersRegistrationBodyValidation} from "../midlewares/body/users-registration-body-validation";
 import {authService} from "../domain/auth-service";
 import {refreshTokenMiddleware} from "../midlewares/refresh-token-middleware";
 import {apiRequestMiddleware} from "../midlewares/apiRequestMiddleware";
+import {authInputModel} from "../appliacation/jwt-models";
 
 
 export const authRoute = Router({})
@@ -19,18 +19,21 @@ authRoute.post('/login',
     errorsFormatMiddleware,
     async (req: RequestWithBody<AuthModel>, res: Response) => {
         const user = await authService.checkCredentials(req.body.loginOrEmail, req.body.password)
-        if (user) {
-            const tokens = await jwtService.createAccessRefreshTokens(user)
-            res
-                .cookie('refreshToken', tokens.refreshToken, {httpOnly: true, secure: true})
-                .status(200)
-                .send({accessToken: tokens.accessToken})
-        } else {
-            res.sendStatus(401)
+        if (!user) return res.sendStatus(401)
+        const authInput: authInputModel = {
+            userId: user._id.toString(),
+            deviceName: req.headers["user-agent"]!.toString(),
+            IP: req.socket.remoteAddress || req.headers['x-forwarded-for']!.toString()
         }
+        const tokens = await authService.createNewPairOfTokes(authInput)
+        if (!tokens) return res.sendStatus(400)
+        return res
+            .cookie('refreshToken', tokens.refreshToken, {httpOnly: true, secure: true})
+            .status(200)
+            .send({accessToken: tokens.accessToken})
     })
 authRoute.get('/me',
-    authorizationMiddleware,
+    accessTokenMiddleware,
     async (req: Request, res: Response) => {
         const aboutUser: MeViewUserModel = {
             email: req.user!.accountData.email,
@@ -40,6 +43,7 @@ authRoute.get('/me',
         res.status(200).send(aboutUser)
     })
 authRoute.post('/registration',
+    apiRequestMiddleware,
     usersRegistrationBodyValidation,
     errorsFormatMiddleware,
     async (req: RequestWithBody<UserInputModel>, res: Response) => {
@@ -50,6 +54,7 @@ authRoute.post('/registration',
             res.sendStatus(400)
     })
 authRoute.post('/registration-confirmation',
+    apiRequestMiddleware,
     async (req: RequestWithBody<{ code: string }>, res: Response) => {
         const code = req.body.code
         if (!code) res.sendStatus(400)
@@ -67,6 +72,7 @@ authRoute.post('/registration-confirmation',
         }
     })
 authRoute.post('/registration-email-resending',
+    apiRequestMiddleware,
     async (req: RequestWithBody<{ email: string }>, res: Response) => {
         const isEmailResend = await authService.resendConfirmationEmail(req.body.email)
         if (isEmailResend) {
@@ -84,8 +90,11 @@ authRoute.post('/registration-email-resending',
 authRoute.post('/refresh-token',
     refreshTokenMiddleware,
     async (req: Request, res: Response) => {
-        const tokens = await jwtService.createAccessRefreshTokens(req.user!)
-        res
+        const refreshToken = req.cookies.refreshToken
+        const activeSession = req.session
+        const tokens = await authService.refreshPairOfTokens(refreshToken, activeSession!)
+        if (!tokens) return res.sendStatus(400)
+        return res
             .cookie('refreshToken', tokens.refreshToken, {httpOnly: true, secure: true})
             .status(200)
             .send({accessToken: tokens.accessToken})
@@ -93,6 +102,7 @@ authRoute.post('/refresh-token',
 authRoute.post('/logout',
     refreshTokenMiddleware,
     async (req: Request, res: Response) => {
+        await authService.logOut(req.cookies.refreshToken)
         res.sendStatus(204)
     }
 )

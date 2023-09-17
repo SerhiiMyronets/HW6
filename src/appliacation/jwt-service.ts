@@ -1,38 +1,50 @@
 import jwt from "jsonwebtoken"
-import {UsersMongoDBModel} from "../db/db-models";
 import {settings} from "../setting";
-import {AccessRefreshTokensModel} from "./jwt-models";
-import {tokenBlackListDbRepository} from "../repositories/db-repositories/token-black-list-db-repository";
-import {WithId} from "mongodb";
+import {AccessRefreshTokensModel, refreshTokenPayload} from "./jwt-models";
+import {deviceAuthSessionsDbRepository} from "../repositories/db-repositories/device-auth-sessions-db-repository";
 
 export const jwtService = {
-    async createAccessJWTToken(user: WithId<UsersMongoDBModel>) {
+    async createAccessJWTToken(userId: string) {
         return jwt.sign(
-            {userId: user._id},
+            {userId},
             settings.JWT_TOKEN.SECRET,
             {expiresIn: settings.JWT_TOKEN.ACCESS_EXP})
     },
-    async createRefreshJWTToken(user: WithId<UsersMongoDBModel>) {
+    async createRefreshJWTToken(userId: string, deviceId: string) {
         return jwt.sign(
-            {userId: user._id},
+            {userId, deviceId},
             settings.JWT_TOKEN.SECRET,
             {expiresIn: settings.JWT_TOKEN.REFRESH_EXP})
     },
-    async getUserIdByToken(token: string): Promise<string | null> {
+    async getUserIdFromAccessToken(token: string): Promise<string | null> {
         try {
             const result: any = jwt.verify(token, settings.JWT_TOKEN.SECRET)
             return result.userId
-        } catch (error) {
+        } catch {
             return null
         }
     },
-    async createAccessRefreshTokens(user: WithId<UsersMongoDBModel>): Promise<AccessRefreshTokensModel> {
+    async createAccessRefreshTokens(userId: string, deviceId: string): Promise<AccessRefreshTokensModel> {
         return {
-            accessToken: await this.createAccessJWTToken(user),
-            refreshToken: await this.createRefreshJWTToken(user)
+            accessToken: await this.createAccessJWTToken(userId),
+            refreshToken: await this.createRefreshJWTToken(userId, deviceId)
         }
     },
     async deleteAllTokens(): Promise<Boolean> {
-        return tokenBlackListDbRepository.deleteAllTokens()
+        return deviceAuthSessionsDbRepository.deleteAllTokens()
+    },
+    async getPayloadOfRefreshToken(refreshToken: string): Promise<refreshTokenPayload| null> {
+        try {
+            const payload: any = jwt.verify(refreshToken, settings.JWT_TOKEN.SECRET)
+            return {
+                userId: payload.userId,
+                deviceId: payload.deviceId,
+                issuedAt: new Date(payload.iat * 1000),
+                expiredAt: new Date(payload.exp * 1000)
+            }
+        } catch {
+            return null
+        }
+
     }
 }

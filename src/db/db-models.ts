@@ -1,3 +1,5 @@
+import {ObjectId} from "mongodb";
+
 type BlogsViewModel = Omit<BlogMongoDBModel, 'createdAt' | 'isMembership'>
 type PostInputModel = Omit<PostMongoDBModel, 'blogName'> & Pick<UsersMongoDBModel, 'emailConfirmation'>
 
@@ -29,7 +31,7 @@ export type AccountDataType = {
     login: string
     email: string
     password: string
-    createdAt: string
+    createdAt: Date
 }
 export type EmailConfirmation = {
     confirmationCode: string
@@ -59,13 +61,17 @@ export type EmailBodyModel = {
 }
 
 // refresh token db models
-export type RefreshTokenBlackListMongoInputDB = {
+export type DeviceAuthSessionsModel = {
     userId: string
-    refreshToken: string
+    deviceId: string
+    deviceName: string
+    IP: string
+    issuedAt: Date
+    expiredAt: Date
 }
 
-export type apiRequestDatabase = {
-    IP: string | string[]
+export type ApiRequestDatabaseModel = {
+    IP: string
     URL: string
     date: Date
 }

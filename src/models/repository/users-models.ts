@@ -18,7 +18,7 @@ export type UsersViewModel = {
     id: string
     login: string
     email: string
-    createdAt: string
+    createdAt: Date
 }
 export type UserViewPaginatedModel = {
     pagesCount: number
@@ -39,3 +39,4 @@ export type MeViewUserModel = {
     login: string
     userId: string
 }
+
