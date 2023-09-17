@@ -31,7 +31,7 @@ export const settings = {
     JWT_TOKEN: {
         SECRET: "qwerty",
         ACCESS_EXP: "10s",
-        REFRESH_EXP: "2000s"
+        REFRESH_EXP: "20s"
     },
     CONFIRMATION_CODE_EXP: {
         hours: 5
