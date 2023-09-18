@@ -9,8 +9,7 @@ export const apiRequestDbRepository = {
     },
     async getRequestByIP(request: ApiRequestDatabaseModel, requestValidDate: Date) {
         return apiRequestDatabaseCollection
-            .find({'IP': request.IP, 'date': {$gt: requestValidDate}})
+            .find({'IP': request.IP, 'URL': request.URL,  'date': {$gt: requestValidDate}})
             .toArray()
-
     }
 }
