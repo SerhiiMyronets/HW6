@@ -15,7 +15,7 @@ export const apiRequestMiddleware = async (req: Request, res: Response, next: Ne
     const requestValidDate = add(request.date, settings.REQUEST_TIME_LIMIT)
     const previousRequests = await apiRequestDbRepository.getRequestByIP(request, requestValidDate)
     if (previousRequests.length >= settings.REQUEST_COUNT_LIMIT)
-        return res.sendStatus(423)
+        return res.sendStatus(429)
     await apiRequestDbRepository.addRequest(request)
     return next()
 }
