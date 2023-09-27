@@ -1,118 +1,73 @@
 // @ts-ignore
 import request from 'supertest'
 import {app, RouterPaths} from "../../src/setting";
-import {BlogInputModel} from "../../src/models/repository/blogs-models";
+import {BlogInputModel, BlogViewModel, BlogViewPaginatedModel} from "../../src/models/repository/blogs-models";
 import {correctLogin} from "../test-inputs/blogs-test-inputs";
-import {ErrorType} from "../../src/midlewares/errors-format-middleware";
-import {UserInputModel} from "../../src/models/repository/users-models";
+import {generateString} from "../test-inputs/generate-string";
 
-const createUserForTest = async (inputModel: UserInputModel, saLogin: string, saPwd: string) => {
-    return request(app).post('/users').auth(saLogin, saPwd).send(inputModel)
-}
-
-const createUsersForTest = async (count: number, inputModel: UserInputModel, saLogin: string, saPwd: string) => {
-    const users = []
-    for (let i = 0; i < count; i++) {
-        const iM: UserInputModel = {
-            login: `${inputModel.login}${i}`,
-            email: `${inputModel.email}${i}`,
-            password: inputModel.password,
-        }
-        const user = await createUserForTest(iM, saLogin, saPwd)
-        users.push(user.body)
-    }
-    return users
-}
-
-//it1 401 cr => saLogin: ''
-//it2 401 cr => saLogin: 'any'
-//it3 not 401 cr => saLogin: 'ok'
-
-//it10...
 
 export const blogTestRepository = {
-    async get(blogsArray: BlogInputModel[] = []) {
-        await request(app)
+    async get(query: object = {}): Promise<BlogViewPaginatedModel> {
+        const result = await request(app)
             .get(RouterPaths.blogs)
-            .query({"sortDirection": "asc"})
-            .expect(response => {
-                expect(200)
-                expect(response.body.items).toEqual(blogsArray)
-            })
+            .query(query)
+            .expect(200)
+        return result.body
     },
     async getById(
         BlogId: string,
-        code = 200,
-        errors: ErrorType | null = null) {
-        if (!errors) {
-            const result = await request(app)
-                .get(`${RouterPaths.blogs}/${BlogId}`)
-                .expect(code)
-            return result.body
-        } else {
-            const result = await request(app)
-                .get(`${RouterPaths.blogs}/${BlogId}`)
-                .expect(code, errors)
-            return result.body
-        }
+        code = 200): Promise<BlogViewModel> {
+        const result = await request(app)
+            .get(`${RouterPaths.blogs}/${BlogId}`)
+            .expect(code)
+        return result.body
     },
-    async create(
+    async createBlog(
         body: BlogInputModel,
         code: number = 201,
-        errors: ErrorType | null = null,
         auth: string = correctLogin
-    ) {
-        if (!errors) {
-            return request(app)
-                .post(RouterPaths.blogs)
-                .set("Authorization", auth)
-                .send(body)
-                .expect(code)
-        } else {
-            return request(app)
-                .post(RouterPaths.blogs)
-                .set("Authorization", auth)
-                .send(body)
-                .expect(code, errors)
+    ): Promise<BlogViewModel> {
+        const result = await request(app)
+            .post(RouterPaths.blogs)
+            .set("Authorization", auth)
+            .send(body)
+            .expect(code)
+        return result.body
+    },
+    async createBlogs(count: number): Promise<BlogViewModel[]> {
+        const result = []
+        for (let i = 0; i < count; i++) {
+            const blog = await this.createBlog(
+                {
+                    name: 'BlogName' + i,
+                    description: (count - i) + generateString(60),
+                    websiteUrl: i + generateString(5) + '.com'
+                }
+            )
+            result.push(blog)
         }
+        return result
     },
     async update(
         blogId: string,
         body: BlogInputModel,
         code: number = 204,
-        errors: ErrorType | null = null,
         auth: string = correctLogin
     ) {
-        if (!errors) {
-            return request(app)
-                .put(`${RouterPaths.blogs}/${blogId}`)
-                .set("Authorization", auth)
-                .send(body)
-                .expect(code)
-        } else {
-            return request(app)
-                .put(`${RouterPaths.blogs}/${blogId}`)
-                .set("Authorization", auth)
-                .send(body)
-                .expect(code, errors)
-        }
+        return request(app)
+            .put(`${RouterPaths.blogs}/${blogId}`)
+            .set("Authorization", auth)
+            .send(body)
+            .expect(code)
     },
     async delete(
         blogId: string,
         code = 204,
-        errors: ErrorType | null = null,
         auth: string = correctLogin) {
-        if (!errors) {
-            return request(app)
-                .delete(`${RouterPaths.blogs}/${blogId}`)
-                .set("Authorization", auth)
-                .expect(code)
-        } else {
-            return request(app)
-                .delete(`${RouterPaths.blogs}/${blogId}`)
-                .set("Authorization", auth)
-                .expect(code, errors)
-        }
+        return request(app)
+            .delete(`${RouterPaths.blogs}/${blogId}`)
+            .set("Authorization", auth)
+            .expect(code)
     }
 }
 

@@ -9,7 +9,11 @@ export const apiRequestDbRepository = {
     },
     async getRequestByIP(request: ApiRequestDatabaseModel, requestValidDate: Date) {
         return apiRequestDatabaseCollection
-            .find({'IP': request.IP, 'URL': request.URL,  'date': {$gt: requestValidDate}})
+            .find({'IP': request.IP, 'URL': request.URL, 'date': {$gt: requestValidDate}})
             .toArray()
+    },
+    async deleteAllRequest() {
+        await apiRequestDatabaseCollection.deleteMany()
+        return true
     }
 }

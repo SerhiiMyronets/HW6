@@ -1,5 +1,10 @@
 import {usersDbRepository} from "../repositories/db-repositories/users-db-repository";
-import {ConfirmationCodeUpdateType, DeviceAuthSessionsModel, UsersMongoDBModel} from "../db/db-models";
+import {
+    ConfirmationCodeUpdateType,
+    DeviceAuthSessionsModel,
+    passwordRecoveryModel,
+    UsersMongoDBModel
+} from "../db/db-models";
 import {randomUUID} from "crypto";
 import add from "date-fns/add";
 import {emailManager} from "../managers/email-manager";
@@ -8,7 +13,7 @@ import {ObjectId, WithId} from "mongodb";
 import {AccessRefreshTokensModel, authInputModel} from "../appliacation/jwt-models";
 import {deviceAuthSessionsDbRepository} from "../repositories/db-repositories/device-auth-sessions-db-repository";
 import {jwtService} from "../appliacation/jwt-service";
-import {DeviceViewModel} from "../models/repository/users-models";
+import {DeviceViewModel, NewPasswordInputModel} from "../models/repository/users-models";
 
 const bcrypt = require('bcrypt');
 
@@ -34,14 +39,18 @@ export const authService = {
             },
             emailConfirmation: {
                 confirmationCode: randomUUID(),
-                expirationDate: add(new Date(), settings.CONFIRMATION_CODE_EXP),
+                expirationDate: add(new Date(), settings.EMAIL_CONFIRMATION_CODE_EXP),
                 isConfirmed: false
+            },
+            passwordRecovery: {
+                confirmationCode: '',
+                expirationDate: new Date,
             }
         }
         const createdUser = await usersDbRepository.createUser(user)
         if (createdUser)
             try {
-                await emailManager.sendEmailConfirmation(createdUser)
+                await emailManager.sendEmailConfirmationCode(createdUser)
             } catch (error) {
                 console.error(error)
                 await usersDbRepository.deleteUser(createdUser._id.toString())
@@ -49,8 +58,25 @@ export const authService = {
             }
         return createdUser
     },
+    async passwordRecovery(email: string): Promise<boolean> {
+        const user = await usersDbRepository.findUserByEmail(email)
+        if (!user) return true
+        const passwordRecovery: passwordRecoveryModel = {
+            confirmationCode: randomUUID(),
+            expirationDate: add(new Date(), settings.PASSWORD_RECOVERY_CONFIRMATION_CODE_EXP)
+        }
+        const updatedUser = await usersDbRepository.updatePasswordRecovery(user._id, passwordRecovery)
+        if (updatedUser)
+            try {
+                await emailManager.sendPasswordRecoveryCode(updatedUser)
+            } catch (error) {
+                console.error(error)
+                return false
+            }
+        return true
+    },
     async confirmEmail(code: string): Promise<boolean> {
-        const user = await usersDbRepository.findUserByConfirmationCode(code)
+        const user = await usersDbRepository.findUserByEmailConfirmationCode(code)
         if (!user) return false
         if (user.emailConfirmation.isConfirmed) return false
         if (user.emailConfirmation.confirmationCode !== code) return false
@@ -63,14 +89,14 @@ export const authService = {
         if (user.emailConfirmation.isConfirmed) return false
         const confirmationCodeUpdate: ConfirmationCodeUpdateType = {
             'emailConfirmation.confirmationCode': randomUUID(),
-            'emailConfirmation.expirationDate': add(new Date(), settings.CONFIRMATION_CODE_EXP)
+            'emailConfirmation.expirationDate': add(new Date(), settings.EMAIL_CONFIRMATION_CODE_EXP)
         }
         const isUpdated = await usersDbRepository.confirmationCodeUpdate(user._id, confirmationCodeUpdate)
         if (!isUpdated) return false
         const updatedUser = await usersDbRepository.findUserById(user._id.toString())
         if (!updatedUser) return false
         try {
-            await emailManager.sendEmailConfirmation(updatedUser)
+            await emailManager.sendEmailConfirmationCode(updatedUser)
             return true
         } catch (error) {
             console.error(error)
@@ -117,7 +143,16 @@ export const authService = {
         await deviceAuthSessionsDbRepository.deleteSession(sessionId)
 
     },
-    async getDeviceSession(sessionId: string) : Promise<WithId<DeviceAuthSessionsModel>| null> {
+    async getDeviceSession(sessionId: string): Promise<WithId<DeviceAuthSessionsModel> | null> {
         return await deviceAuthSessionsDbRepository.getSessionByDeviceId(sessionId)
+    },
+    async newPasswordUpdate(newPassword: NewPasswordInputModel): Promise<boolean> {
+        const user = await usersDbRepository.findUserByNewPasswordConfirmationCode(newPassword.recoveryCode)
+        if (!user) return false
+        if (user.passwordRecovery.expirationDate < new Date()) return false
+        const password = await bcrypt.hash(newPassword.newPassword, 10)
+        const isPasswordUpdated = await usersDbRepository.newPasswordUpdate(user._id, password)
+        if (!isPasswordUpdated) return false
+        return true
     }
 }

@@ -26,14 +26,17 @@ export const RouterPaths = {
 export const superAdminAuth = {login: 'admin', password: 'qwerty'}
 
 export const settings = {
-    MONGO_URI: process.env.MONGO_URI || "mongodb+srv://hardmail88:3846MrN1@cluster0.0goknaf.mongodb.net/?retryWrites=true&w=majority",
+    //MONGO_URI: process.env.MONGO_URI || "mongodb+srv://hardmail88:3846MrN1@cluster0.0goknaf.mongodb.net/?retryWrites=true&w=majority",
     PORT: process.env.PORT || 3000,
     JWT_TOKEN: {
         SECRET: "qwerty",
         ACCESS_EXP: "10s",
         REFRESH_EXP: "20s"
     },
-    CONFIRMATION_CODE_EXP: {
+    EMAIL_CONFIRMATION_CODE_EXP: {
+        hours: 5
+    },
+    PASSWORD_RECOVERY_CONFIRMATION_CODE_EXP: {
         hours: 5
     },
     REQUEST_TIME_LIMIT: {

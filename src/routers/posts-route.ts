@@ -1,6 +1,6 @@
 import {Response, Router} from "express";
 import {errorsFormatMiddleware} from "../midlewares/errors-format-middleware";
-import {findPostsPaginateModel, PostInputModel} from "../models/repository/posts-models";
+import {findPostsPaginateModel, PostInputModel, PostUpdateInputModel} from "../models/repository/posts-models";
 import {
     RequestWithBody,
     RequestWithParams,
@@ -13,7 +13,7 @@ import {postBodyValidation} from "../midlewares/body/posts-body-validation";
 import {paramValidation} from "../midlewares/param/param-validation";
 import {postsService} from "../domain/posts-service";
 import {postsQueryRepository} from "../repositories/query-repositories/posts-query-repository";
-import {PostsQueryValidation} from "../midlewares/query/posts-query-validation";
+import {postsQueryValidation} from "../midlewares/query/posts-query-validation";
 import {accessTokenMiddleware} from "../midlewares/access-token-middleware";
 import {commentsBodyValidation} from "../midlewares/body/comments-body-validation";
 import {CommentInputModel, findCommentsPaginateModel} from "../models/repository/comments-models";
@@ -26,7 +26,7 @@ import {commentsQueryValidation} from "../midlewares/query/comments-query-valida
 export const postsRoute = Router({})
 
 postsRoute.get('/',
-    PostsQueryValidation,
+    postsQueryValidation,
     async (req: RequestWithQuery<findPostsPaginateModel>, res: Response) => {
         const result = await postsQueryRepository.findPostsQuery(req.query);
         res.send(result)
@@ -59,9 +59,13 @@ postsRoute.post('/',
     postBodyValidation,
     errorsFormatMiddleware,
     async (req: RequestWithBody<PostInputModel>, res: Response) => {
-        const newPost = await postsService.creatPost(
-            req.body.title, req.body.shortDescription,
-            req.body.content, req.body.blogId)
+        const postInputBody: PostInputModel = {
+            title: req.body.title,
+            shortDescription: req.body.shortDescription,
+            content: req.body.content,
+            blogId: req.body.blogId
+        }
+        const newPost = await postsService.creatPost(postInputBody)
         res.status(201).send(newPost)
     })
 postsRoute.put('/:id',
@@ -70,9 +74,14 @@ postsRoute.put('/:id',
     postBodyValidation,
     errorsFormatMiddleware,
     async (req: RequestWithParamsBody<{ id: string }, PostInputModel>, res: Response) => {
-        const isPostUpdated = await postsService.updatePost(
-            req.params.id, req.body.title, req.body.shortDescription,
-            req.body.content, req.body.blogId)
+        const postUpdateInputBody: PostUpdateInputModel = {
+            postId:req.params.id,
+            title: req.body.title,
+            shortDescription: req.body.shortDescription,
+            content: req.body.content,
+            blogId: req.body.blogId
+        }
+        const isPostUpdated = await postsService.updatePost(postUpdateInputBody)
         if (isPostUpdated) {
             res.sendStatus(204)
         } else {

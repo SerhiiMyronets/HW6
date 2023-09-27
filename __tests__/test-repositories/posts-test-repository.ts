@@ -1,93 +1,108 @@
 // @ts-ignore
 import request from 'supertest'
 import {app, RouterPaths} from "../../src/setting";
-import {PostInputModel, PostViewModel} from "../../src/models/repository/posts-models";
+import {PostInputModel, PostViewModel, PostViewModelPaginated} from "../../src/models/repository/posts-models";
 import {correctLogin} from "../test-inputs/blogs-test-inputs";
-import {ErrorType} from "../../src/midlewares/errors-format-middleware";
+import {generateString} from "../test-inputs/generate-string";
 
 export const postTestRepository = {
-    async get(postsArray: PostViewModel[] = []) {
-        await request(app)
+    async get(query: object = {}): Promise<PostViewModelPaginated> {
+        const result = await request(app)
             .get(RouterPaths.posts)
-            .query({"sortDirection": "asc"})
-            .expect(response => {
-                expect(200)
-                expect(response.body.items).toEqual(postsArray)
-            })
+            .query(query)
+            .expect(200)
+        return result.body
     },
     async getById(
         postId: string,
-        code = 200,
-        errors: ErrorType | null = null) {
-        if (!errors) {
-            const result = await request(app)
-                .get(`${RouterPaths.posts}/${postId}`)
-                .expect(code)
-            return result.body
-        } else {
-            const result = await request(app)
-                .get(`${RouterPaths.posts}/${postId}`)
-                .expect(code, errors)
-            return result.body
-        }
+        code = 200): Promise<PostViewModel> {
+        const result = await request(app)
+            .get(`${RouterPaths.posts}/${postId}`)
+            .expect(code)
+        return result.body
     },
-    async create(
+    async createPost(
         body: PostInputModel,
         code: number = 201,
-        errors: ErrorType | null = null,
         auth: string = correctLogin
-    ) {
-        if (!errors) {
-            return request(app)
+    ) : Promise<PostViewModel> {
+            const result = await request(app)
                 .post(RouterPaths.posts)
                 .set("Authorization", auth)
                 .send(body)
                 .expect(code)
-        } else {
-            return request(app)
-                .post(RouterPaths.posts)
-                .set("Authorization", auth)
-                .send(body)
-                .expect(code, errors)
+        return result.body
+    },
+    async createPosts(blogId: string, count: number): Promise<PostViewModel[]> {
+        const result = []
+        for (let i = 0; i < count; i++) {
+            const post = await this.createPost(
+                {
+                    title: "PostTitle" + i,
+                    shortDescription: (count - i) + generateString(20),
+                    content: i + generateString(20),
+                    blogId
+                }
+            )
+            result.push(post)
         }
+        return result
+    },
+    async getByBlogId(blogId: string,query: object = {}, code = 200): Promise<PostViewModelPaginated> {
+        const result = await request(app)
+            .get(`${RouterPaths.blogs}/${blogId}/Posts`)
+            .query(query)
+            .expect(code)
+        return result.body
+    },
+    async createPostByBlogId(
+        body: PostInputModel,
+        code: number = 201,
+        auth: string = correctLogin
+    ) : Promise<PostViewModel> {
+        let {blogId, ...newBody} = body
+        const result = await request(app)
+            .post(`${RouterPaths.blogs}/${blogId}/Posts`)
+            .set("Authorization", auth)
+            .send(newBody)
+            .expect(code)
+        return result.body
+    },
+    async createPostsByBlogId(blogId: string, count: number): Promise<PostViewModel[]> {
+        const result = []
+        for (let i = 0; i < count; i++) {
+            const post = await this.createPostByBlogId(
+                {
+                    title: "PostTitle" + i,
+                    shortDescription: (count - i) + generateString(20),
+                    content: i + generateString(20),
+                    blogId
+                }
+            )
+            result.push(post)
+        }
+        return result
     },
     async update(
         postId: string,
         body: PostInputModel,
         code: number = 204,
-        errors: ErrorType | null = null,
         auth: string = correctLogin
     ) {
-        if (!errors) {
             return request(app)
                 .put(`${RouterPaths.posts}/${postId}`)
                 .set("Authorization", auth)
                 .send(body)
                 .expect(code)
-        } else {
-            return request(app)
-                .put(`${RouterPaths.posts}/${postId}`)
-                .set("Authorization", auth)
-                .send(body)
-                .expect(code, errors)
-        }
     },
     async delete(
         postId: string,
         code = 204,
-        errors: ErrorType | null = null,
         auth: string = correctLogin) {
-        if (!errors) {
             return request(app)
                 .delete(`${RouterPaths.posts}/${postId}`)
                 .set("Authorization", auth)
                 .expect(code)
-        } else {
-            return request(app)
-                .delete(`${RouterPaths.posts}/${postId}`)
-                .set("Authorization", auth)
-                .expect(code)
-        }
     }
 }
 

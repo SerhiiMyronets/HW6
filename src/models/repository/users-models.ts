@@ -18,8 +18,9 @@ export type UsersViewModel = {
     id: string
     login: string
     email: string
-    createdAt: Date
+    createdAt: string
 }
+
 export type UserViewPaginatedModel = {
     pagesCount: number
     pageSize: number
@@ -32,7 +33,17 @@ export type AuthModel = {
     loginOrEmail: string
     password: string
 }
+export type AuthViewModel = {
+    accessToken: string
+}
 
+export type PasswordRecoveryInputModel = {
+    email: string
+}
+export type NewPasswordInputModel = {
+    newPassword: string,
+    recoveryCode: string
+}
 //me
 export type MeViewUserModel = {
     email: string

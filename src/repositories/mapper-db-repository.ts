@@ -14,7 +14,7 @@ export const mapperDbRepository = {
             name: blogDB.name,
             description: blogDB.description,
             websiteUrl: blogDB.websiteUrl,
-            createdAt: blogDB.createdAt,
+            createdAt: blogDB.createdAt.toISOString(),
             isMembership: blogDB.isMembership
         }
     },
@@ -26,7 +26,7 @@ export const mapperDbRepository = {
             content: postDB.content,
             blogId: postDB.blogId,
             blogName: postDB.blogName,
-            createdAt: postDB.createdAt
+            createdAt: postDB.createdAt.toISOString()
         }
     },
     userOutputMongoDBtoUsersViewMongo(userDB: WithId<UsersMongoDBModel>) {
@@ -34,7 +34,7 @@ export const mapperDbRepository = {
             id: userDB._id.toString(),
             login: userDB.accountData.login,
             email: userDB.accountData.email,
-            createdAt: userDB.accountData.createdAt
+            createdAt: userDB.accountData.createdAt.toISOString()
         }
     },
     commentViewMongoDBtoCommentViewModel(commentDB: WithId<CommentMongoDBModel>) {
@@ -45,7 +45,7 @@ export const mapperDbRepository = {
                 userId: commentDB.userId,
                 userLogin: commentDB.userLogin
             },
-            createdAt: commentDB.createdAt
+            createdAt: commentDB.createdAt.toISOString()
         }
     },
     deviceAuthSessionsModelToDeviceViewModel(session: DeviceAuthSessionsModel) {

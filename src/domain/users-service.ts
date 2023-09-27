@@ -20,6 +20,10 @@ export const usersService = {
                 confirmationCode: '',
                 expirationDate: new Date(),
                 isConfirmed: true
+            },
+            passwordRecovery: {
+                confirmationCode: '',
+                expirationDate: new Date,
             }
         }
         const createdUser = await usersDbRepository.createUser(newUser)

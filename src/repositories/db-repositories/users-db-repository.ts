@@ -1,4 +1,4 @@
-import {ConfirmationCodeUpdateType, UsersMongoDBModel} from "../../db/db-models";
+import {ConfirmationCodeUpdateType, passwordRecoveryModel, UsersMongoDBModel} from "../../db/db-models";
 import {usersCollection} from "../../db/db";
 import {ObjectId, WithId} from "mongodb";
 
@@ -20,12 +20,17 @@ export const usersDbRepository = {
             .findOne({$or: [{"accountData.login": loginOrEmail}, {"accountData.email": loginOrEmail}]})
         return foundedUser ? foundedUser : null
     },
+    async findUserByEmail(email: string): Promise<WithId<UsersMongoDBModel> | null> {
+        const foundedUser = await usersCollection
+            .findOne({"accountData.email": email})
+        return foundedUser ? foundedUser : null
+    },
     async deleteAllUsers(): Promise<Boolean> {
         await usersCollection
             .deleteMany({})
         return true
     },
-    async findUserByConfirmationCode(code: string) {
+    async findUserByEmailConfirmationCode(code: string) {
         return await usersCollection
             .findOne({'emailConfirmation.confirmationCode': code})
     },
@@ -34,9 +39,23 @@ export const usersDbRepository = {
             .updateOne({_id: id}, {$set: {'emailConfirmation.isConfirmed': true}})
         return result.modifiedCount === 1
     },
-    async confirmationCodeUpdate(_id: ObjectId, updateBody: ConfirmationCodeUpdateType): Promise <boolean> {
+    async confirmationCodeUpdate(_id: ObjectId, updateBody: ConfirmationCodeUpdateType): Promise<boolean> {
         const result = await usersCollection
             .updateOne({_id: _id}, {$set: updateBody})
+        return result.modifiedCount === 1
+    },
+    async updatePasswordRecovery(_id: ObjectId, passwordRecovery: passwordRecoveryModel): Promise<WithId<UsersMongoDBModel> | null> {
+        const result = await usersCollection
+            .findOneAndUpdate({_id}, {$set: {"passwordRecovery": passwordRecovery}})
+        return result.value
+    },
+    async findUserByNewPasswordConfirmationCode(recoveryCode: string) {
+        return usersCollection
+            .findOne({'passwordRecovery.confirmationCode': recoveryCode})
+    },
+    async newPasswordUpdate(_id: ObjectId, password: string): Promise<Boolean> {
+        const result = await usersCollection
+            .updateOne({_id}, {$set: {'accountData.password': password}})
         return result.modifiedCount === 1
     }
 }

@@ -16,10 +16,10 @@ import {blogsQueryRepository} from "../repositories/query-repositories/blogs-que
 import {postsService} from "../domain/posts-service";
 import {blogPostBodyValidation} from "../midlewares/body/blog-post-body-validation";
 import {blogsQueryValidation} from "../midlewares/query/blogs-query-validation";
-import {PostsQueryValidation} from "../midlewares/query/posts-query-validation";
+import {postsQueryValidation} from "../midlewares/query/posts-query-validation";
 import {
     findPostsPaginateModel,
-    PostInputByBlogModel
+    PostInputByBlogModel, PostInputModel
 } from "../models/repository/posts-models";
 import {postsQueryRepository} from "../repositories/query-repositories/posts-query-repository";
 
@@ -56,7 +56,7 @@ blogsRoute.delete('/:id',
     })
 blogsRoute.get('/:id/posts',
     paramValidation,
-    PostsQueryValidation,
+    postsQueryValidation,
     errorsFormatMiddleware,
     async (req: RequestWithParamsQuery<{ id: string }, findPostsPaginateModel>, res: Response) => {
         const isBlogExisting = await blogsQueryRepository.isBlogExisting(req.params.id)
@@ -88,9 +88,13 @@ blogsRoute.post('/:id/posts',
     async (req: RequestWithParamsBody<{ id: string }, PostInputByBlogModel>, res: Response) => {
         const isBlogExisting = await blogsQueryRepository.isBlogExisting(req.params.id)
         if (isBlogExisting) {
-            const newPost = await postsService.creatPost(
-                req.body.title, req.body.shortDescription,
-                req.body.content, req.params.id)
+            const postInputBody: PostInputModel = {
+                title: req.body.title,
+                shortDescription: req.body.shortDescription,
+                content: req.body.content,
+                blogId: req.params.id
+            }
+            const newPost = await postsService.creatPost(postInputBody)
             res.status(201).send(newPost)
         } else {
             res.sendStatus(404)

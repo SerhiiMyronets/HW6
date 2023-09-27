@@ -21,18 +21,8 @@ export const incorrectBodyPost: PostInputModel = {
     content: generateString(1001),
     blogId: randomObjectId
 }
-export const undefinedBodyPost: PostInputModel = {
-    title: "",
-    shortDescription: "",
-    content: "",
-    blogId: ""
-}
 
-export const errorsIncorrectInputId: ErrorType = {
-    errorsMessages: [
-        {message: 'Invalid id format', field: 'id'},
-    ]
-}
+
 export const errorsIncorrectInputPost: ErrorType = {
     errorsMessages: [
         {message: 'Title length should be below 30 symbols', field: 'title'},
@@ -41,12 +31,13 @@ export const errorsIncorrectInputPost: ErrorType = {
         {message: 'Blog not found', field: 'blogId'}
     ]
 }
-export const errorsUndefinedInputPost: ErrorType = {
+
+export const errorsIncorrectInputPostByBlog: ErrorType = {
     errorsMessages: [
-        {message: 'Title is required', field: 'title'},
-        {message: 'ShortDescription is required', field: 'shortDescription'},
-        {message: 'Content is required', field: 'content'},
-        {message: 'BlogId is required', field: 'blogId'}
+        {message: 'Title length should be below 30 symbols', field: 'title'},
+        {message: 'ShortDescription length should be below 100 symbols', field: 'shortDescription'},
+        {message: 'Content should be be below 1000 symbols', field: 'content'}
     ]
 }
+
 export const incorrectLogin: string = "Basic admin:qwerty"

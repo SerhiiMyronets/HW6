@@ -1,14 +1,12 @@
-import {ObjectId} from "mongodb";
-
-type BlogsViewModel = Omit<BlogMongoDBModel, 'createdAt' | 'isMembership'>
-type PostInputModel = Omit<PostMongoDBModel, 'blogName'> & Pick<UsersMongoDBModel, 'emailConfirmation'>
+// type BlogsViewModel = Omit<BlogMongoDBModel, 'createdAt' | 'isMembership'>
+// type PostInputModel = Omit<PostMongoDBModel, 'blogName'> & Pick<UsersMongoDBModel, 'emailConfirmation'>
 
 //blogs db models
 export type BlogMongoDBModel = {
     name: string
     description: string
     websiteUrl: string
-    createdAt: string
+    createdAt: Date
     isMembership: boolean
 }
 
@@ -19,24 +17,29 @@ export type PostMongoDBModel = {
     content: string
     blogId: string
     blogName: string
-    createdAt: string
+    createdAt: Date
 }
 
 //users db models
 export type UsersMongoDBModel = {
-    accountData: AccountDataType,
-    emailConfirmation: EmailConfirmation
+    accountData: AccountDataTypeModel,
+    emailConfirmation: EmailConfirmationModel
+    passwordRecovery: passwordRecoveryModel
 }
-export type AccountDataType = {
+export type AccountDataTypeModel = {
     login: string
     email: string
     password: string
     createdAt: Date
 }
-export type EmailConfirmation = {
+export type EmailConfirmationModel = {
     confirmationCode: string
     expirationDate: Date
     isConfirmed: boolean
+}
+export type passwordRecoveryModel = {
+    confirmationCode: string
+    expirationDate: Date
 }
 export type ConfirmationCodeUpdateType = {
     'emailConfirmation.confirmationCode': string
@@ -49,7 +52,7 @@ export type CommentMongoDBModel = {
     content: string
     userId: string
     userLogin: string
-    createdAt: string
+    createdAt: Date
 }
 
 // email smtp models

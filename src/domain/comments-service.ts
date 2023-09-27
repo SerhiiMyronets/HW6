@@ -12,7 +12,7 @@ export const commentsService = {
             content: content,
             userId: userId.toString(),
             userLogin: login,
-            createdAt: new Date().toISOString()
+            createdAt: new Date()
         }
         const commentDB = await commentsDbRepository.creatComment(newComment)
         if (commentDB)

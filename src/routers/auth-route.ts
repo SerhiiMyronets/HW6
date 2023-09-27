@@ -1,6 +1,12 @@
 import {Request, Response, Router} from "express";
 import {RequestWithBody} from "../types/request-types";
-import {AuthModel, MeViewUserModel, UserInputModel} from "../models/repository/users-models";
+import {
+    AuthModel,
+    AuthViewModel,
+    MeViewUserModel, NewPasswordInputModel,
+    PasswordRecoveryInputModel,
+    UserInputModel
+} from "../models/repository/users-models";
 import {errorsFormatMiddleware, ErrorType} from "../midlewares/errors-format-middleware";
 import {authBodyValidation} from "../midlewares/body/auth-body-validation";
 import {accessTokenMiddleware} from "../midlewares/access-token-middleware";
@@ -9,6 +15,8 @@ import {authService} from "../domain/auth-service";
 import {refreshTokenMiddleware} from "../midlewares/refresh-token-middleware";
 import {apiRequestMiddleware} from "../midlewares/apiRequestMiddleware";
 import {authInputModel} from "../appliacation/jwt-models";
+import {authPasswordRecoveryValidation} from "../midlewares/body/auth-password-recovery-validation";
+import {authNewPasswordValidation} from "../midlewares/body/auth-new-password-validation";
 
 
 export const authRoute = Router({})
@@ -22,15 +30,16 @@ authRoute.post('/login',
         if (!user) return res.sendStatus(401)
         const authInput: authInputModel = {
             userId: user._id.toString(),
-            deviceName: req.headers["user-agent"]!.toString(),
+            deviceName: req.headers["user-agent"] ? req.headers["user-agent"].toString() : 'unknown',
             IP: req.socket.remoteAddress || req.headers['x-forwarded-for']!.toString()
         }
         const tokens = await authService.createNewPairOfTokes(authInput)
         if (!tokens) return res.sendStatus(400)
+        const accessToken: AuthViewModel = {accessToken: tokens.accessToken}
         return res
             .cookie('refreshToken', tokens.refreshToken, {httpOnly: true, secure: true})
             .status(200)
-            .send({accessToken: tokens.accessToken})
+            .send(accessToken)
     })
 authRoute.get('/me',
     accessTokenMiddleware,
@@ -86,6 +95,31 @@ authRoute.post('/registration-email-resending',
             }
             res.status(400).send(errorMessage)
         }
+    })
+authRoute.post('/password-recovery',
+    apiRequestMiddleware,
+    authPasswordRecoveryValidation,
+    errorsFormatMiddleware,
+    async (req: RequestWithBody<PasswordRecoveryInputModel>, res: Response) => {
+        await authService.passwordRecovery(req.body.email)
+        res.sendStatus(204)
+    })
+authRoute.post('/new-password',
+    apiRequestMiddleware,
+    authNewPasswordValidation,
+    errorsFormatMiddleware,
+    async (req: RequestWithBody<NewPasswordInputModel>, res: Response) => {
+        console.log(1)
+        const newPassword: NewPasswordInputModel = {
+            newPassword: req.body.newPassword,
+            recoveryCode: req.body.recoveryCode
+        }
+        console.log(newPassword)
+        const isPasswordUpdate = await authService.newPasswordUpdate(newPassword)
+        if (!isPasswordUpdate)
+            res.sendStatus(400)
+        else
+            res.sendStatus(204)
     })
 authRoute.post('/refresh-token',
     refreshTokenMiddleware,

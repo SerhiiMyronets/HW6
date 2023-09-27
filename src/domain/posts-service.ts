@@ -1,61 +1,44 @@
-import {PostViewModel} from "../models/repository/posts-models";
+import {PostInputModel, PostUpdateInputModel, PostViewModel} from "../models/repository/posts-models";
 import {postsRepository} from "../repositories/db-repositories/post-db-repository";
 import {blogsRepository} from "../repositories/db-repositories/blogs-db-repository";
 
-type createPostInputModel = {}
 
-type UserViewModel = {
-    userId: string
-    login: string
-}
 
-type DomainUserModel = {
-    userId: string
-    login: string
-    passwordHash: string
-}
 
 export const postsService = {
     async findPosts(): Promise<PostViewModel[]> {
         return postsRepository.findPosts()
     },
-    async creatPost(
-        title: string, shortDescription: string,
-        content: string, blogId: string): Promise<PostViewModel | null> {
-        const blog = await blogsRepository.findBlogById(blogId);
-        const newPostBody = this._createNewPostBody(title, shortDescription, content, blogId, blog!.name)
+    async creatPost(postInputBody: PostInputModel): Promise<PostViewModel | null> {
+        const blog = await blogsRepository.findBlogById(postInputBody.blogId);
+        const newPostBody = {
+            title: postInputBody.title,
+            shortDescription: postInputBody.shortDescription,
+            content: postInputBody.content,
+            blogId: postInputBody.blogId,
+            blogName: blog!.name,
+            createdAt: new Date()
+        }
         return postsRepository.creatPost(newPostBody)
     },
     async findById(id: string): Promise<PostViewModel | null> {
         return postsRepository.findById(id)
     },
-    async updatePost(id: string, title: string, shortDescription: string,
-                     content: string, blogId: string): Promise<Boolean> {
-        const blog = await blogsRepository.findBlogById(blogId);
+    async updatePost(postUpdateInputBody: PostUpdateInputModel): Promise<Boolean> {
+        const blog = await blogsRepository.findBlogById(postUpdateInputBody.blogId);
         const newUpdatedPostBody = {
-            title,
-            shortDescription,
-            content,
-            blogId,
+            title: postUpdateInputBody.title,
+            shortDescription: postUpdateInputBody.shortDescription,
+            content: postUpdateInputBody.content,
+            blogId: postUpdateInputBody.blogId,
             blogName: blog!.name
         }
-        return postsRepository.updatePost(id, newUpdatedPostBody)
+        return postsRepository.updatePost(postUpdateInputBody.postId, newUpdatedPostBody)
     },
     async deletePost(id: string): Promise<Boolean> {
         return postsRepository.deletePost(id)
     },
     async deleteAllPosts(): Promise<boolean> {
         return postsRepository.deleteAllPosts()
-    },
-    _createNewPostBody(title: string, shortDescription: string,
-                       content: string, blogId: string, blogName: string) {
-        return {
-            title,
-            shortDescription,
-            content,
-            blogId,
-            blogName: blogName,
-            createdAt: new Date().toISOString()
-        }
     }
 }

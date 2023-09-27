@@ -14,11 +14,11 @@ export const usersQueryRepository = {
             searchArray.push({"accountData.email": new RegExp(query.searchEmailTerm, "i")})
         if (searchArray.length > 0)
             searchFilter = {$or: searchArray}
-
         const totalCount = await usersCollection.countDocuments(searchFilter)
+
         const foundedUsers = await usersCollection
             .find(searchFilter)
-            .sort({[query.sortBy]: sortDirectionList[query.sortDirection]})
+            .sort({[`accountData.${query.sortBy}`]: sortDirectionList[query.sortDirection]})
             .skip(query.pageSize * (query.pageNumber - 1))
             .limit(+query.pageSize)
             .toArray()

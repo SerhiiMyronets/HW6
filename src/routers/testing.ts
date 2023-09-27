@@ -5,6 +5,7 @@ import {usersService} from "../domain/users-service";
 import {commentsService} from "../domain/comments-service";
 import {jwtService} from "../appliacation/jwt-service";
 import {authService} from "../domain/auth-service";
+import {apiRequestDbRepository} from "../repositories/db-repositories/api-request-db-repository";
 
 export const testing = Router({})
 
@@ -15,5 +16,6 @@ testing.delete('/', async (req: Request, res: Response) => {
     await postsService.deleteAllPosts()
     await commentsService.deleteAllComments()
     await authService.deleteAllSessions()
+    await apiRequestDbRepository.deleteAllRequest()
     res.sendStatus(204)
 })

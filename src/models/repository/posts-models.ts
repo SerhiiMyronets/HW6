@@ -5,11 +5,10 @@ export type PostInputModel = {
     content: string
     blogId: string
 }
-export type PostInputByBlogModel = {
-    title: string
-    shortDescription: string
-    content: string
-}
+
+export type PostUpdateInputModel = PostInputModel & {postId: string}
+export type PostInputByBlogModel = Omit<PostInputModel, 'blogId'>
+
 export type findPostsPaginateModel = {
     pageNumber: number
     pageSize: number

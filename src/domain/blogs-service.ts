@@ -32,7 +32,7 @@ export const blogsService = {
             name: body.name,
             description: body.description,
             websiteUrl: body.websiteUrl,
-            createdAt: new Date().toISOString(),
+            createdAt: new Date(),
             isMembership: false
         }
     }
