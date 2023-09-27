@@ -66,6 +66,8 @@ export const authService = {
             expirationDate: add(new Date(), settings.PASSWORD_RECOVERY_CONFIRMATION_CODE_EXP)
         }
         const updatedUser = await usersDbRepository.updatePasswordRecovery(user._id, passwordRecovery)
+        console.log(passwordRecovery.confirmationCode)
+        console.log(passwordRecovery.expirationDate)
         if (updatedUser)
             try {
                 await emailManager.sendPasswordRecoveryCode(updatedUser)

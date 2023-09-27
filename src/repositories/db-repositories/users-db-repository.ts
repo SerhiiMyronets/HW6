@@ -46,7 +46,14 @@ export const usersDbRepository = {
     },
     async updatePasswordRecovery(_id: ObjectId, passwordRecovery: passwordRecoveryModel): Promise<WithId<UsersMongoDBModel> | null> {
         const result = await usersCollection
-            .findOneAndUpdate({_id}, {$set: {"passwordRecovery": passwordRecovery}})
+            .findOneAndUpdate({_id},
+                {
+                    $set: {
+                        "passwordRecovery.confirmationCode": passwordRecovery.confirmationCode,
+                        "passwordRecovery.expirationDate": passwordRecovery.expirationDate
+                    }
+                }, {returnDocument: "after"})
+        console.log(result.value)
         return result.value
     },
     async findUserByNewPasswordConfirmationCode(recoveryCode: string) {
