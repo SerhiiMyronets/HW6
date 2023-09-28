@@ -18,7 +18,7 @@ export type UsersViewModel = {
     id: string
     login: string
     email: string
-    createdAt: string
+    createdAt: Date
 }
 
 export type UserViewPaginatedModel = {
@@ -55,6 +55,6 @@ export type MeViewUserModel = {
 export type DeviceViewModel = {
     ip: string
     title: string
-    lastActiveDate: string
+    lastActiveDate: Date
     deviceId: string
 }

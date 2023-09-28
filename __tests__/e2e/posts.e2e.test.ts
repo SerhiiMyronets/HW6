@@ -14,10 +14,17 @@ import {
     updatedCorrectBodyPost
 } from "../test-inputs/posts-test-inputs";
 import {postsService} from "../../src/domain/posts-service";
+import {MongoMemoryServer} from "mongodb-memory-server";
+import mongoose from "mongoose";
 
 describe("PostTest", () => {
+    let mongoMemoryServer: any
     let testBlog: BlogViewModel
     beforeAll(async () => {
+        mongoMemoryServer = new MongoMemoryServer()
+        await mongoMemoryServer.start();
+        const uri = await mongoMemoryServer.getUri();
+        await mongoose.connect(uri);
         await request(app).delete(RouterPaths.__test__).expect(204)
         testBlog = await blogTestRepository.createBlog(correctBodyBlog)
         correctBodyPost.blogId = testBlog.id
@@ -28,6 +35,7 @@ describe("PostTest", () => {
     })
     afterAll(async () => {
         await request(app).delete(RouterPaths.__test__).expect(204)
+        await mongoose.connection.close()
     })
     it(`should return 200 and empty array after get/ request`, async () => {
         const getResult = await postTestRepository.get()
@@ -69,7 +77,7 @@ describe("PostTest", () => {
         getResult = await postTestRepository.get()
         expect(getResult.items).toEqual(posts
             .sort((a, b) =>
-                b.createdAt.localeCompare(a.createdAt)))
+                new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
         getResult = await postTestRepository
             .get({"sortDirection": "desc"})
         expect(getResult.items).toEqual(posts)
@@ -225,7 +233,7 @@ describe("PostTest", () => {
             .getByBlogId(testBlog.id)
         expect(getResult.items).toEqual(posts
             .sort((a, b) =>
-                b.createdAt.localeCompare(a.createdAt)))
+                new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
         getResult = await postTestRepository
             .getByBlogId(testBlog.id,{"sortDirection": "desc"})
         expect(getResult.items).toEqual(posts)

@@ -1,19 +1,20 @@
-import {ApiRequestDatabaseModel} from "../../db/db-models";
-import {apiRequestDatabaseCollection} from "../../db/db";
+import {ApiRequestDatabaseMongoDBModel} from "../../db/db-models";
 import {ObjectId} from "mongodb";
+import {ApiRequestDatabaseModel} from "../../db/db";
 
 export const apiRequestDbRepository = {
-    async addRequest(request: ApiRequestDatabaseModel): Promise<ObjectId> {
-        const result = await apiRequestDatabaseCollection.insertOne(request)
-        return result.insertedId
+    async addRequest(request: ApiRequestDatabaseMongoDBModel): Promise<ObjectId> {
+        const result = await ApiRequestDatabaseModel
+            .create(request)
+        return result.id
     },
-    async getRequestByIP(request: ApiRequestDatabaseModel, requestValidDate: Date) {
-        return apiRequestDatabaseCollection
+    async getRequestByIP(request: ApiRequestDatabaseMongoDBModel, requestValidDate: Date) {
+        return ApiRequestDatabaseModel
             .find({'IP': request.IP, 'URL': request.URL, 'date': {$gt: requestValidDate}})
-            .toArray()
     },
     async deleteAllRequest() {
-        await apiRequestDatabaseCollection.deleteMany()
+        await ApiRequestDatabaseModel
+            .deleteMany()
         return true
     }
 }

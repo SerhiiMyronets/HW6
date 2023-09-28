@@ -1,7 +1,7 @@
 import {
     BlogMongoDBModel,
     CommentMongoDBModel,
-    DeviceAuthSessionsModel,
+    DeviceAuthSessionMongoDBModel,
     PostMongoDBModel,
     UsersMongoDBModel
 } from "../db/db-models";
@@ -14,7 +14,7 @@ export const mapperDbRepository = {
             name: blogDB.name,
             description: blogDB.description,
             websiteUrl: blogDB.websiteUrl,
-            createdAt: blogDB.createdAt.toISOString(),
+            createdAt: blogDB.createdAt,
             isMembership: blogDB.isMembership
         }
     },
@@ -26,7 +26,7 @@ export const mapperDbRepository = {
             content: postDB.content,
             blogId: postDB.blogId,
             blogName: postDB.blogName,
-            createdAt: postDB.createdAt.toISOString()
+            createdAt: postDB.createdAt
         }
     },
     userOutputMongoDBtoUsersViewMongo(userDB: WithId<UsersMongoDBModel>) {
@@ -34,7 +34,7 @@ export const mapperDbRepository = {
             id: userDB._id.toString(),
             login: userDB.accountData.login,
             email: userDB.accountData.email,
-            createdAt: userDB.accountData.createdAt.toISOString()
+            createdAt: userDB.accountData.createdAt
         }
     },
     commentViewMongoDBtoCommentViewModel(commentDB: WithId<CommentMongoDBModel>) {
@@ -45,14 +45,14 @@ export const mapperDbRepository = {
                 userId: commentDB.userId,
                 userLogin: commentDB.userLogin
             },
-            createdAt: commentDB.createdAt.toISOString()
+            createdAt: commentDB.createdAt
         }
     },
-    deviceAuthSessionsModelToDeviceViewModel(session: DeviceAuthSessionsModel) {
+    deviceAuthSessionsModelToDeviceViewModel(session: DeviceAuthSessionMongoDBModel) {
         return {
             ip: session.IP,
             title: session.deviceName,
-            lastActiveDate: session.issuedAt.toISOString(),
+            lastActiveDate: session.issuedAt,
             deviceId: session.deviceId
         }
     }

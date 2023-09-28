@@ -109,12 +109,10 @@ authRoute.post('/new-password',
     authNewPasswordValidation,
     errorsFormatMiddleware,
     async (req: RequestWithBody<NewPasswordInputModel>, res: Response) => {
-        console.log(1)
         const newPassword: NewPasswordInputModel = {
             newPassword: req.body.newPassword,
             recoveryCode: req.body.recoveryCode
         }
-        console.log(newPassword)
         const isPasswordUpdate = await authService.newPasswordUpdate(newPassword)
         if (!isPasswordUpdate)
             res.sendStatus(400)

@@ -1,8 +1,8 @@
 import {usersDbRepository} from "../repositories/db-repositories/users-db-repository";
 import {
     ConfirmationCodeUpdateType,
-    DeviceAuthSessionsModel,
-    passwordRecoveryModel,
+    DeviceAuthSessionMongoDBModel,
+    PasswordRecoveryMongoDBModel,
     UsersMongoDBModel
 } from "../db/db-models";
 import {randomUUID} from "crypto";
@@ -41,10 +41,6 @@ export const authService = {
                 confirmationCode: randomUUID(),
                 expirationDate: add(new Date(), settings.EMAIL_CONFIRMATION_CODE_EXP),
                 isConfirmed: false
-            },
-            passwordRecovery: {
-                confirmationCode: '',
-                expirationDate: new Date,
             }
         }
         const createdUser = await usersDbRepository.createUser(user)
@@ -61,20 +57,33 @@ export const authService = {
     async passwordRecovery(email: string): Promise<boolean> {
         const user = await usersDbRepository.findUserByEmail(email)
         if (!user) return true
-        const passwordRecovery: passwordRecoveryModel = {
+        await usersDbRepository.deletePreviousPasswordRecoveryRequest(user._id)
+        const passwordRecovery: PasswordRecoveryMongoDBModel = {
+            userId: user._id.toString(),
+            email: user.accountData.email,
             confirmationCode: randomUUID(),
             expirationDate: add(new Date(), settings.PASSWORD_RECOVERY_CONFIRMATION_CODE_EXP)
         }
-        const updatedUser = await usersDbRepository.updatePasswordRecovery(user._id, passwordRecovery)
-        console.log(passwordRecovery.confirmationCode)
-        console.log(passwordRecovery.expirationDate)
-        if (updatedUser)
-            try {
-                await emailManager.sendPasswordRecoveryCode(updatedUser)
-            } catch (error) {
-                console.error(error)
-                return false
-            }
+        const passwordRecoveryRequest = await usersDbRepository.createPasswordRecoveryRequest(passwordRecovery)
+        try {
+            await emailManager.sendPasswordRecoveryCode(passwordRecoveryRequest)
+        } catch (error) {
+            console.error(error)
+            return false
+        }
+        return true
+    },
+    async newPasswordUpdate(newPassword: NewPasswordInputModel): Promise<boolean> {
+        const passwordRecoveryRequest = await usersDbRepository
+            .findPasswordRecoveryRequest(newPassword.recoveryCode)
+        if (!passwordRecoveryRequest) return false
+        if (passwordRecoveryRequest.expirationDate < new Date()) return false
+        const user = await usersDbRepository.findUserById(passwordRecoveryRequest.userId)
+        if (!user) return false
+        const password = await bcrypt.hash(newPassword.newPassword, 10)
+        const isPasswordUpdated = await usersDbRepository.newPasswordUpdate(user._id, password)
+        if (!isPasswordUpdated) return false
+        await usersDbRepository.deletePreviousPasswordRecoveryRequest(user._id)
         return true
     },
     async confirmEmail(code: string): Promise<boolean> {
@@ -110,7 +119,7 @@ export const authService = {
         const newPairOfTokens = await jwtService.createAccessRefreshTokens(authInput.userId, deviceId)
         const payload = await jwtService.getPayloadOfRefreshToken(newPairOfTokens.refreshToken)
         if (!payload) return null
-        const authSession: DeviceAuthSessionsModel = {
+        const authSession: DeviceAuthSessionMongoDBModel = {
             userId: payload.userId,
             deviceId: payload.deviceId,
             deviceName: authInput.deviceName,
@@ -121,7 +130,7 @@ export const authService = {
         await deviceAuthSessionsDbRepository.createSession(authSession)
         return newPairOfTokens
     },
-    async refreshPairOfTokens(refreshToken: string, activeSession: WithId<DeviceAuthSessionsModel>): Promise<AccessRefreshTokensModel | null> {
+    async refreshPairOfTokens(refreshToken: string, activeSession: WithId<DeviceAuthSessionMongoDBModel>): Promise<AccessRefreshTokensModel | null> {
         const newPairOfTokens = await jwtService.createAccessRefreshTokens(activeSession.userId, activeSession.deviceId)
         const newPayload = await jwtService.getPayloadOfRefreshToken(newPairOfTokens.refreshToken)
         const isSessionUpdated = await deviceAuthSessionsDbRepository.updateSession(activeSession._id, newPayload!.issuedAt)
@@ -145,16 +154,7 @@ export const authService = {
         await deviceAuthSessionsDbRepository.deleteSession(sessionId)
 
     },
-    async getDeviceSession(sessionId: string): Promise<WithId<DeviceAuthSessionsModel> | null> {
+    async getDeviceSession(sessionId: string): Promise<WithId<DeviceAuthSessionMongoDBModel> | null> {
         return await deviceAuthSessionsDbRepository.getSessionByDeviceId(sessionId)
-    },
-    async newPasswordUpdate(newPassword: NewPasswordInputModel): Promise<boolean> {
-        const user = await usersDbRepository.findUserByNewPasswordConfirmationCode(newPassword.recoveryCode)
-        if (!user) return false
-        if (user.passwordRecovery.expirationDate < new Date()) return false
-        const password = await bcrypt.hash(newPassword.newPassword, 10)
-        const isPasswordUpdated = await usersDbRepository.newPasswordUpdate(user._id, password)
-        if (!isPasswordUpdated) return false
-        return true
     }
 }

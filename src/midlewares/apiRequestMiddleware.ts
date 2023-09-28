@@ -1,13 +1,13 @@
 import {NextFunction, Request, Response} from "express";
 import {apiRequestDbRepository} from "../repositories/db-repositories/api-request-db-repository";
-import {ApiRequestDatabaseModel} from "../db/db-models";
+import {ApiRequestDatabaseMongoDBModel} from "../db/db-models";
 import {settings} from "../setting";
 import add from "date-fns/add";
 
 export const apiRequestMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const IP = req.headers['x-forwarded-for'] || req.socket.remoteAddress
     if (!IP) return res.sendStatus(400)
-    const request: ApiRequestDatabaseModel = {
+    const request: ApiRequestDatabaseMongoDBModel = {
         IP: IP.toString(),
         URL: req.originalUrl,
         date: new Date()

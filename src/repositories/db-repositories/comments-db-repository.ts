@@ -1,37 +1,30 @@
 import {CommentMongoDBModel} from "../../db/db-models";
-import {commentsCollection} from "../../db/db";
-import {ObjectId, WithId} from "mongodb";
+import {WithId} from "mongodb";
+import {CommentModel} from "../../db/db";
 
 export const commentsDbRepository = {
     async creatComment(newComment: CommentMongoDBModel): Promise<WithId<CommentMongoDBModel> | null> {
-        const res = await commentsCollection
-            .insertOne(newComment)
-        return this.findCommentById(res.insertedId.toString());
+        const res = await CommentModel
+            .create(newComment)
+        return this.findCommentById(res.id);
     },
-    async findCommentById(id: string): Promise<WithId<CommentMongoDBModel> | null> {
-        const result = await commentsCollection
-            .findOne({_id: new ObjectId(id)}, )
-        if (result) {
-            return result
-        } else {
-            return null
-        }
+    async findCommentById(_id: string): Promise<WithId<CommentMongoDBModel> | null> {
+        return CommentModel.findOne({_id})
     },
     async deleteAllComments(): Promise<boolean> {
-        await commentsCollection
-            .deleteMany({})
+        await CommentModel.deleteMany({})
         return true
     },
-    async updateComment(commentId: string, commentContent: string) {
-        const result = await commentsCollection
-            .updateOne({_id: new ObjectId(commentId)}, {
+    async updateComment(_id: string, commentContent: string) {
+        const result = await CommentModel
+            .updateOne({_id}, {
                 $set: {content: commentContent}
             })
         return result.matchedCount === 1
     },
-    async deleteComment(id: string) {
-        const result = await commentsCollection
-            .deleteOne({_id: new ObjectId(id)})
+    async deleteComment(_id: string) {
+        const result = await CommentModel
+            .deleteOne({_id})
         return result.deletedCount === 1
     }
 }

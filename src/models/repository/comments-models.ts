@@ -17,7 +17,7 @@ export type CommentViewModel = {
     id: string
     content: string
     commentatorInfo: CommentatorInfo
-    createdAt: string
+    createdAt: Date
 }
 export type CommentsViewModelPaginated = {
     pagesCount: number

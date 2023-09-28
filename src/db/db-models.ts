@@ -22,11 +22,10 @@ export type PostMongoDBModel = {
 
 //users db models
 export type UsersMongoDBModel = {
-    accountData: AccountDataTypeModel,
+    accountData: AccountDataModel,
     emailConfirmation: EmailConfirmationModel
-    passwordRecovery: passwordRecoveryModel
 }
-export type AccountDataTypeModel = {
+export type AccountDataModel = {
     login: string
     email: string
     password: string
@@ -37,7 +36,9 @@ export type EmailConfirmationModel = {
     expirationDate: Date
     isConfirmed: boolean
 }
-export type passwordRecoveryModel = {
+export type PasswordRecoveryMongoDBModel = {
+    userId: string
+    email: string
     confirmationCode: string
     expirationDate: Date
 }
@@ -64,7 +65,7 @@ export type EmailBodyModel = {
 }
 
 // refresh token db models
-export type DeviceAuthSessionsModel = {
+export type DeviceAuthSessionMongoDBModel = {
     userId: string
     deviceId: string
     deviceName: string
@@ -73,7 +74,7 @@ export type DeviceAuthSessionsModel = {
     expiredAt: Date
 }
 
-export type ApiRequestDatabaseModel = {
+export type ApiRequestDatabaseMongoDBModel = {
     IP: string
     URL: string
     date: Date

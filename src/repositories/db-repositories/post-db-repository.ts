@@ -1,20 +1,18 @@
-import {postsCollection} from "../../db/db";
-import {ObjectId} from "mongodb";
+import {PostModel} from "../../db/db";
 import {mapperDbRepository} from "../mapper-db-repository";
 import {PostInputModel, PostViewModel} from "../../models/repository/posts-models";
 import {PostMongoDBModel} from "../../db/db-models";
 
 export const postsRepository = {
     async findPosts(): Promise<PostViewModel[]> {
-        const result = await postsCollection
+        const result = await PostModel
             .find()
-            .toArray()
         return result.map(b =>
             (mapperDbRepository.postOutputMongoDBToPostViewModel(b)))
     },
-    async findById(id: string): Promise<PostViewModel | null> {
-        const result = await postsCollection
-            .findOne({_id: new ObjectId(id)})
+    async findById(_id: string): Promise<PostViewModel | null> {
+        const result = await PostModel
+            .findOne({_id})
         if (result) {
             return mapperDbRepository.postOutputMongoDBToPostViewModel(result)
         } else {
@@ -22,25 +20,25 @@ export const postsRepository = {
         }
     },
     async creatPost(newPostBody: PostMongoDBModel): Promise<PostViewModel | null> {
-        const res = await postsCollection
-            .insertOne(newPostBody)
-        return this.findById(res.insertedId.toString());
+        const res = await PostModel
+            .create(newPostBody)
+        return this.findById(res.id);
     },
 
-    async updatePost(id: string, newUpdatedPostBody: PostInputModel): Promise<Boolean> {
-        const result = await postsCollection
-            .updateOne({_id: new ObjectId(id)}, {
+    async updatePost(_id: string, newUpdatedPostBody: PostInputModel): Promise<Boolean> {
+        const result = await PostModel
+            .updateOne({_id}, {
                 $set: newUpdatedPostBody
             })
         return result.matchedCount === 1
     },
-    async deletePost(id: string): Promise<Boolean> {
-        const result = await postsCollection
-            .deleteOne({_id: new ObjectId(id)})
+    async deletePost(_id: string): Promise<Boolean> {
+        const result = await PostModel
+            .deleteOne({_id})
         return result.deletedCount === 1
     },
     async deleteAllPosts(): Promise<boolean> {
-        await postsCollection
+        await PostModel
             .deleteMany({})
         return true
     }

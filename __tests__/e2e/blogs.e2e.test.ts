@@ -14,14 +14,14 @@ import {blogsService} from "../../src/domain/blogs-service";
 import mongoose from "mongoose";
 import {MongoMemoryServer} from "mongodb-memory-server";
 
-let mongoMemoryServer: any
+
 describe(RouterPaths.blogs, () => {
+    let mongoMemoryServer: any
     beforeAll(async () => {
         mongoMemoryServer = new MongoMemoryServer()
         await mongoMemoryServer.start();
         const uri = await mongoMemoryServer.getUri();
         await mongoose.connect(uri);
-        // await mongoose.connect(mongooseURI)
         await request(app).delete(RouterPaths.__test__).expect(204)
     })
     beforeEach(async () => {
@@ -88,7 +88,7 @@ describe(RouterPaths.blogs, () => {
         getResult = await blogTestRepository.get()
         expect(getResult.items).toEqual(blogs
             .sort((a, b) =>
-                b.createdAt.localeCompare(a.createdAt)))
+                new Date(b.createdAt).getTime()- new Date(a.createdAt).getTime()))
         getResult = await blogTestRepository
             .get({"sortDirection": "desc"})
         expect(getResult.items).toEqual(blogs)

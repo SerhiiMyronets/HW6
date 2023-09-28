@@ -1,4 +1,4 @@
-import {EmailBodyModel, UsersMongoDBModel} from "../db/db-models";
+import {EmailBodyModel, PasswordRecoveryMongoDBModel, UsersMongoDBModel} from "../db/db-models";
 import {emailAdapter} from "../adapters/email-adapter";
 import {WithId} from "mongodb";
 
@@ -16,15 +16,15 @@ export const emailManager = {
         }
         await emailAdapter.sendEmail(emailBody)
     },
-    async sendPasswordRecoveryCode(user: UsersMongoDBModel) {
+    async sendPasswordRecoveryCode(passwordRecoveryRequest: PasswordRecoveryMongoDBModel) {
         const emailBody: EmailBodyModel = {
             from: 'Social Media <volkamana.test@gmail.com>',
-            to: user.accountData.email,
+            to: passwordRecoveryRequest.email,
             subject: 'Password recovery',
             html:
 `<h1>Password recovery</h1>
 <p>To finish password recovery please follow the link below:
-<a href='https://hw-6-git-main-serhiimyronets.vercel.app/password-recovery?recoveryCode=${user.passwordRecovery.confirmationCode}'>recovery password</a>
+<a href='https://hw-6-git-main-serhiimyronets.vercel.app/password-recovery?recoveryCode=${passwordRecoveryRequest.confirmationCode}'>recovery password</a>
         </p>`
         }
         await emailAdapter.sendEmail(emailBody)
