@@ -54,9 +54,9 @@ export const usersDbRepository = {
         return await PasswordRecoveryModel
             .create(passwordRecovery)
     },
-    async findPasswordRecoveryRequest(recoveryCode: string): Promise<WithId<PasswordRecoveryMongoDBModel> | null> {
+    async findPasswordRecoveryRequest(confirmationCode: string): Promise<WithId<PasswordRecoveryMongoDBModel> | null> {
         return PasswordRecoveryModel
-            .findOne({recoveryCode});
+            .findOne({confirmationCode});
     },
     async deletePreviousPasswordRecoveryRequest(userId: ObjectId): Promise<boolean> {
         await PasswordRecoveryModel

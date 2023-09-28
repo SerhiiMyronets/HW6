@@ -65,6 +65,7 @@ export const authService = {
             expirationDate: add(new Date(), settings.PASSWORD_RECOVERY_CONFIRMATION_CODE_EXP)
         }
         const passwordRecoveryRequest = await usersDbRepository.createPasswordRecoveryRequest(passwordRecovery)
+        console.log(passwordRecoveryRequest)
         try {
             await emailManager.sendPasswordRecoveryCode(passwordRecoveryRequest)
         } catch (error) {
@@ -76,6 +77,7 @@ export const authService = {
     async newPasswordUpdate(newPassword: NewPasswordInputModel): Promise<boolean> {
         const passwordRecoveryRequest = await usersDbRepository
             .findPasswordRecoveryRequest(newPassword.recoveryCode)
+        console.log(passwordRecoveryRequest)
         if (!passwordRecoveryRequest) return false
         if (passwordRecoveryRequest.expirationDate < new Date()) return false
         const user = await usersDbRepository.findUserById(passwordRecoveryRequest.userId)
