@@ -35,7 +35,7 @@ commentsRoute.put('/:id',
     })
 commentsRoute.put('/:id/like-status',
     accessTokenMiddlewareProtected,
-    paramValidation,
+    // paramValidation,
     likeInputValidation,
     errorsFormatMiddleware,
     async (req: RequestWithParamsBody<{ id: string }, LikeInputModel>, res: Response) => {
