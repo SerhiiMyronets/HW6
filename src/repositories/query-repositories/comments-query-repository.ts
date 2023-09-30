@@ -45,7 +45,8 @@ export const commentsQueryRepository = {
                         __v: 0,
                         _id: 0,
                         'likesInfo.likedUsersList': 0,
-                        'likesInfo.dislikedUsersList': 0
+                        'likesInfo.dislikedUsersList': 0,
+                        postId: 0
                     }
                 }])
             .sort({[query.sortBy]: sortDirectionList[query.sortDirection]})
@@ -90,7 +91,8 @@ export const commentsQueryRepository = {
                         __v: 0,
                         _id: 0,
                         'likesInfo.likedUsersList': 0,
-                        'likesInfo.dislikedUsersList': 0
+                        'likesInfo.dislikedUsersList': 0,
+                        postId: 0
                     }
                 }])
         if (comment.length === 0) return null
