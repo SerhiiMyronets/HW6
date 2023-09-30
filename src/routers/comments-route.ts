@@ -2,22 +2,26 @@ import {Response, Router} from "express";
 import {paramValidation} from "../midlewares/param/param-validation";
 import {RequestWithParams, RequestWithParamsBody} from "../types/request-types";
 import {commentsService} from "../domain/comments-service";
-import {accessTokenMiddleware} from "../midlewares/access-token-middleware";
+import {accessTokenMiddlewareProtected} from "../midlewares/access-token-middleware-protected";
 import {commentsBodyValidation} from "../midlewares/body/comments-body-validation";
 import {errorsFormatMiddleware} from "../midlewares/errors-format-middleware";
-import {CommentInputModel} from "../models/repository/comments-models";
+import {CommentInputModel, LikeInputModel} from "../models/repository/comments-models";
 import {commentsDbRepository} from "../repositories/db-repositories/comments-db-repository";
+import {accessTokenNonProtectedMiddleware} from "../midlewares/access-token-non-protected-middleware";
+import {commentsQueryRepository} from "../repositories/query-repositories/comments-query-repository";
+import {likeInputValidation} from "../midlewares/body/like-input-validation";
 
 export const commentsRoute = Router({})
 
 commentsRoute.get('/:id',
+    accessTokenNonProtectedMiddleware,
     paramValidation,
     async (req: RequestWithParams<{ id: string }>, res: Response) => {
-        const comment = await commentsService.findCommentById(req.params.id)
+        const comment = await commentsQueryRepository.findCommentsById(req.params.id, req.user?._id.toString())
         comment ? res.status(200).send(comment) : res.sendStatus(404)
     })
 commentsRoute.put('/:id',
-    accessTokenMiddleware,
+    accessTokenMiddlewareProtected,
     paramValidation,
     commentsBodyValidation,
     errorsFormatMiddleware,
@@ -25,19 +29,32 @@ commentsRoute.put('/:id',
         const commentId = req.params.id
         const comment = await commentsDbRepository.findCommentById(commentId)
         if (!comment) return res.sendStatus(404)
-        if (comment.userId !== req.user!._id.toString()) return res.sendStatus(403)
+        if (comment.commentatorInfo.userId !== req.user!._id.toString()) return res.sendStatus(403)
         await commentsService.updateComment(commentId, req.body.content)
         return res.sendStatus(204)
     })
+commentsRoute.put('/:id/like-status',
+    accessTokenMiddlewareProtected,
+    paramValidation,
+    likeInputValidation,
+    errorsFormatMiddleware,
+    async (req: RequestWithParamsBody<{ id: string }, LikeInputModel>, res: Response) => {
+        const commentId = req.params.id
+        const comment = await commentsDbRepository.findCommentById(commentId)
+        if (!comment) return res.sendStatus(404)
+        if (comment.commentatorInfo.userId !== req.user!._id.toString()) return res.sendStatus(403)
+        await commentsService.updateLikeStatus(commentId, req.body.likeStatus.toString(), req.user!._id.toString())
+        return res.sendStatus(204)
+    })
 commentsRoute.delete('/:id',
-    accessTokenMiddleware,
+    accessTokenMiddlewareProtected,
     paramValidation,
     errorsFormatMiddleware,
     async (req: RequestWithParams<{ id: string }>, res: Response) => {
         const commentId = req.params.id
         const comment = await commentsDbRepository.findCommentById(commentId)
         if (!comment) return res.sendStatus(404)
-        if (comment.userId !== req.user!._id.toString()) return res.sendStatus(403)
+        if (comment.commentatorInfo.userId !== req.user!._id.toString()) return res.sendStatus(403)
         await commentsService.deleteComment(commentId)
         return res.sendStatus(204)
     })

@@ -14,13 +14,14 @@ import {paramValidation} from "../midlewares/param/param-validation";
 import {postsService} from "../domain/posts-service";
 import {postsQueryRepository} from "../repositories/query-repositories/posts-query-repository";
 import {postsQueryValidation} from "../midlewares/query/posts-query-validation";
-import {accessTokenMiddleware} from "../midlewares/access-token-middleware";
+import {accessTokenMiddlewareProtected} from "../midlewares/access-token-middleware-protected";
 import {commentsBodyValidation} from "../midlewares/body/comments-body-validation";
 import {CommentInputModel, findCommentsPaginateModel} from "../models/repository/comments-models";
 import {postsRepository} from "../repositories/db-repositories/post-db-repository";
 import {commentsService} from "../domain/comments-service";
 import {commentsQueryRepository} from "../repositories/query-repositories/comments-query-repository";
 import {commentsQueryValidation} from "../midlewares/query/comments-query-validation";
+import {accessTokenNonProtectedMiddleware} from "../midlewares/access-token-non-protected-middleware";
 
 
 export const postsRoute = Router({})
@@ -89,28 +90,30 @@ postsRoute.put('/:id',
         }
     })
 postsRoute.post('/:id/comments',
-    accessTokenMiddleware,
+    accessTokenMiddlewareProtected,
     paramValidation,
     commentsBodyValidation,
     errorsFormatMiddleware,
     async (req: RequestWithParamsBody<{ id: string }, CommentInputModel>, res: Response) => {
         if (await postsRepository.findById(req.params.id)) {
-            const newComment = await commentsService
+            const newCommentId = await commentsService
                 .createComment(req.params.id, req.body.content,
                     req.user!._id, req.user!.accountData.login)
-            res.status(201).send(newComment)
+            const comment = await commentsQueryRepository.findCommentsById(newCommentId)
+            res.status(201).send(comment)
         } else {
             res.sendStatus(404)
         }
     })
 postsRoute.get('/:id/comments',
+    accessTokenNonProtectedMiddleware,
     paramValidation,
     commentsQueryValidation,
     errorsFormatMiddleware,
     async (req: RequestWithParamsQuery<{ id: string }, findCommentsPaginateModel>, res: Response) => {
         const isPostExisting = await postsQueryRepository.isPostExisting(req.params.id)
         if (isPostExisting) {
-            const result = await commentsQueryRepository.findCommentsByPostIdQuery(req.query, req.params.id)
+            const result = await commentsQueryRepository.findCommentsByPostIdQuery(req.query, req.params.id, req.user?._id.toString())
             res.status(200).send(result)
         } else {
             res.sendStatus(404)

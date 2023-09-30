@@ -9,7 +9,7 @@ import {
 } from "../models/repository/users-models";
 import {errorsFormatMiddleware, ErrorType} from "../midlewares/errors-format-middleware";
 import {authBodyValidation} from "../midlewares/body/auth-body-validation";
-import {accessTokenMiddleware} from "../midlewares/access-token-middleware";
+import {accessTokenMiddlewareProtected} from "../midlewares/access-token-middleware-protected";
 import {usersRegistrationBodyValidation} from "../midlewares/body/users-registration-body-validation";
 import {authService} from "../domain/auth-service";
 import {refreshTokenMiddleware} from "../midlewares/refresh-token-middleware";
@@ -42,7 +42,7 @@ authRoute.post('/login',
             .send(accessToken)
     })
 authRoute.get('/me',
-    accessTokenMiddleware,
+    accessTokenMiddlewareProtected,
     async (req: Request, res: Response) => {
         const aboutUser: MeViewUserModel = {
             email: req.user!.accountData.email,

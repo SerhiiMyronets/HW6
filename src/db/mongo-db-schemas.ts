@@ -1,11 +1,16 @@
 import mongoose from "mongoose";
 import {
-    AccountDataModel, ApiRequestDatabaseMongoDBModel,
-    BlogMongoDBModel, CommentMongoDBModel, DeviceAuthSessionMongoDBModel,
+    AccountDataModel,
+    ApiRequestDatabaseMongoDBModel,
+    BlogMongoDBModel,
+    CommentMongoDBModel,
+    DeviceAuthSessionMongoDBModel,
     EmailConfirmationModel,
     PasswordRecoveryMongoDBModel,
-    PostMongoDBModel, UsersMongoDBModel
+    PostMongoDBModel,
+    UsersMongoDBModel
 } from "./db-models";
+
 
 export const BlogSchema = new mongoose.Schema<BlogMongoDBModel>({
     name: {type: String, require: true},
@@ -47,9 +52,15 @@ export const UserSchema = new mongoose.Schema<UsersMongoDBModel>({
 export const CommentSchema = new mongoose.Schema<CommentMongoDBModel>({
     postId: {type: String, require: true},
     content: {type: String, require: true},
-    userId: {type: String, require: true},
-    userLogin: {type: String, require: true},
-    createdAt: {type: Date, required: true}
+    commentatorInfo: {
+        userId: {type: String, require: true},
+        userLogin: {type: String, require: true}
+    },
+    createdAt: {type: Date, required: true},
+    likesInfo: {
+        likedUsersList: [String],
+        dislikedUsersList: [String]
+    }
 })
 export const DeviceAuthSessionsSchema = new mongoose.Schema<DeviceAuthSessionMongoDBModel>({
     userId: {type: String, require: true},

@@ -77,7 +77,6 @@ export const authService = {
     async newPasswordUpdate(newPassword: NewPasswordInputModel): Promise<boolean> {
         const passwordRecoveryRequest = await usersDbRepository
             .findPasswordRecoveryRequest(newPassword.recoveryCode)
-        console.log(passwordRecoveryRequest)
         if (!passwordRecoveryRequest) return false
         if (passwordRecoveryRequest.expirationDate < new Date()) return false
         const user = await usersDbRepository.findUserById(passwordRecoveryRequest.userId)

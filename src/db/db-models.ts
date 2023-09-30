@@ -51,9 +51,16 @@ export type ConfirmationCodeUpdateType = {
 export type CommentMongoDBModel = {
     postId: string
     content: string
-    userId: string
-    userLogin: string
+    commentatorInfo: {
+        userId: string
+        userLogin: string
+    }
     createdAt: Date
+    likesInfo: {
+        likedUsersList: Array<string>
+        dislikedUsersList: Array<string>
+        myStatus: string
+    }
 }
 
 // email smtp models

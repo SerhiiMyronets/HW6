@@ -42,10 +42,15 @@ export const mapperDbRepository = {
             id: commentDB._id.toString(),
             content: commentDB.content,
             commentatorInfo: {
-                userId: commentDB.userId,
-                userLogin: commentDB.userLogin
+                userId: commentDB.commentatorInfo.userId,
+                userLogin: commentDB.commentatorInfo.userLogin
             },
-            createdAt: commentDB.createdAt
+            createdAt: commentDB.createdAt,
+            likesInfo: {
+                likesCount: 1,
+                dislikesCount: 1,
+                myStatus: ''
+            }
         }
     },
     deviceAuthSessionsModelToDeviceViewModel(session: DeviceAuthSessionMongoDBModel) {
