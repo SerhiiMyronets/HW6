@@ -99,7 +99,7 @@ postsRoute.post('/:id/comments',
             const newCommentId = await commentsService
                 .createComment(req.params.id, req.body.content,
                     req.user!._id, req.user!.accountData.login)
-            const comment = await commentsQueryRepository.findCommentsById(newCommentId)
+            const comment = await commentsQueryRepository.findCommentById(newCommentId)
             res.status(201).send(comment)
         } else {
             res.sendStatus(404)

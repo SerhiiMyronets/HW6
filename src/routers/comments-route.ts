@@ -17,7 +17,7 @@ commentsRoute.get('/:id',
     accessTokenNonProtectedMiddleware,
     paramValidation,
     async (req: RequestWithParams<{ id: string }>, res: Response) => {
-        const comment = await commentsQueryRepository.findCommentsById(req.params.id, req.user?._id.toString())
+        const comment = await commentsQueryRepository.findCommentById(req.params.id, req.user?._id.toString())
         comment ? res.status(200).send(comment) : res.sendStatus(404)
     })
 commentsRoute.put('/:id',

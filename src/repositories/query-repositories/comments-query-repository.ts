@@ -56,7 +56,7 @@ export const commentsQueryRepository = {
         //     b => mapperDbRepository.commentViewMongoDBtoCommentViewModel(b))
         return mapperQueryRepository.commentViewModelToCommentsViewModelPaginated(
             foundedComments, +query.pageNumber, +query.pageSize, totalCount)
-    }, async findCommentsById(commentId: string, userId?: string): Promise<CommentViewModel | null> {
+    }, async findCommentById(commentId: string, userId?: string): Promise<CommentViewModel | null> {
         let myStatusFieldValue: any
         if (userId)
             myStatusFieldValue = {
@@ -97,6 +97,6 @@ export const commentsQueryRepository = {
                 }])
         if (comment.length === 0) return null
         // @ts-ignore
-        else return comment
+        else return comment[0]
     }
 }
