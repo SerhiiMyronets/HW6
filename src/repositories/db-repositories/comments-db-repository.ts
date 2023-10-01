@@ -49,7 +49,7 @@ export const commentsDbRepository = {
                 $addFields: {
                     likesStatus: {
                         $cond: {
-                            if: {$in: [userId, '$likesInfo.likedUsersList']},
+                            if:  {$in: [userId, '$likesInfo.likedUsersList']},
                             then: 'Like',
                             else: {
                                 $cond: {

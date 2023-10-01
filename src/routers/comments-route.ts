@@ -42,7 +42,7 @@ commentsRoute.put('/:id/like-status',
         const commentId = req.params.id
         const comment = await commentsDbRepository.findCommentById(commentId)
         if (!comment) return res.sendStatus(404)
-        if (comment.commentatorInfo.userId !== req.user!._id.toString()) return res.sendStatus(403)
+        if (comment.commentatorInfo.userId !== req.user!._id.toString()) return res.sendStatus(401)
         await commentsService.updateLikeStatus(commentId, req.body.likeStatus.toString(), req.user!._id.toString())
         return res.sendStatus(204)
     })
@@ -54,7 +54,7 @@ commentsRoute.delete('/:id',
         const commentId = req.params.id
         const comment = await commentsDbRepository.findCommentById(commentId)
         if (!comment) return res.sendStatus(404)
-        if (comment.commentatorInfo.userId !== req.user!._id.toString()) return res.sendStatus(403)
+        if (comment.commentatorInfo.userId !== req.user!._id.toString()) return res.sendStatus(401)
         await commentsService.deleteComment(commentId)
         return res.sendStatus(204)
     })
