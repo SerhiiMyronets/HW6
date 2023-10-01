@@ -29,7 +29,7 @@ commentsRoute.put('/:id',
         const commentId = req.params.id
         const comment = await commentsDbRepository.findCommentById(commentId)
         if (!comment) return res.sendStatus(404)
-        if (comment.commentatorInfo.userId !== req.user!._id.toString()) return res.sendStatus(403)
+        if (comment.commentatorInfo.userId !== req.user!._id.toString()) return res.sendStatus(401)
         await commentsService.updateComment(commentId, req.body.content)
         return res.sendStatus(204)
     })
