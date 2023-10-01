@@ -53,11 +53,17 @@ export const commentsService = {
             await commentsDbRepository.addDislike(commentId, userId)
         if (currentLikeStatus == 'Dislike' && desiredLikeStatus == 'Like') {
             await commentsDbRepository.removeDislike(commentId, userId)
-            // await commentsDbRepository.addLike(commentId, userId)
+            await commentsDbRepository.addLike(commentId, userId)
         }
         if (currentLikeStatus == 'Like' && desiredLikeStatus == 'Dislike') {
             await commentsDbRepository.removeLike(commentId, userId)
-            // await commentsDbRepository.addDislike(commentId, userId)
+            await commentsDbRepository.addDislike(commentId, userId)
+        }
+        if (currentLikeStatus == 'Like' && desiredLikeStatus == 'None') {
+            await commentsDbRepository.removeLike(commentId, userId)
+        }
+        if (currentLikeStatus == 'Dislike' && desiredLikeStatus == 'None') {
+            await commentsDbRepository.removeDislike(commentId, userId)
         }
         currentLikeStatus = await commentsDbRepository.getCommentStatus(commentId, userId)
         console.log("result", currentLikeStatus)
