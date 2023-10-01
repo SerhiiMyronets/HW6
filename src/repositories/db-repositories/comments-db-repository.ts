@@ -10,7 +10,7 @@ export const commentsDbRepository = {
         return res.id;
     },
     async findCommentById(_id: string): Promise<WithId<CommentMongoDBModel> | null> {
-        return CommentModel.findOne({_id})
+        return CommentModel.findById({_id})
     },
     async deleteAllComments(): Promise<boolean> {
         await CommentModel.deleteMany({})
