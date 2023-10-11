@@ -26,7 +26,7 @@ export type CommentViewModel = {
 export type LikesInfoViewModel = {
     likesCount: number
     dislikesCount: number
-    myStatus: string//myStatusType
+    myStatus: string
 }
 
 export type CommentsViewModelPaginated = {
@@ -36,8 +36,11 @@ export type CommentsViewModelPaginated = {
     totalCount: number
     items: CommentViewModel[]
 }
+
 export enum LikeStatusType {
     None,
     Like,
     Dislike
 }
+
+export type ParamInputModel = { id: string }

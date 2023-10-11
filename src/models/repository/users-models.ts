@@ -36,7 +36,9 @@ export type AuthModel = {
 export type AuthViewModel = {
     accessToken: string
 }
-
+export type ResendConfirmationCodeInputModel = {
+    email: string
+}
 export type PasswordRecoveryInputModel = {
     email: string
 }
@@ -44,6 +46,11 @@ export type NewPasswordInputModel = {
     newPassword: string,
     recoveryCode: string
 }
+
+export type RegistrationConfirmationCodeModel = {
+    code: string
+}
+
 //me
 export type MeViewUserModel = {
     email: string

@@ -1,6 +1,6 @@
 import {
     BlogMongoDBModel,
-    CommentMongoDBModel,
+    CommentDBType,
     DeviceAuthSessionMongoDBModel,
     PostMongoDBModel,
     UsersMongoDBModel
@@ -37,7 +37,7 @@ export const mapperDbRepository = {
             createdAt: userDB.accountData.createdAt
         }
     },
-    commentViewMongoDBtoCommentViewModel(commentDB: WithId<CommentMongoDBModel>) {
+    commentViewMongoDBtoCommentViewModel(commentDB: WithId<CommentDBType>) {
         return {
             id: commentDB._id.toString(),
             content: commentDB.content,

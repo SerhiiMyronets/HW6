@@ -18,10 +18,11 @@ import {accessTokenMiddlewareProtected} from "../midlewares/access-token-middlew
 import {commentsBodyValidation} from "../midlewares/body/comments-body-validation";
 import {CommentInputModel, findCommentsPaginateModel} from "../models/repository/comments-models";
 import {postsRepository} from "../repositories/db-repositories/post-db-repository";
-import {commentsService} from "../domain/comments-service";
-import {commentsQueryRepository} from "../repositories/query-repositories/comments-query-repository";
+
 import {commentsQueryValidation} from "../midlewares/query/comments-query-validation";
 import {accessTokenNonProtectedMiddleware} from "../midlewares/access-token-non-protected-middleware";
+import {commentsQueryRepository, commentsService, likesInfoQueryRepository} from "../composition-root";
+import {LikesStatusQueryModel} from "../db/db-models";
 
 
 export const postsRoute = Router({})
@@ -76,7 +77,7 @@ postsRoute.put('/:id',
     errorsFormatMiddleware,
     async (req: RequestWithParamsBody<{ id: string }, PostInputModel>, res: Response) => {
         const postUpdateInputBody: PostUpdateInputModel = {
-            postId:req.params.id,
+            postId: req.params.id,
             title: req.body.title,
             shortDescription: req.body.shortDescription,
             content: req.body.content,
@@ -96,9 +97,10 @@ postsRoute.post('/:id/comments',
     errorsFormatMiddleware,
     async (req: RequestWithParamsBody<{ id: string }, CommentInputModel>, res: Response) => {
         if (await postsRepository.findById(req.params.id)) {
+            const [postId, content, userId, userLogin] =
+                [req.params.id, req.body.content, req.user!._id.toString(), req.user!.accountData.login]
             const newCommentId = await commentsService
-                .createComment(req.params.id, req.body.content,
-                    req.user!._id, req.user!.accountData.login)
+                .createComment(postId, content, userId, userLogin)
             const comment = await commentsQueryRepository.findCommentById(newCommentId)
             res.status(201).send(comment)
         } else {
@@ -111,11 +113,17 @@ postsRoute.get('/:id/comments',
     commentsQueryValidation,
     errorsFormatMiddleware,
     async (req: RequestWithParamsQuery<{ id: string }, findCommentsPaginateModel>, res: Response) => {
-        const isPostExisting = await postsQueryRepository.isPostExisting(req.params.id)
-        if (isPostExisting) {
-            const result = await commentsQueryRepository.findCommentsByPostIdQuery(req.query, req.params.id, req.user?._id.toString())
-            res.status(200).send(result)
-        } else {
+        const postId = req.params.id
+        const userId = req.user?._id.toString()
+        const isPostExisting = await postsQueryRepository.isPostExisting(postId)
+        if (!isPostExisting)
             res.sendStatus(404)
+        let likesStatus: LikesStatusQueryModel = []
+        if (userId) {
+            likesStatus = await likesInfoQueryRepository.getCommentsLikeStatusByPost(postId, userId)
         }
+        const result = await commentsQueryRepository.findCommentsByPostId(req.query, postId, likesStatus)
+        res.status(200).send(result)
+
+
     })

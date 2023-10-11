@@ -3,8 +3,10 @@ import 'dotenv/config'
 import {
     ApiRequestDatabaseMongoDBModel,
     BlogMongoDBModel,
-    CommentMongoDBModel,
-    DeviceAuthSessionMongoDBModel, PasswordRecoveryMongoDBModel,
+    CommentDBType,
+    DeviceAuthSessionMongoDBModel,
+    LikeInfoType,
+    PasswordRecoveryMongoDBModel,
     PostMongoDBModel,
     UsersMongoDBModel
 } from "./db-models";
@@ -12,7 +14,9 @@ import {
     ApiRequestDatabaseSchema,
     BlogSchema,
     CommentSchema,
-    DeviceAuthSessionsSchema, PasswordRecoverySchema,
+    DeviceAuthSessionsSchema,
+    LikesInfoSchema,
+    PasswordRecoverySchema,
     PostSchema,
     UserSchema
 } from "./mongo-db-schemas";
@@ -23,7 +27,8 @@ export const mongooseURI = process.env.MONGOOSE_URI || `mongodb+srv://hardmail88
 export const BlogModel = mongoose.model<BlogMongoDBModel>('blogs', BlogSchema)
 export const PostModel = mongoose.model<PostMongoDBModel>('posts', PostSchema)
 export const UserModel = mongoose.model<UsersMongoDBModel>('users', UserSchema)
-export const CommentModel = mongoose.model<CommentMongoDBModel>('comments', CommentSchema)
+export const CommentModel = mongoose.model<CommentDBType>('comments', CommentSchema)
+export const LikeInfoModel = mongoose.model<LikeInfoType>('likeInfo', LikesInfoSchema)
 export const DeviceAuthSessionsModel = mongoose.model<DeviceAuthSessionMongoDBModel>('deviceAuthSessions', DeviceAuthSessionsSchema)
 export const ApiRequestDatabaseModel = mongoose.model<ApiRequestDatabaseMongoDBModel>('apiRequestDatabase', ApiRequestDatabaseSchema)
 export const PasswordRecoveryModel = mongoose.model<PasswordRecoveryMongoDBModel>('passwordRecovery', PasswordRecoverySchema)

@@ -97,7 +97,7 @@ export const authService = {
     },
     async resendConfirmationEmail(email: string): Promise<boolean> {
         const user = await usersDbRepository.findUserByLoginOrEmail(email)
-        if (!user) return false
+        if (!user) return true
         if (user.emailConfirmation.isConfirmed) return false
         const confirmationCodeUpdate: ConfirmationCodeUpdateType = {
             'emailConfirmation.confirmationCode': randomUUID(),

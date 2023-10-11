@@ -2,6 +2,7 @@
 // type PostInputModel = Omit<PostMongoDBModel, 'blogName'> & Pick<UsersMongoDBModel, 'emailConfirmation'>
 
 //blogs db models
+
 export type BlogMongoDBModel = {
     name: string
     description: string
@@ -48,19 +49,66 @@ export type ConfirmationCodeUpdateType = {
 }
 
 //comments db models
-export type CommentMongoDBModel = {
-    postId: string
-    content: string
-    commentatorInfo: {
-        userId: string
-        userLogin: string
+export class CommentDBType {
+    public createdAt: Date
+    public likesInfo: {
+        likesCount: number,
+        dislikesCount: number
     }
+
+    constructor(public postId: string,
+                public content: string,
+                public commentatorInfo: {
+                    userId: string,
+                    userLogin: string
+                }
+    ) {
+        this.createdAt = new Date()
+        this.likesInfo = {
+            likesCount: 0,
+            dislikesCount: 0
+        }
+    }
+}
+
+export class LikeInfoType {
+    public createdAt: Date
+
+    constructor(public userId: string,
+                public objectType: string,
+                public objectId: string,
+                public parentObjectType: string,
+                public parentObjectId: string,
+                public likeStatus: string
+    ) {
+        this.createdAt = new Date()
+    }
+}
+
+export type LikesInfoDBModel = {
+    userId: string
+    likeObjectType: "comment" | "post"
+    likeObjectId: string
+    likeStatus: "None" | "Like" | "Dislike"
     createdAt: Date
-    likesInfo: {
-        likedUsersList: Array<string>
-        dislikedUsersList: Array<string>
-        myStatus: string
-    }
+}
+export type LikesStatusQueryModel = Array<{
+    id: string,
+    likeStatus: "None" | "Like" | "Dislike"
+}>
+
+// export type CommentMongoDBModel = {
+//     postId: string
+//     content: string
+//     userId: string
+//     userLogin: string
+//     createdAt: Date
+//     likesInfo: LikesInfoDBModel[]
+// }
+
+export type CommentatorInfoModel = {
+    userId: string
+    userLogin: string
 }
 
 // email smtp models

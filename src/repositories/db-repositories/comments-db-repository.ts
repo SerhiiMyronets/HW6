@@ -1,47 +1,18 @@
-import {CommentMongoDBModel} from "../../db/db-models";
+import {CommentDBType} from "../../db/db-models";
 import {ObjectId, WithId} from "mongodb";
 import {CommentModel} from "../../db/db";
-import {LikeStatusType} from "../../models/repository/comments-models";
 
-export const commentsDbRepository = {
-    async creatComment(newComment: CommentMongoDBModel): Promise<string> {
+export class CommentsDbRepository {
+    async creatComment(newComment: CommentDBType): Promise<string> {
         const res = await CommentModel
             .create(newComment)
-        return res.id;
-    },
-    async findCommentById(_id: string): Promise<WithId<CommentMongoDBModel> | null> {
+        return res._id.toString();
+    }
+
+    async findCommentById(_id: string): Promise<WithId<CommentDBType> | null> {
         return CommentModel.findById({_id})
-    },
-    async deleteAllComments(): Promise<boolean> {
-        await CommentModel.deleteMany({})
-        return true
-    },
-    async updateComment(_id: string, commentContent: string) {
-        const result = await CommentModel
-            .updateOne({_id}, {
-                $set: {content: commentContent}
-            })
-        return result.matchedCount === 1
-    },
-    async deleteComment(_id: string) {
-        const result = await CommentModel
-            .deleteOne({_id})
-        return result.deletedCount === 1
-    },
-    async updateLikeStatus(_id: string, likeStatus: LikeStatusType, userId: string) {
-        const result = await CommentModel.findByIdAndUpdate({_id},
-            {
-                $cond:
-                    {
-                        if: {$likeStatus: {$eq: "0"}},
-                        then: {$push: {'$likesInfo.likedUsersList': userId}},
-                        else: {$push: {'$likesInfo.dislikedUsersList': userId}}
-                    }
-            })
-        console.log(result)
-        // console.log(CommentModel.findOne({_id}))
-        return true
-    },
+    }
+
     async getCommentStatus(_id: string, userId: string): Promise<string> {
         const status = await CommentModel.aggregate([
             {$match: {_id: new ObjectId(_id)}},
@@ -49,7 +20,7 @@ export const commentsDbRepository = {
                 $addFields: {
                     likesStatus: {
                         $cond: {
-                            if:  {$in: [userId, '$likesInfo.likedUsersList']},
+                            if: {$in: [userId, '$likesInfo.likedUsersList']},
                             then: 'Like',
                             else: {
                                 $cond: {
@@ -69,21 +40,55 @@ export const commentsDbRepository = {
             }]
         )
         return status[0].likesStatus
-    },
-    async removeDislike(_id: string, userId: string) {
-        await CommentModel.findByIdAndUpdate({_id: new ObjectId(_id)},
-            {$pull: {'likesInfo.dislikedUsersList': userId}})
-    },
-    async removeLike(_id: string, userId: string) {
-        await CommentModel.findByIdAndUpdate({_id: new ObjectId(_id)},
-            {$pull: {'likesInfo.likedUsersList': userId}})
-    },
-    async addLike(_id: string, userId: string) {
-        await CommentModel.findByIdAndUpdate({_id: new ObjectId(_id)},
-            {$push: {'likesInfo.likedUsersList': userId}})
-    },
-    async addDislike(_id: string, userId: string) {
-        await CommentModel.findByIdAndUpdate({_id: new ObjectId(_id)},
-            {$push: {'likesInfo.dislikedUsersList': userId}})
-    },
+    }
+
+    async deleteAllComments(): Promise<boolean> {
+        await CommentModel.deleteMany({})
+        return true
+    }
+
+    async updateComment(_id: string, commentContent: string) {
+        const result = await CommentModel
+            .updateOne({_id}, {
+                $set: {content: commentContent}
+            })
+        return result.matchedCount === 1
+    }
+
+    async deleteComment(_id: string) {
+        const result = await CommentModel
+            .deleteOne({_id})
+        return result.deletedCount === 1
+    }
+
+    async increaseLikesCount(id: string) {
+        await CommentModel.findOneAndUpdate({_id: new ObjectId(id)},
+            {$inc: {'likesInfo.likesCount': 1}})
+    }
+
+    async increaseLikesAndDecreaseDislikeCount(id: string) {
+        await CommentModel.findOneAndUpdate({_id: new ObjectId(id)},
+            {$inc: {'likesInfo.likesCount': 1, 'likesInfo.dislikesCount': -1}})
+    }
+
+    async increaseDislikeCount(id: string) {
+        await CommentModel.findOneAndUpdate({_id: new ObjectId(id)},
+            {$inc: {'likesInfo.dislikesCount': 1}})
+    }
+    async increaseDislikeAndDecreaseLikeCount(id: string) {
+        await CommentModel.findOneAndUpdate({_id: new ObjectId(id)},
+            {$inc: {'likesInfo.likesCount': -1, 'likesInfo.dislikesCount': 1}})
+    }
+
+    async decreaseLikeCount(id: string) {
+        await CommentModel.findOneAndUpdate({_id: new ObjectId(id)},
+            {$inc: {'likesInfo.likesCount': -1}})
+    }
+
+    async decreaseDislikeCount(id: string) {
+        await CommentModel.findOneAndUpdate({_id: new ObjectId(id)},
+            {$inc: {'likesInfo.dislikesCount': -1}})
+    }
 }
+
+

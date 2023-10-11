@@ -3,9 +3,10 @@ import {
     AccountDataModel,
     ApiRequestDatabaseMongoDBModel,
     BlogMongoDBModel,
-    CommentMongoDBModel,
+    CommentDBType,
     DeviceAuthSessionMongoDBModel,
     EmailConfirmationModel,
+    LikeInfoType,
     PasswordRecoveryMongoDBModel,
     PostMongoDBModel,
     UsersMongoDBModel
@@ -49,19 +50,30 @@ export const UserSchema = new mongoose.Schema<UsersMongoDBModel>({
     emailConfirmation: EmailConfirmationSchema
 })
 
-export const CommentSchema = new mongoose.Schema<CommentMongoDBModel>({
+export const CommentSchema = new mongoose.Schema<CommentDBType>({
     postId: {type: String, require: true},
     content: {type: String, require: true},
     commentatorInfo: {
         userId: {type: String, require: true},
-        userLogin: {type: String, require: true}
+        userLogin: {type: String, require: true},
     },
     createdAt: {type: Date, required: true},
     likesInfo: {
-        likedUsersList: [String],
-        dislikedUsersList: [String]
+        likesCount: {type: Number, require: true},
+        dislikesCount: {type: Number, require: true}
     }
 })
+
+export const LikesInfoSchema = new mongoose.Schema<LikeInfoType>({
+    userId: {type: String, require: true},
+    objectType: {type: String, require: true},
+    objectId: {type: String, require: true},
+    parentObjectType: {type: String, require: true},
+    parentObjectId: {type: String, require: true},
+    likeStatus: {type: String, require: true},
+    createdAt: {type: Date, required: true}
+})
+
 export const DeviceAuthSessionsSchema = new mongoose.Schema<DeviceAuthSessionMongoDBModel>({
     userId: {type: String, require: true},
     deviceId: {type: String, require: true},
@@ -75,3 +87,11 @@ export const ApiRequestDatabaseSchema = new mongoose.Schema<ApiRequestDatabaseMo
     URL: {type: String, require: true},
     date: {type: Date, required: true}
 })
+
+// CommentSchema.methods = {
+//     addLike(iserId: string, status: string) {
+//         this.likes.find(() => {
+//         })
+//         this.likesCount += 1
+//     }
+// }

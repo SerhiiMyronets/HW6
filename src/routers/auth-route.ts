@@ -4,7 +4,7 @@ import {
     AuthModel,
     AuthViewModel,
     MeViewUserModel, NewPasswordInputModel,
-    PasswordRecoveryInputModel,
+    PasswordRecoveryInputModel, RegistrationConfirmationCodeModel, ResendConfirmationCodeInputModel,
     UserInputModel
 } from "../models/repository/users-models";
 import {errorsFormatMiddleware, ErrorType} from "../midlewares/errors-format-middleware";
@@ -64,7 +64,7 @@ authRoute.post('/registration',
     })
 authRoute.post('/registration-confirmation',
     apiRequestMiddleware,
-    async (req: RequestWithBody<{ code: string }>, res: Response) => {
+    async (req: RequestWithBody<RegistrationConfirmationCodeModel>, res: Response) => {
         const code = req.body.code
         if (!code) res.sendStatus(400)
         const isConfirmed = await authService.confirmEmail(code)
@@ -82,7 +82,7 @@ authRoute.post('/registration-confirmation',
     })
 authRoute.post('/registration-email-resending',
     apiRequestMiddleware,
-    async (req: RequestWithBody<{ email: string }>, res: Response) => {
+    async (req: RequestWithBody<ResendConfirmationCodeInputModel>, res: Response) => {
         const isEmailResend = await authService.resendConfirmationEmail(req.body.email)
         if (isEmailResend) {
             res.sendStatus(204)
