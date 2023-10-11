@@ -2,9 +2,9 @@ import {LikeInfoModel} from "../../db/db";
 import {LikesStatusQueryModel} from "../../db/db-models";
 
 export class LikesInfoQueryRepository {
-    async getLikeStatus(userId: string, likeObjectType: string, likeObjectId: string): Promise<string> {
+    async getLikeStatus(userId: string, objectType: string, objectId: string): Promise<string> {
         const likeInfo = await LikeInfoModel
-            .findOne({userId, likeObjectType, likeObjectId})
+            .findOne({userId, objectType, objectId})
         if (likeInfo)
             return likeInfo.likeStatus
         else

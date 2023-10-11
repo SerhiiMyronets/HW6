@@ -28,7 +28,8 @@ export class CommentsController {
     async getComment(req: RequestWithParams<ParamInputModel>, res: Response) {
         let likeStatus = 'None'
         if (req.user)
-            likeStatus = await likesInfoQueryRepository.getLikeStatus(req.user?._id.toString(), 'comment', req.params.id)
+            likeStatus = await likesInfoQueryRepository.getLikeStatus(req.user?._id.toString(),
+                'comment', req.params.id)
         const comment = await commentsQueryRepository.findCommentById(req.params.id, likeStatus)
         comment ? res.status(200).send(comment) : res.sendStatus(404)
     }
