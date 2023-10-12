@@ -2,7 +2,7 @@ import express from "express";
 import {blogsRoute} from "./routers/blogs-route";
 import {postsRoute} from "./routers/posts-route";
 import {testing} from "./routers/testing";
-import {commentsRoute} from "./routers/comments-route";
+import {commentsRouter} from "./routers/comments-router";
 import {usersRoute} from "./routers/users-route";
 import {authRoute} from "./routers/auth-route";
 import cookieParser from "cookie-parser";
@@ -50,5 +50,5 @@ app.use(RouterPaths.posts, postsRoute)
 app.use(RouterPaths.__test__, testing)
 app.use(RouterPaths.users, usersRoute)
 app.use(RouterPaths.auth, authRoute)
-app.use(RouterPaths.comments, commentsRoute)
+app.use(RouterPaths.comments, commentsRouter)
 app.use(RouterPaths.securityDevices, securityDevices)

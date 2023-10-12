@@ -1,14 +1,14 @@
 import mongoose from 'mongoose'
 import 'dotenv/config'
 import {
-    ApiRequestDatabaseMongoDBModel,
-    BlogMongoDBModel,
+    ApiRequestDatabaseDBType,
+    BlogDBType,
     CommentDBType,
-    DeviceAuthSessionMongoDBModel,
+    DeviceAuthSessionDBType,
     LikeInfoType,
-    PasswordRecoveryMongoDBModel,
-    PostMongoDBModel,
-    UsersMongoDBModel
+    PasswordRecoveryDBType,
+    PostDBType,
+    UsersBDType
 } from "./db-models";
 import {
     ApiRequestDatabaseSchema,
@@ -24,14 +24,14 @@ import {
 const dbName = 'social_media'
 export const mongooseURI = process.env.MONGOOSE_URI || `mongodb+srv://hardmail88:3846MrN1@cluster0.0goknaf.mongodb.net/${dbName}?retryWrites=true&w=majority`
 
-export const BlogModel = mongoose.model<BlogMongoDBModel>('blogs', BlogSchema)
-export const PostModel = mongoose.model<PostMongoDBModel>('posts', PostSchema)
-export const UserModel = mongoose.model<UsersMongoDBModel>('users', UserSchema)
+export const BlogModel = mongoose.model<BlogDBType>('blogs', BlogSchema)
+export const PostModel = mongoose.model<PostDBType>('posts', PostSchema)
+export const UserModel = mongoose.model<UsersBDType>('users', UserSchema)
 export const CommentModel = mongoose.model<CommentDBType>('comments', CommentSchema)
 export const LikeInfoModel = mongoose.model<LikeInfoType>('likeInfo', LikesInfoSchema)
-export const DeviceAuthSessionsModel = mongoose.model<DeviceAuthSessionMongoDBModel>('deviceAuthSessions', DeviceAuthSessionsSchema)
-export const ApiRequestDatabaseModel = mongoose.model<ApiRequestDatabaseMongoDBModel>('apiRequestDatabase', ApiRequestDatabaseSchema)
-export const PasswordRecoveryModel = mongoose.model<PasswordRecoveryMongoDBModel>('passwordRecovery', PasswordRecoverySchema)
+export const DeviceAuthSessionsModel = mongoose.model<DeviceAuthSessionDBType>('deviceAuthSessions', DeviceAuthSessionsSchema)
+export const ApiRequestDatabaseModel = mongoose.model<ApiRequestDatabaseDBType>('apiRequestDatabase', ApiRequestDatabaseSchema)
+export const PasswordRecoveryModel = mongoose.model<PasswordRecoveryDBType>('passwordRecovery', PasswordRecoverySchema)
 
 // const mongoURI = process.env.MONGO_URI || "mongodb+srv://hardmail88:3846MrN1@cluster0.0goknaf.mongodb.net/?retryWrites=true&w=majority"
 // if (!mongoURI) throw new Error('URI doesn't found!')

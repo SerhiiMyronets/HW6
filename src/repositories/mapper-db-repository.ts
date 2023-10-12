@@ -1,14 +1,8 @@
-import {
-    BlogMongoDBModel,
-    CommentDBType,
-    DeviceAuthSessionMongoDBModel,
-    PostMongoDBModel,
-    UsersMongoDBModel
-} from "../db/db-models";
+import {BlogDBType, CommentDBType, DeviceAuthSessionDBType, PostDBType, UsersBDType} from "../db/db-models";
 import {WithId} from "mongodb";
 
 export const mapperDbRepository = {
-    blogOutputMongoDBToBlogViewModel(blogDB: WithId<BlogMongoDBModel>) {
+    blogOutputMongoDBToBlogViewModel(blogDB: WithId<BlogDBType>) {
         return {
             id: blogDB._id.toString(),
             name: blogDB.name,
@@ -18,7 +12,7 @@ export const mapperDbRepository = {
             isMembership: blogDB.isMembership
         }
     },
-    postOutputMongoDBToPostViewModel(postDB: WithId<PostMongoDBModel>) {
+    postOutputMongoDBToPostViewModel(postDB: WithId<PostDBType>) {
         return {
             id: postDB._id.toString(),
             title: postDB.title,
@@ -29,7 +23,7 @@ export const mapperDbRepository = {
             createdAt: postDB.createdAt
         }
     },
-    userOutputMongoDBtoUsersViewMongo(userDB: WithId<UsersMongoDBModel>) {
+    userOutputMongoDBtoUsersViewMongo(userDB: WithId<UsersBDType>) {
         return {
             id: userDB._id.toString(),
             login: userDB.accountData.login,
@@ -53,7 +47,7 @@ export const mapperDbRepository = {
             }
         }
     },
-    deviceAuthSessionsModelToDeviceViewModel(session: DeviceAuthSessionMongoDBModel) {
+    deviceAuthSessionsModelToDeviceViewModel(session: DeviceAuthSessionDBType) {
         return {
             ip: session.IP,
             title: session.deviceName,

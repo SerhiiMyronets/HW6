@@ -1,7 +1,10 @@
 import {NextFunction, Response, Request} from "express";
-import {jwtService} from "../appliacation/jwt-service";
 
-import {usersDbRepository} from "../repositories/db-repositories/users-db-repository";
+import {jwtService, usersDBRepository} from "../composition-root";
+
+
+
+
 
 export const accessTokenMiddlewareProtected = async (req: Request, res: Response, next: NextFunction) => {
     const auth = req.headers.authorization
@@ -9,7 +12,7 @@ export const accessTokenMiddlewareProtected = async (req: Request, res: Response
     const token = auth.split(' ')[1]
     const userId = await jwtService.getUserIdFromAccessToken(token)
     if (!userId) return res.sendStatus(401)
-    const user = await usersDbRepository.findUserById(userId)
+    const user = await usersDBRepository.findUserById(userId)
     if (!user) return res.sendStatus(401)
     req.user = user
     return next()

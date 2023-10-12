@@ -2,7 +2,7 @@
 export type CommentInputModel = {
     content: string
 }
-export type findCommentsPaginateModel = {
+export type FindCommentsPaginateModel = {
     pageNumber: number
     pageSize: number
     sortBy: string
@@ -44,3 +44,8 @@ export enum LikeStatusType {
 }
 
 export type ParamInputModel = { id: string }
+
+export type LikesStatusQueryModel = Array<{
+    id: string,
+    likeStatus: "None" | "Like" | "Dislike"
+}>

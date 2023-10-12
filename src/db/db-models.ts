@@ -1,57 +1,75 @@
-// type BlogsViewModel = Omit<BlogMongoDBModel, 'createdAt' | 'isMembership'>
-// type PostInputModel = Omit<PostMongoDBModel, 'blogName'> & Pick<UsersMongoDBModel, 'emailConfirmation'>
+import {randomUUID} from "crypto";
 
-//blogs db models
 
-export type BlogMongoDBModel = {
-    name: string
-    description: string
-    websiteUrl: string
+export class BlogDBType {
     createdAt: Date
     isMembership: boolean
+
+    constructor(public name: string,
+                public description: string,
+                public websiteUrl: string) {
+        this.createdAt = new Date()
+        this.isMembership = false
+    }
 }
 
-//posts db models
-export type PostMongoDBModel = {
-    title: string
-    shortDescription: string
-    content: string
-    blogId: string
-    blogName: string
+export class PostDBType {
     createdAt: Date
+
+    constructor(public title: string,
+                public shortDescription: string,
+                public content: string,
+                public blogId: string,
+                public blogName: string,
+    ) {
+        this.createdAt = new Date()
+    }
 }
 
-//users db models
-export type UsersMongoDBModel = {
-    accountData: AccountDataModel,
-    emailConfirmation: EmailConfirmationModel
-}
-export type AccountDataModel = {
-    login: string
-    email: string
-    password: string
-    createdAt: Date
-}
-export type EmailConfirmationModel = {
-    confirmationCode: string
-    expirationDate: Date
-    isConfirmed: boolean
-}
-export type PasswordRecoveryMongoDBModel = {
-    userId: string
-    email: string
-    confirmationCode: string
-    expirationDate: Date
-}
-export type ConfirmationCodeUpdateType = {
-    'emailConfirmation.confirmationCode': string
-    'emailConfirmation.expirationDate': Date
+export class UsersBDType {
+    accountData: {
+        login: string
+        email: string
+        password: string
+        createdAt: Date
+    }
+    emailConfirmation: {
+        confirmationCode: string
+        expirationDate: Date
+        isConfirmed: boolean
+    }
+
+    constructor(login: string,
+                email: string,
+                password: string,
+                expirationDate: Date) {
+        this.accountData = {
+            login,
+            email,
+            password,
+            createdAt: new Date()
+        }
+        this.emailConfirmation = {
+            confirmationCode: randomUUID(),
+            expirationDate,
+            isConfirmed: false
+        }
+    }
 }
 
-//comments db models
+export class PasswordRecoveryDBType {
+    confirmationCode: string
+
+    constructor(public userId: string,
+                public email: string,
+                public expirationDate: Date) {
+        this.confirmationCode = randomUUID()
+    }
+}
+
 export class CommentDBType {
-    public createdAt: Date
-    public likesInfo: {
+    createdAt: Date
+    likesInfo: {
         likesCount: number,
         dislikesCount: number
     }
@@ -85,52 +103,22 @@ export class LikeInfoType {
     }
 }
 
-export type LikesInfoDBModel = {
-    userId: string
-    likeObjectType: "comment" | "post"
-    likeObjectId: string
-    likeStatus: "None" | "Like" | "Dislike"
-    createdAt: Date
-}
-export type LikesStatusQueryModel = Array<{
-    id: string,
-    likeStatus: "None" | "Like" | "Dislike"
-}>
-
-// export type CommentMongoDBModel = {
-//     postId: string
-//     content: string
-//     userId: string
-//     userLogin: string
-//     createdAt: Date
-//     likesInfo: LikesInfoDBModel[]
-// }
-
-export type CommentatorInfoModel = {
-    userId: string
-    userLogin: string
+export class DeviceAuthSessionDBType {
+    constructor(
+        public userId: string,
+        public deviceId: string,
+        public deviceName: string,
+        public IP: string,
+        public issuedAt: Date,
+        public expiredAt: Date) {
+    }
 }
 
-// email smtp models
-export type EmailBodyModel = {
-    from: string
-    to: string
-    subject: string
-    html: string
-}
-
-// refresh token db models
-export type DeviceAuthSessionMongoDBModel = {
-    userId: string
-    deviceId: string
-    deviceName: string
-    IP: string
-    issuedAt: Date
-    expiredAt: Date
-}
-
-export type ApiRequestDatabaseMongoDBModel = {
-    IP: string
-    URL: string
+export class ApiRequestDatabaseDBType {
     date: Date
+    constructor(public IP: string,
+                public URL: string,
+    ) {
+        this.date = new Date()
+    }
 }

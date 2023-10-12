@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer'
-import {EmailBodyModel} from "../db/db-models";
+import {EmailBodyModel} from "../models/repository/users-models";
 
-export const emailAdapter = {
+export class EmailAdapter  {
     async sendEmail(emailBody: EmailBodyModel) {
         const transporter = nodemailer.createTransport({
             service: 'gmail',

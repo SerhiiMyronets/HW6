@@ -9,7 +9,7 @@ export type PostInputModel = {
 export type PostUpdateInputModel = PostInputModel & {postId: string}
 export type PostInputByBlogModel = Omit<PostInputModel, 'blogId'>
 
-export type findPostsPaginateModel = {
+export type FindPostsPaginateModel = {
     pageNumber: number
     pageSize: number
     sortBy: string

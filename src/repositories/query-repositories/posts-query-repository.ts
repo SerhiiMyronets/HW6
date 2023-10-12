@@ -1,5 +1,5 @@
 import {PostModel} from "../../db/db";
-import {findPostsPaginateModel, PostViewModel, PostViewModelPaginated} from "../../models/repository/posts-models";
+import {FindPostsPaginateModel, PostViewModel} from "../../models/repository/posts-models";
 import {mapperDbRepository} from "../mapper-db-repository";
 import {mapperQueryRepository, sortDirectionList} from "../mapper-query-repository";
 
@@ -9,8 +9,8 @@ type Pagination<T> = {
     items: T[]
 }
 
-export const postsQueryRepository = {
-     async findPostsQuery(query: findPostsPaginateModel): Promise<Pagination<PostViewModel>> {
+export class PostsQueryRepository {
+     async findPostsQuery(query: FindPostsPaginateModel): Promise<Pagination<PostViewModel>> {
         const totalCount = await PostModel.countDocuments()
         const foundedPosts = await PostModel
             .find()
@@ -20,13 +20,13 @@ export const postsQueryRepository = {
         const mappedFoundedPosts = foundedPosts.map(
             b => mapperDbRepository.postOutputMongoDBToPostViewModel(b))
         return mapperQueryRepository.postViewModelToPostViewModelPaginated(mappedFoundedPosts, +query.pageNumber, +query.pageSize, totalCount)
-    },
+    }
     async isPostExisting(_id: string): Promise<boolean> {
         const result = await PostModel
             .findOne({_id})
         return !!result;
-    },
-    async findPostsByBlogIdQuery(query: findPostsPaginateModel, blogId: string): Promise<PostViewModelPaginated> {
+    }
+    async findPostsByBlogIdQuery(query: FindPostsPaginateModel, blogId: string): Promise<Pagination<PostViewModel>> {
         const totalCount = await PostModel.countDocuments({"blogId": blogId})
         const foundedPosts = await PostModel
             .find({"blogId": blogId})

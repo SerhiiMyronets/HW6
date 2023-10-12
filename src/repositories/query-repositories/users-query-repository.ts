@@ -1,11 +1,11 @@
-import {findUserPaginateModel, UserViewPaginatedModel} from "../../models/repository/users-models";
+import {FindUserPaginateModel, UserViewModel, UserViewPaginatedModel} from "../../models/repository/users-models";
 import {mapperQueryRepository, sortDirectionList} from "../mapper-query-repository";
 import {mapperDbRepository} from "../mapper-db-repository";
 import {UserModel} from "../../db/db";
 
 
-export const usersQueryRepository = {
-    async findUsersQuery(query: findUserPaginateModel): Promise<UserViewPaginatedModel> {
+export class UsersQueryRepository {
+    async findUsersQuery(query: FindUserPaginateModel): Promise<UserViewPaginatedModel> {
         let searchFilter = {}
         let searchArray = []
         if (query.searchLoginTerm)
@@ -25,5 +25,14 @@ export const usersQueryRepository = {
             b => mapperDbRepository.userOutputMongoDBtoUsersViewMongo(b))
         return mapperQueryRepository.userViewModelToUserViewModelPaginated(mappedFoundedBlogs, +query.pageNumber, +query.pageSize, totalCount)
 
+    }
+    async findUser(_id: string): Promise<UserViewModel | null> {
+        return UserModel.findOne({_id}, {
+            _id: 0,
+            id: '$_id',
+            login: '$accountData.login',
+            email: '$accountData.email',
+            createdAt: '$accountData.createdAt',
+        }).lean()
     }
 }

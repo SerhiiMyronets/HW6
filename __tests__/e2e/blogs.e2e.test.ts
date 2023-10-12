@@ -10,12 +10,13 @@ import {
     randomObjectId,
     updatedCorrectBodyBlog
 } from "../test-inputs/blogs-test-inputs";
-import {blogsService} from "../../src/domain/blogs-service";
+
 import mongoose from "mongoose";
 import {MongoMemoryServer} from "mongodb-memory-server";
+import {blogsService} from "../../src/composition-root";
 
 
-describe(RouterPaths.blogs, () => {
+describe("BlogTest", () => {
     let mongoMemoryServer: any
     beforeAll(async () => {
         mongoMemoryServer = new MongoMemoryServer()

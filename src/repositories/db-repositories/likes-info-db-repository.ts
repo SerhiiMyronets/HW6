@@ -24,5 +24,3 @@ export class LikesInfoDbRepository {
         await LikeInfoModel.findOneAndUpdate({_id}, {likeStatus: 'None'})
     }
 }
-
-export const likesInfoDbRepository = new LikesInfoDbRepository()

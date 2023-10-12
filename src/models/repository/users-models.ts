@@ -5,7 +5,7 @@ export type UserInputModel = {
     password: string
     email: string
 }
-export type findUserPaginateModel = {
+export type FindUserPaginateModel = {
     searchLoginTerm: string
     searchEmailTerm: string
     sortBy: string
@@ -14,7 +14,7 @@ export type findUserPaginateModel = {
     pageSize: number
 }
 //presentations view models
-export type UsersViewModel = {
+export type UserViewModel = {
     id: string
     login: string
     email: string
@@ -26,7 +26,7 @@ export type UserViewPaginatedModel = {
     pageSize: number
     page: number
     totalCount: number
-    items: UsersViewModel[]
+    items: UserViewModel[]
 }
 //auth
 export type AuthModel = {
@@ -46,9 +46,18 @@ export type NewPasswordInputModel = {
     newPassword: string,
     recoveryCode: string
 }
-
+export type EmailBodyModel = {
+    from: string
+    to: string
+    subject: string
+    html: string
+}
 export type RegistrationConfirmationCodeModel = {
     code: string
+}
+export type ConfirmationCodeUpdateModel = {
+    'emailConfirmation.confirmationCode': string
+    'emailConfirmation.expirationDate': Date
 }
 
 //me

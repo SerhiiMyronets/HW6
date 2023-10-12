@@ -1,67 +1,68 @@
 import {CommentDBType, LikeInfoType} from "../db/db-models";
-import {likesInfoDbRepository} from "../repositories/db-repositories/likes-info-db-repository";
-import {commentsDbRepository} from "../composition-root";
+import {LikesInfoDbRepository} from "../repositories/db-repositories/likes-info-db-repository";
+import {CommentsDbRepository} from "../repositories/db-repositories/comments-db-repository";
 
 
 export class CommentsService {
-    // constructor(protected commentsDbRepository: CommentsDbRepository,
-    //             protected likesInfoDbRepository: LikesInfoDbRepository) {
-    // }
+    constructor(protected commentsDbRepository: CommentsDbRepository,
+                protected likesInfoDbRepository: LikesInfoDbRepository) {
+    }
 
     async createComment(postId: string, content: string, userId: string, userLogin: string): Promise<string> {
         const comment = new CommentDBType(postId, content, {userId, userLogin})
-        return await commentsDbRepository.creatComment(comment)
+        return await this.commentsDbRepository.creatComment(comment)
     }
 
     async deleteAllComments(): Promise<boolean> {
-        return commentsDbRepository.deleteAllComments()
+        return this.commentsDbRepository.deleteAllComments()
     }
 
     async updateComment(commentId: string, commentContent: string) {
-        return commentsDbRepository.updateComment(commentId, commentContent)
+        return this.commentsDbRepository.updateComment(commentId, commentContent)
     }
 
     async deleteComment(id: string) {
-        return commentsDbRepository.deleteComment(id)
+        return this.commentsDbRepository.deleteComment(id)
     }
 
-    async commentLikeStatusUpdate(userId: string, likeObjectId: string, parentObjectId: string,
+    async commentLikeStatusUpdate(userId: string, likeObjectId: string,
                                   likeStatus: string): Promise<boolean> {
-        const likeInfo = await likesInfoDbRepository.findLikeInfo(
+        const likeInfo = await this.likesInfoDbRepository.findLikeInfo(
             userId, 'comment', likeObjectId)
+        const comment = await this.commentsDbRepository.findCommentById(likeObjectId)
         if (!likeInfo) {
             const newLikeInfo = new LikeInfoType(userId, 'comment',
-                likeObjectId, 'post',parentObjectId, likeStatus)
-            await likesInfoDbRepository.addLikeInfo(newLikeInfo)
+                likeObjectId, 'post',comment!.postId, likeStatus)
+            await this.likesInfoDbRepository.addLikeInfo(newLikeInfo)
             if (likeStatus === 'Like')
-                await commentsDbRepository.increaseLikesCount(likeObjectId)
+                await this.commentsDbRepository.increaseLikesCount(likeObjectId)
             if (likeStatus === 'Dislike')
-                await commentsDbRepository.increaseDislikeCount(likeObjectId)
+                await this.commentsDbRepository.increaseDislikeCount(likeObjectId)
             return true
         } else {
             if (likeInfo.likeStatus === 'None' && likeStatus === 'Like') {
-                await likesInfoDbRepository.setLikeStatus(likeInfo._id)
-                await commentsDbRepository.increaseLikesCount(likeObjectId)
+                await this.likesInfoDbRepository.setLikeStatus(likeInfo._id)
+                await this.commentsDbRepository.increaseLikesCount(likeObjectId)
             }
             if (likeInfo.likeStatus === 'Dislike' && likeStatus === 'Like') {
-                await likesInfoDbRepository.setLikeStatus(likeInfo._id)
-                await commentsDbRepository.increaseLikesAndDecreaseDislikeCount(likeObjectId)
+                await this.likesInfoDbRepository.setLikeStatus(likeInfo._id)
+                await this.commentsDbRepository.increaseLikesAndDecreaseDislikeCount(likeObjectId)
             }
             if (likeInfo.likeStatus === 'None' && likeStatus === 'Dislike') {
-                await likesInfoDbRepository.setDislikeStatus(likeInfo._id)
-                await commentsDbRepository.increaseDislikeCount(likeObjectId)
+                await this.likesInfoDbRepository.setDislikeStatus(likeInfo._id)
+                await this.commentsDbRepository.increaseDislikeCount(likeObjectId)
             }
             if (likeInfo.likeStatus === 'Like' && likeStatus === 'Dislike') {
-                await likesInfoDbRepository.setDislikeStatus(likeInfo._id)
-                await commentsDbRepository.increaseDislikeAndDecreaseLikeCount(likeObjectId)
+                await this.likesInfoDbRepository.setDislikeStatus(likeInfo._id)
+                await this.commentsDbRepository.increaseDislikeAndDecreaseLikeCount(likeObjectId)
             }
             if (likeInfo.likeStatus === 'Like' && likeStatus === 'None') {
-                await likesInfoDbRepository.setNoneStatus(likeInfo._id)
-                await commentsDbRepository.decreaseLikeCount(likeObjectId)
+                await this.likesInfoDbRepository.setNoneStatus(likeInfo._id)
+                await this.commentsDbRepository.decreaseLikeCount(likeObjectId)
             }
             if (likeInfo.likeStatus === 'Dislike' && likeStatus === 'None') {
-                await likesInfoDbRepository.setNoneStatus(likeInfo._id)
-                await commentsDbRepository.decreaseDislikeCount(likeObjectId)
+                await this.likesInfoDbRepository.setNoneStatus(likeInfo._id)
+                await this.commentsDbRepository.decreaseDislikeCount(likeObjectId)
             }
             return true
         }

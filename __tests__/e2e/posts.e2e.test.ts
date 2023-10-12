@@ -13,9 +13,9 @@ import {
     incorrectLogin,
     updatedCorrectBodyPost
 } from "../test-inputs/posts-test-inputs";
-import {postsService} from "../../src/domain/posts-service";
 import {MongoMemoryServer} from "mongodb-memory-server";
 import mongoose from "mongoose";
+import {postsService} from "../../src/composition-root";
 
 describe("PostTest", () => {
     let mongoMemoryServer: any

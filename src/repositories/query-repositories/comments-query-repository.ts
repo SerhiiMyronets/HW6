@@ -1,18 +1,17 @@
 import {
     CommentsViewModelPaginated,
     CommentViewModel,
-    findCommentsPaginateModel
+    FindCommentsPaginateModel, LikesStatusQueryModel
 } from "../../models/repository/comments-models";
 import {mapperQueryRepository, sortDirectionList} from "../mapper-query-repository";
 import {CommentModel} from "../../db/db";
-import {LikesStatusQueryModel} from "../../db/db-models";
 
 export class CommentsQueryRepository {
     async isCommentExist(_id: string) {
         return CommentModel.findOne({_id}, {_id: 1})
     }
 
-    async findCommentsByPostId(query: findCommentsPaginateModel, postId: string, likesStatus: LikesStatusQueryModel): Promise<CommentsViewModelPaginated> {
+    async findCommentsByPostId(query: FindCommentsPaginateModel, postId: string, likesStatus: LikesStatusQueryModel): Promise<CommentsViewModelPaginated> {
         const totalCount = await CommentModel.countDocuments({"postId": postId})
         const foundedComments: Array<CommentViewModel> = await CommentModel
             .find({postId}, {

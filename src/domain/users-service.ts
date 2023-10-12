@@ -1,13 +1,14 @@
-import {UsersViewModel} from "../models/repository/users-models";
-import {usersDbRepository} from "../repositories/db-repositories/users-db-repository";
-import {mapperDbRepository} from "../repositories/mapper-db-repository";
+import {UsersDBRepository} from "../repositories/db-repositories/users-db-repository";
+
 
 const bcrypt = require('bcrypt');
 
 
-export const usersService = {
-    async createUser(login: string, pass: string, email: string)
-        : Promise<UsersViewModel | null> {
+export class UsersService {
+    constructor(protected usersDBRepository: UsersDBRepository) {
+    }
+
+    async createUser(login: string, pass: string, email: string): Promise<string> {
         const password = await bcrypt.hash(pass, 10)
         const newUser = {
             accountData: {
@@ -20,22 +21,18 @@ export const usersService = {
                 confirmationCode: '',
                 expirationDate: new Date(),
                 isConfirmed: true
-            },
-            passwordRecovery: {
-                confirmationCode: '',
-                expirationDate: new Date,
             }
         }
-        const createdUser = await usersDbRepository.createUser(newUser)
-        if (createdUser)
-            return mapperDbRepository.userOutputMongoDBtoUsersViewMongo(createdUser)
-        else
-            return null
-    },
+        return this.usersDBRepository.createUser(newUser)
+    }
+
+
     async deleteUser(id: string): Promise<Boolean> {
-        return await usersDbRepository.deleteUser(id)
-    },
+        return await this.usersDBRepository.deleteUser(id)
+    }
+
+
     async deleteAllUsers(): Promise<Boolean> {
-        return usersDbRepository.deleteAllUsers()
+        return this.usersDBRepository.deleteAllUsers()
     }
 }
