@@ -45,6 +45,11 @@ export const settings = {
     REQUEST_COUNT_LIMIT: 5
 }
 
+export enum sortDirectionList {
+    "asc" = 1,
+    "desc" = -1
+}
+
 app.use(RouterPaths.blogs, blogsRoute)
 app.use(RouterPaths.posts, postsRoute)
 app.use(RouterPaths.__test__, testing)

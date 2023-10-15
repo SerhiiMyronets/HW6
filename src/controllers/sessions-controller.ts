@@ -1,9 +1,11 @@
 import {Request, Response} from "express";
 import {AuthService} from "../domain/auth-service";
 import {RequestWithParams} from "../types/request-types";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class SessionsController {
-    constructor(protected authService: AuthService) {
+    constructor(@inject(AuthService) protected authService: AuthService) {
     }
 
     async getSessions(req: Request, res: Response) {

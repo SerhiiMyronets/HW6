@@ -1,7 +1,9 @@
 import jwt from "jsonwebtoken"
 import {settings} from "../setting";
 import {AccessRefreshTokensModel, RefreshTokenPayloadModel} from "./jwt-models";
+import {injectable} from "inversify";
 
+@injectable()
 export class JwtService {
     async createAccessJWTToken(userId: string) {
         return jwt.sign(

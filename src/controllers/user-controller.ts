@@ -3,10 +3,12 @@ import {UsersService} from "../domain/users-service";
 import {RequestWithBody, RequestWithParams, RequestWithQuery} from "../types/request-types";
 import {FindUserPaginateModel, UserInputModel} from "../models/repository/users-models";
 import {Response} from "express";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class UserController {
-    constructor(protected usersQueryRepository: UsersQueryRepository,
-                protected usersService: UsersService) {
+    constructor(@inject(UsersQueryRepository) protected usersQueryRepository: UsersQueryRepository,
+                @inject(UsersService) protected usersService: UsersService) {
     }
 
     async getUsers(req: RequestWithQuery<FindUserPaginateModel>, res: Response) {

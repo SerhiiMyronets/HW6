@@ -1,24 +1,20 @@
 import {PostModel} from "../../db/db";
-import {mapperDbRepository} from "../mapper-db-repository";
 import {PostInputModel, PostViewModel} from "../../models/repository/posts-models";
 import {PostDBType} from "../../db/db-models";
 
 export class PostsRepository {
-    async findPosts(): Promise<PostViewModel[]> {
-        const result = await PostModel
-            .find()
-        return result.map(b =>
-            (mapperDbRepository.postOutputMongoDBToPostViewModel(b)))
-    }
-
     async findById(_id: string): Promise<PostViewModel | null> {
-        const result = await PostModel
-            .findOne({_id})
-        if (result) {
-            return mapperDbRepository.postOutputMongoDBToPostViewModel(result)
-        } else {
-            return null
-        }
+        return PostModel
+            .findOne({_id}, {
+                _id: 0,
+                id: {$toString: '$_id'},
+                title: 1,
+                shortDescription: 1,
+                content: 1,
+                blogId: 1,
+                blogName: 1,
+                createdAt: 1
+            }).lean()
     }
 
     async creatPost(newPostBody: PostDBType): Promise<PostViewModel | null> {

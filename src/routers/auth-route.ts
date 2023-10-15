@@ -7,12 +7,13 @@ import {refreshTokenMiddleware} from "../midlewares/refresh-token-middleware";
 import {apiRequestMiddleware} from "../midlewares/apiRequestMiddleware";
 import {authPasswordRecoveryValidation} from "../midlewares/body/auth-password-recovery-validation";
 import {authNewPasswordValidation} from "../midlewares/body/auth-new-password-validation";
-import {authController} from "../composition-root";
+import {container} from "../composition-root";
+import {AuthController} from "../controllers/auth-controller";
 
 
 export const authRoute = Router({})
 
-
+const authController = container.resolve(AuthController)
 
 authRoute.post('/login',
     authBodyValidation,

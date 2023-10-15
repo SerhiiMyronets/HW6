@@ -3,7 +3,9 @@ import {RefreshTokenPayloadModel} from "../../appliacation/jwt-models";
 import {ObjectId, WithId} from "mongodb";
 import {DeviceViewModel} from "../../models/repository/users-models";
 import {DeviceAuthSessionsModel} from "../../db/db";
+import {injectable} from "inversify";
 
+@injectable()
 export class DeviceAuthSessionsDbRepository {
     async createSession(authSession: DeviceAuthSessionDBType) {
         await DeviceAuthSessionsModel.create(authSession)

@@ -3,8 +3,8 @@ import {
     CommentViewModel,
     FindCommentsPaginateModel, LikesStatusQueryModel
 } from "../../models/repository/comments-models";
-import {mapperQueryRepository, sortDirectionList} from "../mapper-query-repository";
 import {CommentModel} from "../../db/db";
+import {sortDirectionList} from "../../setting";
 
 export class CommentsQueryRepository {
     async isCommentExist(_id: string) {
@@ -35,8 +35,7 @@ export class CommentsQueryRepository {
                     }
                 }
             })
-        return mapperQueryRepository.commentViewModelToCommentsViewModelPaginated(
-            foundedComments, +query.pageNumber, +query.pageSize, totalCount)
+        return this.getPaginated(foundedComments, +query.pageNumber, +query.pageSize, totalCount)
     }
 
     async findCommentById(_id: string, likeStatus: string = 'None'): Promise<CommentViewModel | null> {
@@ -51,5 +50,15 @@ export class CommentsQueryRepository {
                 "likesInfo.dislikesCount": 1,
                 "likesInfo.myStatus": likeStatus,
             }).lean()
+    }
+
+    getPaginated<Type>(items: Array<Type>, page: number, pageSize: number, totalCount: number) {
+        return {
+            pagesCount: Math.ceil(totalCount / pageSize),
+            page,
+            pageSize,
+            totalCount,
+            items
+        }
     }
 }

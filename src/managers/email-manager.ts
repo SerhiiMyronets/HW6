@@ -2,9 +2,11 @@ import {PasswordRecoveryDBType, UsersBDType} from "../db/db-models";
 import {EmailAdapter} from "../adapters/email-adapter";
 import {WithId} from "mongodb";
 import {EmailBodyModel} from "../models/repository/users-models";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class EmailManager {
-    constructor(protected emailAdapter: EmailAdapter) {
+    constructor(@inject(EmailAdapter) protected emailAdapter: EmailAdapter) {
     }
     async sendEmailConfirmationCode(user: WithId<UsersBDType>) {
         const emailBody: EmailBodyModel = {

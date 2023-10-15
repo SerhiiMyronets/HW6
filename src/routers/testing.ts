@@ -1,23 +1,25 @@
 import {Request, Response, Router} from "express";
-
-import {apiRequestDbRepository} from "../repositories/db-repositories/api-request-db-repository";
 import {
-    blogsService,
-    commentsService,
-    deviceAuthSessionsDbRepository,
-    postsService,
-    usersService
-} from "../composition-root";
+    ApiRequestDatabaseModel,
+    BlogModel,
+    CommentModel,
+    DeviceAuthSessionsModel,
+    LikeInfoModel,
+    PasswordRecoveryModel,
+    PostModel,
+    UserModel
+} from "../db/db";
 
 export const testing = Router({})
 
 testing.delete('/', async (req: Request, res: Response) => {
-    // await jwtService.deleteAllTokens()
-    await usersService.deleteAllUsers()
-    await blogsService.deleteAllBlogs()
-    await postsService.deleteAllPosts()
-    await commentsService.deleteAllComments()
-    await deviceAuthSessionsDbRepository.deleteAllSessions()
-    await apiRequestDbRepository.deleteAllRequest()
+    await BlogModel.deleteMany()
+    await PostModel.deleteMany()
+    await UserModel.deleteMany()
+    await CommentModel.deleteMany()
+    await LikeInfoModel.deleteMany()
+    await DeviceAuthSessionsModel.deleteMany()
+    await ApiRequestDatabaseModel.deleteMany()
+    await PasswordRecoveryModel.deleteMany()
     res.sendStatus(204)
 })

@@ -9,9 +9,6 @@ export class PostsService {
     constructor(protected postsRepository: PostsRepository,
                 protected blogsRepository: BlogsDBRepository) {
     }
-    async findPosts(): Promise<PostViewModel[]> {
-        return this.postsRepository.findPosts()
-    }
     async creatPost(postInputBody: PostInputModel): Promise<PostViewModel | null> {
         const blog = await this.blogsRepository.findBlogById(postInputBody.blogId);
         const newPost = new PostDBType(

@@ -13,10 +13,13 @@ import {Request, Response} from "express";
 import {AuthService} from "../domain/auth-service";
 import {AuthInputModel} from "../appliacation/jwt-models";
 import {ErrorType} from "../midlewares/errors-format-middleware";
+import {inject, injectable} from "inversify";
 
+@injectable()
 export class AuthController {
-    constructor(protected authService: AuthService) {
+    constructor(@inject(AuthService) protected authService: AuthService) {
     }
+
     async login(req: RequestWithBody<AuthModel>, res: Response) {
         const user = await this.authService.checkCredentials(req.body.loginOrEmail, req.body.password)
         if (!user) return res.sendStatus(401)
@@ -45,6 +48,7 @@ export class AuthController {
 
     async registerNewUser(req: RequestWithBody<UserInputModel>, res: Response) {
         const user = await this.authService.createUser(req.body.login, req.body.email, req.body.password)
+        console.log(user)
         if (user)
             res.sendStatus(204)
         else

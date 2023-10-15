@@ -1,7 +1,9 @@
 import {PasswordRecoveryDBType} from "../../db/db-models";
 import {ObjectId, WithId} from "mongodb";
 import {PasswordRecoveryModel} from "../../db/db";
+import {injectable} from "inversify";
 
+@injectable()
 export class PasswordRecoveryDbRepository {
     async createPasswordRecoveryRequest(passwordRecovery: PasswordRecoveryDBType): Promise<WithId<PasswordRecoveryDBType>> {
         return await PasswordRecoveryModel

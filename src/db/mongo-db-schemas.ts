@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, {Model} from "mongoose";
 import {
     ApiRequestDatabaseDBType,
     BlogDBType,
@@ -32,7 +32,13 @@ export const PasswordRecoverySchema = new mongoose.Schema<PasswordRecoveryDBType
     confirmationCode: {type: String},
     expirationDate: {type: Date}
 })
-export const UserSchema = new mongoose.Schema<UsersBDType>({
+
+export type UsersBDMethodsType = {
+    canBeConfirmed: () => boolean
+}
+export type UserModelType = Model<UsersBDType, {}, UsersBDMethodsType>
+
+export const UserSchema = new mongoose.Schema<UsersBDType, UserModelType, UsersBDMethodsType>({
     accountData: {
         login: {type: String, require: true},
         email: {type: String, require: true},
@@ -45,6 +51,11 @@ export const UserSchema = new mongoose.Schema<UsersBDType>({
         isConfirmed: {type: Boolean}
     }
 })
+UserSchema.method('canBeConfirmed', function canBeConfirmed() {
+    const that = this as UsersBDType
+    return that.emailConfirmation.isConfirmed && (that.emailConfirmation.expirationDate < new Date())
+})
+
 export const CommentSchema = new mongoose.Schema<CommentDBType>({
     postId: {type: String, require: true},
     content: {type: String, require: true},
@@ -82,11 +93,3 @@ export const ApiRequestDatabaseSchema = new mongoose.Schema<ApiRequestDatabaseDB
     URL: {type: String, require: true},
     date: {type: Date, required: true}
 })
-
-// CommentSchema.methods = {
-//     addLike(iserId: string, status: string) {
-//         this.likes.find(() => {
-//         })
-//         this.likesCount += 1
-//     }
-// }

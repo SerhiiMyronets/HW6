@@ -12,7 +12,9 @@ import {BlogsService} from "../domain/blogs-service";
 import {FindPostsPaginateModel, PostInputByBlogModel, PostInputModel} from "../models/repository/posts-models";
 import {PostsQueryRepository} from "../repositories/query-repositories/posts-query-repository";
 import {PostsService} from "../domain/posts-service";
+import {injectable} from "inversify";
 
+@injectable()
 export class BlogsController {
     constructor(protected blogsQueryRepository: BlogsQueryRepository,
                 protected blogsService: BlogsService,

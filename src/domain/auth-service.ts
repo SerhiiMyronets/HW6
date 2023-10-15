@@ -10,26 +10,17 @@ import {JwtService} from "../appliacation/jwt-service";
 import {ConfirmationCodeUpdateModel, DeviceViewModel, NewPasswordInputModel} from "../models/repository/users-models";
 import {PasswordRecoveryDbRepository} from "../repositories/db-repositories/password-recovery-db-repository";
 import {UsersDBRepository} from "../repositories/db-repositories/users-db-repository";
+import {inject, injectable} from "inversify";
 
 const bcrypt = require('bcrypt');
 
-
+@injectable()
 export class AuthService {
-    constructor(protected usersDBRepository: UsersDBRepository,
-                protected emailManager: EmailManager,
-                protected deviceAuthSessionsDbRepository: DeviceAuthSessionsDbRepository,
-                protected jwtService: JwtService,
-                protected passwordRecoveryDbRepository: PasswordRecoveryDbRepository) {
-    }
-
-    async checkCredentials(login: string, pass: string) {
-        const user = await this.usersDBRepository.findUserByLoginOrEmail(login)
-        if (!user) return null
-        if (!user.emailConfirmation.isConfirmed) return null
-        if (await bcrypt.compare(pass, user.accountData.password))
-            return user
-        else
-            return null
+    constructor(@inject(UsersDBRepository) protected usersDBRepository: UsersDBRepository,
+                @inject(EmailManager) protected emailManager: EmailManager,
+                @inject(DeviceAuthSessionsDbRepository) protected deviceAuthSessionsDbRepository: DeviceAuthSessionsDbRepository,
+                @inject(JwtService) protected jwtService: JwtService,
+                @inject(PasswordRecoveryDbRepository) protected passwordRecoveryDbRepository: PasswordRecoveryDbRepository) {
     }
 
     async createUser(login: string, email: string, pass: string): Promise<WithId<UsersBDType> | null> {
@@ -48,6 +39,26 @@ export class AuthService {
             }
         return createdUser
     }
+
+    async confirmEmail(code: string): Promise<boolean> {
+        const user = await this.usersDBRepository.findUserByEmailConfirmationCode(code)
+        if (!user) return false
+        if (user.canBeConfirmed())
+            return await this.usersDBRepository.updateConfirmation(user._id);
+        return false
+
+    }
+
+    async checkCredentials(login: string, pass: string) {
+        const user = await this.usersDBRepository.findUserByLoginOrEmail(login)
+        if (!user) return null
+        if (!user.emailConfirmation.isConfirmed) return null
+        if (await bcrypt.compare(pass, user.accountData.password))
+            return user
+        else
+            return null
+    }
+
 
     async passwordRecovery(email: string): Promise<boolean> {
         const user = await this.usersDBRepository.findUserByEmail(email)
@@ -83,14 +94,6 @@ export class AuthService {
         return true
     }
 
-    async confirmEmail(code: string): Promise<boolean> {
-        const user = await this.usersDBRepository.findUserByEmailConfirmationCode(code)
-        if (!user) return false
-        if (user.emailConfirmation.isConfirmed) return false
-        if (user.emailConfirmation.confirmationCode !== code) return false
-        if (user.emailConfirmation.expirationDate < new Date()) return false
-        return await this.usersDBRepository.updateConfirmation(user._id);
-    }
 
     async resendConfirmationEmail(email: string): Promise<boolean> {
         const user = await this.usersDBRepository.findUserByLoginOrEmail(email)

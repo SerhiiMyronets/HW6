@@ -4,12 +4,13 @@ import {usersRegistrationBodyValidation} from "../midlewares/body/users-registra
 import {errorsFormatMiddleware} from "../midlewares/errors-format-middleware";
 import {usersQueryValidation} from "../midlewares/query/users-query-validation";
 import {paramValidation} from "../midlewares/param/param-validation";
-import {userController} from "../composition-root";
+import {container} from "../composition-root";
+import {UserController} from "../controllers/user-controller";
 
 
 export const usersRoute = Router({})
 
-
+const userController = container.resolve(UserController)
 
 usersRoute.get('/',
     authenticationMiddleware,

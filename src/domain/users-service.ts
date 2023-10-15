@@ -1,11 +1,12 @@
 import {UsersDBRepository} from "../repositories/db-repositories/users-db-repository";
+import {inject, injectable} from "inversify";
 
 
 const bcrypt = require('bcrypt');
 
-
+@injectable()
 export class UsersService {
-    constructor(protected usersDBRepository: UsersDBRepository) {
+    constructor(@inject(UsersDBRepository) protected usersDBRepository: UsersDBRepository) {
     }
 
     async createUser(login: string, pass: string, email: string): Promise<string> {

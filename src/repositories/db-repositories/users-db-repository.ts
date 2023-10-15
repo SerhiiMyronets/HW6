@@ -2,11 +2,14 @@ import { UsersBDType} from "../../db/db-models";
 import {ObjectId, WithId} from "mongodb";
 import {UserModel} from "../../db/db";
 import {ConfirmationCodeUpdateModel} from "../../models/repository/users-models";
+import {injectable} from "inversify";
 
+@injectable()
 export class UsersDBRepository {
-    async createUser(newUser: UsersBDType): Promise<string> {
-        const res = await UserModel.create(newUser)
-        return res._id.toString()
+    async createUser(userDTO: UsersBDType): Promise<string> {
+        const userModel = new UserModel(userDTO)
+        await userModel.save()
+        return userModel.id
     }
     async findUserById(_id: string): Promise<WithId<UsersBDType> | null> {
         return UserModel

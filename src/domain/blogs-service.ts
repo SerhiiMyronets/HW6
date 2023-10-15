@@ -1,8 +1,9 @@
 import {BlogInputModel} from "../models/repository/blogs-models";
 import {BlogDBType} from "../db/db-models";
 import {BlogsDBRepository} from "../repositories/db-repositories/blogs-db-repository";
+import {injectable} from "inversify";
 
-
+@injectable()
 export class BlogsService {
     constructor(protected blogsRepository: BlogsDBRepository) {
     }
