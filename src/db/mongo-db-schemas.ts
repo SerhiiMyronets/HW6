@@ -1,4 +1,4 @@
-import mongoose, {Model} from "mongoose";
+import mongoose, {HydratedDocument, Model} from "mongoose";
 import {
     ApiRequestDatabaseDBType,
     BlogDBType,
@@ -9,6 +9,10 @@ import {
     PostDBType,
     UsersBDType
 } from "./db-models";
+import {UserModel} from "./db";
+import {randomUUID} from "crypto";
+import add from "date-fns/add";
+import {settings} from "../setting";
 
 
 export const BlogSchema = new mongoose.Schema<BlogDBType>({
@@ -25,6 +29,17 @@ export const PostSchema = new mongoose.Schema<PostDBType>({
     blogId: {type: String, require: true},
     blogName: {type: String, require: true},
     createdAt: {type: Date},
+    extendedLikesInfo: {
+        likesCount: {type: Number, require: true},
+        dislikesCount: {type: Number, require: true},
+        newestLikes: {
+            type: Array<{
+                likesCount: 0,
+                dislikesCount: 0,
+                newestLikes: []
+            }>
+        }
+    }
 })
 export const PasswordRecoverySchema = new mongoose.Schema<PasswordRecoveryDBType>({
     userId: {type: String, require: true},
@@ -35,10 +50,18 @@ export const PasswordRecoverySchema = new mongoose.Schema<PasswordRecoveryDBType
 
 export type UsersBDMethodsType = {
     canBeConfirmed: () => boolean
+    confirm: () => void
 }
+
 export type UserModelType = Model<UsersBDType, {}, UsersBDMethodsType>
 
-export const UserSchema = new mongoose.Schema<UsersBDType, UserModelType, UsersBDMethodsType>({
+export type UserModelStaticType = Model<UsersBDType> & {
+    makeInstance(login: string, email: string, passHash: string): HydratedDocument<UsersBDType, UsersBDMethodsType>
+}
+
+export type UserModelFullType = UserModelType & UserModelStaticType
+
+export const UserSchema = new mongoose.Schema<UsersBDType, UserModelFullType, UsersBDMethodsType>({
     accountData: {
         login: {type: String, require: true},
         email: {type: String, require: true},
@@ -54,6 +77,27 @@ export const UserSchema = new mongoose.Schema<UsersBDType, UserModelType, UsersB
 UserSchema.method('canBeConfirmed', function canBeConfirmed() {
     const that = this as UsersBDType
     return that.emailConfirmation.isConfirmed && (that.emailConfirmation.expirationDate < new Date())
+})
+
+UserSchema.static('makeInstance', function makeInstance(login: string, email: string, passHash: string) {
+    return new UserModel({
+        accountData: {
+            login,
+            email,
+            passHash,
+            createdAt: new Date()
+        },
+        emailConfirmation: {
+            confirmationCode: randomUUID(),
+            expirationDate: add(new Date(), settings.EMAIL_CONFIRMATION_CODE_EXP),
+            isConfirmed: false
+        }
+    })
+})
+
+UserSchema.method('confirm', function confirm() {
+    const that = this as UsersBDType
+    that.emailConfirmation.isConfirmed = true
 })
 
 export const CommentSchema = new mongoose.Schema<CommentDBType>({
@@ -72,6 +116,7 @@ export const CommentSchema = new mongoose.Schema<CommentDBType>({
 
 export const LikesInfoSchema = new mongoose.Schema<LikeInfoType>({
     userId: {type: String, require: true},
+    userLogin: {type: String, require: true},
     objectType: {type: String, require: true},
     objectId: {type: String, require: true},
     parentObjectType: {type: String, require: true},

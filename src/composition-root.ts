@@ -5,7 +5,7 @@ import {CommentsService} from "./domain/comments-service";
 import {LikesInfoQueryRepository} from "./repositories/query-repositories/likes-info-query-repository";
 import {CommentsController} from "./controllers/comments-controller";
 import {LikesInfoDbRepository} from "./repositories/db-repositories/likes-info-db-repository";
-import {PostsRepository} from "./repositories/db-repositories/post-db-repository";
+import {PostsDBRepository} from "./repositories/db-repositories/post-db-repository";
 import {PostsQueryRepository} from "./repositories/query-repositories/posts-query-repository";
 import {PostsService} from "./domain/posts-service";
 import {BlogsDBRepository} from "./repositories/db-repositories/blogs-db-repository";
@@ -41,9 +41,9 @@ export const commentsService = new CommentsService(
     commentsDBRepository, likesInfoDBRepository)
 
 export const postsQueryRepository = new PostsQueryRepository()
-export const postsRepository = new PostsRepository()
+export const postsRepository = new PostsDBRepository()
 export const postsService = new PostsService(
-    postsRepository, blogsDBRepository)
+    postsRepository, blogsDBRepository, likesInfoDBRepository)
 
 export const usersDBRepository = new UsersDBRepository()
 // export const usersQueryRepository = new UsersQueryRepository()

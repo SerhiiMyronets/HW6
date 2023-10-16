@@ -1,4 +1,4 @@
-import {DeviceAuthSessionDBType, PasswordRecoveryDBType, UsersBDType} from "../db/db-models";
+import {DeviceAuthSessionDBType, PasswordRecoveryDBType} from "../db/db-models";
 import {randomUUID} from "crypto";
 import add from "date-fns/add";
 import {EmailManager} from "../managers/email-manager";
@@ -11,6 +11,7 @@ import {ConfirmationCodeUpdateModel, DeviceViewModel, NewPasswordInputModel} fro
 import {PasswordRecoveryDbRepository} from "../repositories/db-repositories/password-recovery-db-repository";
 import {UsersDBRepository} from "../repositories/db-repositories/users-db-repository";
 import {inject, injectable} from "inversify";
+import {UserModel} from "../db/db";
 
 const bcrypt = require('bcrypt');
 
@@ -23,30 +24,26 @@ export class AuthService {
                 @inject(PasswordRecoveryDbRepository) protected passwordRecoveryDbRepository: PasswordRecoveryDbRepository) {
     }
 
-    async createUser(login: string, email: string, pass: string): Promise<WithId<UsersBDType> | null> {
-        const password = await bcrypt.hash(pass, 10)
-        const expirationDate = add(new Date(), settings.EMAIL_CONFIRMATION_CODE_EXP)
-        const newUser = new UsersBDType(login, email, password, expirationDate)
-        const createdUserId = await this.usersDBRepository.createUser(newUser)
-        const createdUser = await this.usersDBRepository.findUserById(createdUserId)
-        if (createdUser)
-            try {
-                await this.emailManager.sendEmailConfirmationCode(createdUser)
-            } catch (error) {
-                console.error(error)
-                await this.usersDBRepository.deleteUser(createdUser._id.toString())
-                return null
-            }
-        return createdUser
+    async createUser(login: string, email: string, pass: string): Promise<boolean> {
+        const passwordHash = await bcrypt.hash(pass, 10)
+        const user = UserModel.makeInstance(login, email, passwordHash)
+        try {
+            await this.emailManager.sendEmailConfirmationCode(user)
+        } catch (error) {
+            console.error(error)
+            return false
+        }
+        await this.usersDBRepository.save(user)
+        return true
     }
 
     async confirmEmail(code: string): Promise<boolean> {
         const user = await this.usersDBRepository.findUserByEmailConfirmationCode(code)
         if (!user) return false
-        if (user.canBeConfirmed())
-            return await this.usersDBRepository.updateConfirmation(user._id);
-        return false
-
+        if (!user.canBeConfirmed()) return false
+        user.confirm()
+        await this.usersDBRepository.save(user)
+        return true
     }
 
     async checkCredentials(login: string, pass: string) {

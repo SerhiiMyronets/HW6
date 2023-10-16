@@ -25,14 +25,14 @@ export class CommentsService {
         return this.commentsDbRepository.deleteComment(id)
     }
 
-    async commentLikeStatusUpdate(userId: string, likeObjectId: string,
+    async commentLikeStatusUpdate(userId: string, userLogin: string, likeObjectId: string,
                                   likeStatus: string): Promise<boolean> {
         const likeInfo = await this.likesInfoDbRepository.findLikeInfo(
             userId, 'comment', likeObjectId)
         const comment = await this.commentsDbRepository.findCommentById(likeObjectId)
         if (!likeInfo) {
-            const newLikeInfo = new LikeInfoType(userId, 'comment',
-                likeObjectId, 'post',comment!.postId, likeStatus)
+            const newLikeInfo = new LikeInfoType(userId, userLogin, 'comment',
+                likeObjectId, 'post', comment!.postId, likeStatus)
             await this.likesInfoDbRepository.addLikeInfo(newLikeInfo)
             if (likeStatus === 'Like')
                 await this.commentsDbRepository.increaseLikesCount(likeObjectId)

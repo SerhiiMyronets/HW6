@@ -9,6 +9,7 @@ import {commentsBodyValidation} from "../midlewares/body/comments-body-validatio
 import {commentsQueryValidation} from "../midlewares/query/comments-query-validation";
 import {accessTokenNonProtectedMiddleware} from "../midlewares/access-token-non-protected-middleware";
 import {postController} from "../composition-root";
+import {likeInputValidation} from "../midlewares/body/like-input-validation";
 
 
 export const postsRoute = Router({})
@@ -30,6 +31,13 @@ postsRoute.delete('/:id',
     paramValidation,
     errorsFormatMiddleware,
     postController.deletePost.bind(postController))
+
+postsRoute.put('/:id/like-status',
+    accessTokenMiddlewareProtected,
+    paramValidation,
+    likeInputValidation,
+    errorsFormatMiddleware,
+    postController.postLikeStatusUpdate.bind(postController))
 
 postsRoute.post('/',
     authenticationMiddleware,

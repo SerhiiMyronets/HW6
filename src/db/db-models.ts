@@ -15,6 +15,16 @@ export class BlogDBType {
 
 export class PostDBType {
     createdAt: Date
+    extendedLikesInfo: {
+        likesCount: number,
+        dislikesCount: number
+        newestLikes: Array<{
+            addedAt: Date,
+            userId: string,
+            login: string
+        }>
+    }
+
 
     constructor(public title: string,
                 public shortDescription: string,
@@ -23,6 +33,12 @@ export class PostDBType {
                 public blogName: string,
     ) {
         this.createdAt = new Date()
+        this.extendedLikesInfo = {
+            likesCount: 0,
+            dislikesCount: 0,
+            newestLikes: []
+        }
+
     }
 }
 
@@ -93,6 +109,7 @@ export class LikeInfoType {
     public createdAt: Date
 
     constructor(public userId: string,
+                public userLogin: string,
                 public objectType: string,
                 public objectId: string,
                 public parentObjectType: string,
@@ -116,6 +133,7 @@ export class DeviceAuthSessionDBType {
 
 export class ApiRequestDatabaseDBType {
     date: Date
+
     constructor(public IP: string,
                 public URL: string,
     ) {

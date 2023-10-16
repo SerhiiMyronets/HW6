@@ -34,6 +34,10 @@ export class PostsQueryRepository {
         return !!result;
     }
 
+    async findPostById(_id: string): Promise<PostViewModel | null> {
+        return PostModel.findOne({_id}).lean()
+    }
+
     async findPostsByBlogIdQuery(query: FindPostsPaginateModel, blogId: string): Promise<Pagination<PostViewModel>> {
         const totalCount = await PostModel.countDocuments({"blogId": blogId})
         const foundedPosts: PostViewModel[] = await PostModel

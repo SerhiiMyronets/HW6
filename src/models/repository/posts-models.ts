@@ -24,7 +24,21 @@ export type PostViewModel = {
     blogId: string
     blogName: string
     createdAt: Date
+    extendedLikesInfo: extendedLikesInfoViewModel
 }
+
+export type extendedLikesInfoViewModel = {
+    likesCount: number
+    dislikesCount: number
+    myStatus: string
+    newestLikes: newestLikesViewModel[]
+}
+export type newestLikesViewModel= {
+    addedAt: Date,
+    userId: string,
+    login: string
+}
+
 export type PostViewModelPaginated = {
     pagesCount: number
     page: number

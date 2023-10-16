@@ -2,6 +2,7 @@ import {LikeInfoType} from "../../db/db-models";
 import {LikeInfoModel} from "../../db/db";
 import {ObjectId} from "mongodb";
 import {HydratedDocument} from "mongoose";
+import {newestLikesViewModel} from "../../models/repository/posts-models";
 
 export class LikesInfoDbRepository {
     async addLikeInfo(likeInfo: LikeInfoType): Promise<ObjectId> {
@@ -14,13 +15,29 @@ export class LikesInfoDbRepository {
         const likeInfo = await LikeInfoModel.findOne({userId, objectType, objectId})
         return (likeInfo) ? likeInfo : null
     }
+
     async setLikeStatus(_id: ObjectId) {
         await LikeInfoModel.findOneAndUpdate({_id}, {likeStatus: 'Like'})
     }
+
     async setDislikeStatus(_id: ObjectId) {
         await LikeInfoModel.findOneAndUpdate({_id}, {likeStatus: 'Dislike'})
     }
+
     async setNoneStatus(_id: ObjectId) {
         await LikeInfoModel.findOneAndUpdate({_id}, {likeStatus: 'None'})
+    }
+
+    async findNewestThreeLikes(objectId: string): Promise<newestLikesViewModel[] | null> {
+        return LikeInfoModel
+            .find({objectId: new ObjectId(objectId), likeStatus: {$ne: "None"}}, {
+                _id: 0,
+                userId: 1,
+                userLogin: 1,
+                createdAt: 1,
+            })
+            .sort({createdAt: -1})
+            .limit(3)
+            .lean()
     }
 }

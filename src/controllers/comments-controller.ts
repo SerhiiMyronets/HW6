@@ -35,7 +35,7 @@ export class CommentsController {
         const comment = await this.commentsQueryRepository.findCommentById(commentId)
         if (!comment) return res.sendStatus(404)
         await this.commentsService.commentLikeStatusUpdate(req.user!._id.toString(),
-            commentId, req.body.likeStatus.toString())
+            req.user!.accountData.login,commentId, req.body.likeStatus.toString())
         return res.sendStatus(204)
     }
 

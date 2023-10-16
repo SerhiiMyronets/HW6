@@ -11,8 +11,8 @@ import {PostsQueryRepository,} from "../repositories/query-repositories/posts-qu
 import {PostsService,} from "../domain/posts-service";
 import {
     CommentInputModel,
-    FindCommentsPaginateModel,
-    LikesStatusQueryModel
+    FindCommentsPaginateModel, LikeInputModel,
+    LikesStatusQueryModel, ParamInputModel
 } from "../models/repository/comments-models";
 import {CommentsService} from "../domain/comments-service";
 import {CommentsQueryRepository} from "../repositories/query-repositories/comments-query-repository";
@@ -75,6 +75,18 @@ export class PostController {
         } else {
             res.sendStatus(404)
         }
+    }
+
+    async postLikeStatusUpdate(req: RequestWithParamsBody<ParamInputModel, LikeInputModel>, res: Response) {
+
+        const postId = req.params.id
+        const userId = req.user!._id.toString()
+        const userLogin = req.user!.accountData.login
+        const likeStatus = req.body.likeStatus.toString()
+        const post = await this.postsQueryRepository.findPostById(postId)
+        if (!post) return res.sendStatus(404)
+        await this.postsService.postLikeStatusUpdate(userId, userLogin, postId, likeStatus)
+        return res.sendStatus(204)
     }
 
     async createCommentByPost(req: RequestWithParamsBody<{ id: string }, CommentInputModel>, res: Response) {

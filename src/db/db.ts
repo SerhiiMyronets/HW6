@@ -17,7 +17,8 @@ import {
     DeviceAuthSessionsSchema,
     LikesInfoSchema,
     PasswordRecoverySchema,
-    PostSchema, UserModelType,
+    PostSchema,
+    UserModelFullType,
     UserSchema
 } from "./mongo-db-schemas";
 
@@ -26,7 +27,7 @@ export const mongooseURI = process.env.MONGOOSE_URI || `mongodb+srv://hardmail88
 
 export const BlogModel = mongoose.model<BlogDBType>('blogs', BlogSchema)
 export const PostModel = mongoose.model<PostDBType>('posts', PostSchema)
-export const UserModel = mongoose.model<UsersBDType, UserModelType>('users', UserSchema)
+export const UserModel = mongoose.model<UsersBDType, UserModelFullType>('users', UserSchema)
 export const CommentModel = mongoose.model<CommentDBType>('comments', CommentSchema)
 export const LikeInfoModel = mongoose.model<LikeInfoType>('likeInfo', LikesInfoSchema)
 export const DeviceAuthSessionsModel = mongoose.model<DeviceAuthSessionDBType>('deviceAuthSessions', DeviceAuthSessionsSchema)
