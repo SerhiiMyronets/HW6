@@ -62,8 +62,9 @@ export class PostController {
             content: req.body.content,
             blogId: req.body.blogId
         }
-        const newPost = await this.postsService.creatPost(postInputBody)
-        res.status(201).send(newPost)
+        const newPostId = await this.postsService.creatPost(postInputBody)
+        const post = await this.postsQueryRepository.findPostById(newPostId)
+        res.status(201).send(post)
     }
 
     async updatePost(req: RequestWithParamsBody<{ id: string }, PostInputModel>, res: Response) {

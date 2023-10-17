@@ -18,10 +18,10 @@ export class PostsDBRepository {
             }).lean()
     }
 
-    async creatPost(newPostBody: PostDBType): Promise<PostViewModel | null> {
+    async creatPost(newPostBody: PostDBType): Promise<string> {
         const res = await PostModel
             .create(newPostBody)
-        return this.findById(res.id);
+        return res.id;
     }
 
     async updatePost(_id: string, newUpdatedPostBody: PostInputModel): Promise<Boolean> {

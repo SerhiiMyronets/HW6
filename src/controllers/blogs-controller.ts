@@ -83,8 +83,9 @@ export class BlogsController {
                 content: req.body.content,
                 blogId: req.params.id
             }
-            const newPost = await this.postsService.creatPost(postInputBody)
-            res.status(201).send(newPost)
+            const newPostId = await this.postsService.creatPost(postInputBody)
+            const post = await this.postsQueryRepository.findPostById(newPostId)
+            res.status(201).send(post)
         } else {
             res.sendStatus(404)
         }

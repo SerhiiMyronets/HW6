@@ -13,7 +13,7 @@ export class PostsService {
                 protected likesInfoDbRepository: LikesInfoDbRepository) {
     }
 
-    async creatPost(postInputBody: PostInputModel): Promise<PostViewModel | null> {
+    async creatPost(postInputBody: PostInputModel): Promise<string> {
         const blog = await this.blogsRepository.findBlogById(postInputBody.blogId);
         const newPost = new PostDBType(
             postInputBody.title,
