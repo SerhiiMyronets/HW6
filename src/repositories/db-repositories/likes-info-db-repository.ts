@@ -30,7 +30,7 @@ export class LikesInfoDbRepository {
 
     async findNewestThreeLikes(objectId: string): Promise<newestLikesViewModel[] | null> {
         return LikeInfoModel
-            .find({objectId: new ObjectId(objectId), likeStatus: {$ne: "None"}}, {
+            .find({objectId: new ObjectId(objectId), likeStatus: 'Like'}, {
                 _id: 0,
                 login: '$userLogin',
                 userId: '$userId',
