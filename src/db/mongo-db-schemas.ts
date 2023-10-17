@@ -38,7 +38,8 @@ export const PostSchema = new mongoose.Schema<PostDBType>({
         newestLikes: [{
             addedAt: Date,
             userId: String,
-            login: String
+            login: String,
+            _id: false
         }]
     }
 })
