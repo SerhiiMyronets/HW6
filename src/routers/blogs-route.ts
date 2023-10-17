@@ -7,6 +7,7 @@ import {blogPostBodyValidation} from "../midlewares/body/blog-post-body-validati
 import {blogsQueryValidation} from "../midlewares/query/blogs-query-validation";
 import {postsQueryValidation} from "../midlewares/query/posts-query-validation";
 import {blogController} from "../composition-root";
+import {accessTokenNonProtectedMiddleware} from "../midlewares/access-token-non-protected-middleware";
 
 
 export const blogsRoute = Router({})
@@ -29,6 +30,7 @@ blogsRoute.delete('/:id',
     blogController.deleteBlog.bind(blogController))
 
 blogsRoute.get('/:id/posts',
+    accessTokenNonProtectedMiddleware,
     paramValidation,
     postsQueryValidation,
     errorsFormatMiddleware,

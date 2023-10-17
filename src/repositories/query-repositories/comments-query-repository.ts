@@ -7,10 +7,6 @@ import {CommentModel} from "../../db/db";
 import {sortDirectionList} from "../../setting";
 
 export class CommentsQueryRepository {
-    async isCommentExist(_id: string) {
-        return CommentModel.findOne({_id}, {_id: 1})
-    }
-
     async findCommentsByPostId(query: FindCommentsPaginateModel, postId: string, likesStatus: LikesStatusQueryModel): Promise<CommentsViewModelPaginated> {
         const totalCount = await CommentModel.countDocuments({"postId": postId})
         const foundedComments: Array<CommentViewModel> = await CommentModel

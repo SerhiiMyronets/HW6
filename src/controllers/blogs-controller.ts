@@ -13,13 +13,16 @@ import {FindPostsPaginateModel, PostInputByBlogModel, PostInputModel} from "../m
 import {PostsQueryRepository} from "../repositories/query-repositories/posts-query-repository";
 import {PostsService} from "../domain/posts-service";
 import {injectable} from "inversify";
+import {LikesStatusQueryModel} from "../models/repository/comments-models";
+import {LikesInfoQueryRepository} from "../repositories/query-repositories/likes-info-query-repository";
 
 @injectable()
 export class BlogsController {
     constructor(protected blogsQueryRepository: BlogsQueryRepository,
                 protected blogsService: BlogsService,
                 protected postsQueryRepository: PostsQueryRepository,
-                protected postsService: PostsService) {
+                protected postsService: PostsService,
+                protected likesInfoQueryRepository: LikesInfoQueryRepository) {
     }
 
     async getBlogs(req: RequestWithQuery<findBlogsPaginateModel>, res: Response) {
@@ -46,13 +49,19 @@ export class BlogsController {
     }
 
     async getPostsByBlog(req: RequestWithParamsQuery<{ id: string }, FindPostsPaginateModel>, res: Response) {
-        const isBlogExisting = await this.blogsQueryRepository.isBlogExisting(req.params.id)
-        if (isBlogExisting) {
-            const result = await this.postsQueryRepository.findPostsByBlogIdQuery(req.query, req.params.id)
-            res.status(200).send(result)
-        } else {
+        const blogId = req.params.id
+        const userId = req.user?._id.toString()
+        const isBlogExisting = await this.blogsQueryRepository.isBlogExisting(blogId)
+        if (!isBlogExisting)
             res.sendStatus(404)
+        let likesStatus: LikesStatusQueryModel = []
+        if (userId) {
+            likesStatus = await this.likesInfoQueryRepository.getPostsLikeStatusByBlog(blogId, userId)
         }
+        const result = await this.postsQueryRepository.findPostsByBlogIdQuery(req.query, blogId, likesStatus)
+        res.status(200).send(result)
+
+
     }
 
     async createBlog(req: RequestWithBody<BlogInputModel>, res: Response) {

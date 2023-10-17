@@ -70,7 +70,7 @@ export const commentsController = new CommentsController(
 export const postController = new PostController(
     postsQueryRepository, postsService, commentsService, commentsQueryRepository, likesInfoQueryRepository)
 export const blogController = new BlogsController(
-    blogsQueryRepository, blogsService, postsQueryRepository, postsService)
+    blogsQueryRepository, blogsService, postsQueryRepository, postsService, likesInfoQueryRepository)
 // export const userController = new UserController(usersQueryRepository, usersService)
 // export const authController = new AuthController(authService)
 // export const sessionsController = new SessionsController(authService)

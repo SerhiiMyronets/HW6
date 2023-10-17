@@ -18,10 +18,12 @@ export const postsRoute = Router({})
 
 
 postsRoute.get('/',
+    accessTokenNonProtectedMiddleware,
     postsQueryValidation,
     postController.getPosts.bind(postController))
 
 postsRoute.get('/:id',
+    accessTokenNonProtectedMiddleware,
     paramValidation,
     errorsFormatMiddleware,
     postController.getPost.bind(postController))

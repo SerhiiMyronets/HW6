@@ -28,17 +28,22 @@ export class PostController {
     }
 
     async getPosts(req: RequestWithQuery<FindPostsPaginateModel>, res: Response) {
-        const result = await this.postsQueryRepository.findPostsQuery(req.query);
-        res.send(result)
+        const userId = req.user?._id.toString()
+        let likesStatus: LikesStatusQueryModel = []
+        if (userId)
+            likesStatus = await this.likesInfoQueryRepository.getPostsLikeStatus(userId)
+        const result = await this.postsQueryRepository.findPostsQuery(req.query, likesStatus)
+        res.status(200).send(result)
     }
 
     async getPost(req: RequestWithParams<{ id: string }>, res: Response) {
-        const post = await this.postsService.findById(req.params.id)
-        if (post) {
-            res.status(200).send(post)
-        } else {
-            res.sendStatus(404)
-        }
+        let likeStatus = 'None'
+        if (req.user)
+            likeStatus = await this.likesInfoQueryRepository.getLikeStatus(req.user?._id.toString(),
+                'post', req.params.id)
+
+        const post = await this.postsQueryRepository.findPostById(req.params.id, likeStatus)
+        post ? res.status(200).send(post) : res.sendStatus(404)
     }
 
     async deletePost(req: RequestWithParams<{ id: string }>, res: Response) {

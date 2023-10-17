@@ -19,4 +19,21 @@ export class LikesInfoQueryRepository {
                 likeStatus: 1
             }).lean()
     }
+
+    async getPostsLikeStatus(userId: string): Promise<LikesStatusQueryModel> {
+        return LikeInfoModel.find({userId, objectType: 'post', likeStatus: {$ne: "None"} },
+            {
+                _id: 0,
+                id: '$objectId',
+                likeStatus: 1
+            }).lean()
+    }
+    async getPostsLikeStatusByBlog(blogId: string, userId: string): Promise<LikesStatusQueryModel> {
+        return LikeInfoModel.find({userId, parentObjectId: blogId, objectType: 'post', likeStatus: {$ne: "None"} },
+            {
+                _id: 0,
+                id: '$objectId',
+                likeStatus: 1
+            }).lean()
+    }
 }
