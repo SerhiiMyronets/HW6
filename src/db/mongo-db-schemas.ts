@@ -13,6 +13,7 @@ import {UserModel} from "./db";
 import {randomUUID} from "crypto";
 import add from "date-fns/add";
 import {settings} from "../setting";
+import {newestLikesViewModel} from "../models/repository/posts-models";
 
 
 export const BlogSchema = new mongoose.Schema<BlogDBType>({
@@ -22,6 +23,8 @@ export const BlogSchema = new mongoose.Schema<BlogDBType>({
     createdAt: {type: Date},
     isMembership: {type: Boolean}
 })
+
+
 export const PostSchema = new mongoose.Schema<PostDBType>({
     title: {type: String, require: true},
     shortDescription: {type: String, require: true},
@@ -32,15 +35,15 @@ export const PostSchema = new mongoose.Schema<PostDBType>({
     extendedLikesInfo: {
         likesCount: {type: Number, require: true},
         dislikesCount: {type: Number, require: true},
-        newestLikes: {
-            type: Array<{
-                addedAt: Date,
-                userId: String,
-                login: String
-            }>
-        }
+        newestLikes: [{
+            addedAt: Date,
+            userId: String,
+            login: String
+        }]
     }
 })
+
+
 export const PasswordRecoverySchema = new mongoose.Schema<PasswordRecoveryDBType>({
     userId: {type: String, require: true},
     email: {type: String, require: true},

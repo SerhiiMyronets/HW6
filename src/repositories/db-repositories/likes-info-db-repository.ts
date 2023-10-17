@@ -32,9 +32,9 @@ export class LikesInfoDbRepository {
         return LikeInfoModel
             .find({objectId: new ObjectId(objectId), likeStatus: {$ne: "None"}}, {
                 _id: 0,
-                login: 1,
-                userId: 1,
-                addedAt: 1,
+                login: '$userLogin',
+                userId: '$userId',
+                addedAt: '$createdAt',
             })
             .sort({createdAt: -1})
             .limit(3)

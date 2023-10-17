@@ -83,7 +83,6 @@ export class PostController {
     }
 
     async postLikeStatusUpdate(req: RequestWithParamsBody<ParamInputModel, LikeInputModel>, res: Response) {
-
         const postId = req.params.id
         const userId = req.user!._id.toString()
         const userLogin = req.user!.accountData.login

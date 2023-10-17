@@ -25,7 +25,7 @@ export class PostsQueryRepository {
                 "extendedLikesInfo.likesCount": 1,
                 "extendedLikesInfo.dislikesCount": 1,
                 "extendedLikesInfo.myStatus": "None",
-                "extendedLikesInfo.newestLikes": 1,
+                "extendedLikesInfo.newestLikes": 1
             })
             .sort({[query.sortBy]: sortDirectionList[query.sortDirection]})
             .skip(query.pageSize * (query.pageNumber - 1))
