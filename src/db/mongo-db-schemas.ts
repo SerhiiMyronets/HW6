@@ -34,9 +34,9 @@ export const PostSchema = new mongoose.Schema<PostDBType>({
         dislikesCount: {type: Number, require: true},
         newestLikes: {
             type: Array<{
-                likesCount: 0,
-                dislikesCount: 0,
-                newestLikes: []
+                addedAt: Date,
+                userId: String,
+                login: String
             }>
         }
     }
